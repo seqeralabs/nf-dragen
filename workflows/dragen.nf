@@ -36,8 +36,8 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // MODULE: Loaded from modules/local/
 //
-include { FETCH_FASTQ_FTP       } from '../modules/local/fetch_fastq_ftp'
 include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN                } from '../modules/local/dragen'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -71,46 +71,22 @@ workflow DRAGEN {
     ch_versions = Channel.empty()
 
     //
-    // MODULE: Parse Genome in a bottle samplesheet and download data
-    //
-    if (params.giab_input) {
-        Channel
-            .from(ch_input)
-            .splitCsv(header:true, sep:'\t')
-            .map { row -> // FASTQ	FASTQ_MD5	PAIRED_FASTQ	PAIRED_FASTQ_MD5	NIST_SAMPLE_NAME
-                meta = [:]
-                meta.id = row.NIST_SAMPLE_NAME
-                meta.single_end = false
-                meta.md5_1 = row.FASTQ_MD5
-                meta.md5_2 = row.PAIRED_FASTQ_MD5
-                return [ meta, [ row.FASTQ, row.PAIRED_FASTQ ] ]
-            }
-            .set { ch_reads }
-
-        FETCH_FASTQ_FTP (
-            ch_reads
-        )
-        ch_reads    = FETCH_FASTQ_FTP.out.fastq
-        ch_versions = ch_versions.mix(FETCH_FASTQ_FTP.out.versions.first())
-
-    //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    } else {
-        INPUT_CHECK (
-            ch_input
-        )
-        ch_reads    = INPUT_CHECK.out.reads
-        ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
-    }
+    INPUT_CHECK (
+        ch_input
+    )
+    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_reads
-    )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    if (!params.skip_fastqc) {
+        FASTQC (
+            INPUT_CHECK.out.reads
+        )
+        ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    }
 
     if (!params.skip_dragen) {
         //
@@ -130,7 +106,7 @@ workflow DRAGEN {
         // MODULE: Run DRAGEN
         //
         DRAGEN (
-            ch_reads,
+            INPUT_CHECK.out.reads,
             ch_dragen_index
         )
         ch_versions = ch_versions.mix(DRAGEN.out.versions)

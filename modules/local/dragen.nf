@@ -8,12 +8,10 @@ process DRAGEN {
 
     output:
     tuple val(meta), path('*.bam')    , emit: bam  , optional:true
-    tuple val(meta), path('*.vcf')    , emit: vcf  , optional:true
+    tuple val(meta), path('*.vcf.gz') , emit: vcf  , optional:true
+    tuple val(meta), path('*.tbi')    , emit: tbi  , optional:true
     tuple val(meta), path('*fastq.gz'), emit: fastq, optional:true
     path  "versions.yml"              , emit: versions
-
-    when:
-    task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
@@ -46,7 +44,3 @@ process DRAGEN {
     END_VERSIONS
     """
 }
-//     --enable-map-align=true \
-//     --enable-variant-caller true \
-//     --enable-duplicate-marking true \
-//     --lic-server=license@licenserver.com \
