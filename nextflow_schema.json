@@ -41,6 +41,21 @@
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
                     "fa_icon": "fas fa-file-signature"
+                },
+                "giab_input": {
+                    "type": "boolean",
+                    "description": "Specifies whether input samplesheet is in Genome In A Bottle format",
+                    "fa_icon": "fas fa-wine-bottle"
+                },
+                "skip_fastqc": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-fast-forward",
+                    "description": "Skip FastQC"
+                },
+                "skip_dragen": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-fast-forward",
+                    "description": "Skip DRAGEN"
                 }
             }
         },
@@ -79,6 +94,10 @@
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
+                },
+                "dragen_index": {
+                    "type": "string",
+                    "fa_icon": "fas fa-dragon"
                 }
             }
         },
