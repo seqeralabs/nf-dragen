@@ -13,6 +13,10 @@ process DRAGEN_BUILDHASHTABLE {
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
+    dragen --help
+
+    dragen --version
+
     dragen \\
         --build-hash-table true \\
         --output-directory $prefix \\
