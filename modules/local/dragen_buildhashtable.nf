@@ -5,9 +5,9 @@ process DRAGEN_BUILDHASHTABLE {
     input:
     path fasta
 
-    output:
-    path "$prefix"     , emit: index
-    path "versions.yml", emit: versions
+    // output:
+    // path "$prefix"     , emit: index
+    // path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -16,17 +16,17 @@ process DRAGEN_BUILDHASHTABLE {
     dragen --help
 
     dragen --version
-
-    dragen \\
-        --build-hash-table true \\
-        --output-directory $prefix \\
-        --ht-reference $fasta \\
-        $args
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        dragen: \$(echo \$(dragen --version))
-    END_VERSIONS
     """
 }
+
+    // dragen \\
+    //     --build-hash-table true \\
+    //     --output-directory $prefix \\
+    //     --ht-reference $fasta \\
+    //     $args
+
+    // cat <<-END_VERSIONS > versions.yml
+    // "${task.process}":
+    //     dragen: \$(echo \$(dragen --version))
+    // END_VERSIONS
 

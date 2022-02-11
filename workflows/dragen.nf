@@ -98,18 +98,18 @@ workflow DRAGEN {
             DRAGEN_BUILDHASHTABLE (
                 ch_fasta
             )
-            ch_dragen_index = DRAGEN_BUILDHASHTABLE.out.index
-            ch_versions     = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
+            //ch_dragen_index = DRAGEN_BUILDHASHTABLE.out.index
+            //ch_versions     = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
         }
 
-        //
-        // MODULE: Run DRAGEN
-        //
-        DRAGEN (
-            INPUT_CHECK.out.reads,
-            ch_dragen_index
-        )
-        ch_versions = ch_versions.mix(DRAGEN.out.versions)
+        // //
+        // // MODULE: Run DRAGEN
+        // //
+        // DRAGEN (
+        //     INPUT_CHECK.out.reads,
+        //     ch_dragen_index
+        // )
+        // ch_versions = ch_versions.mix(DRAGEN.out.versions)
     }
 
     //
