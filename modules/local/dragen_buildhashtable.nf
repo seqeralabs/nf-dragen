@@ -16,6 +16,8 @@ process DRAGEN_BUILDHASHTABLE {
     /opt/edico/bin/dragen --help
 
     /opt/edico/bin/dragen --version
+    
+    mkdir -p $prefix
 
     /opt/edico/bin/dragen \\
         --build-hash-table true \\
