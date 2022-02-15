@@ -13,7 +13,7 @@ process DRAGEN_BUILDHASHTABLE {
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
-    touch test.txt
+    /opt/edico/bin/dragen --help
     """
 }
     // dragen --help
