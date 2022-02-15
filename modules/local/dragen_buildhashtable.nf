@@ -5,29 +5,27 @@ process DRAGEN_BUILDHASHTABLE {
     input:
     path fasta
 
-    // output:
-    // path "$prefix"     , emit: index
-    // path "versions.yml", emit: versions
+    output:
+    path "$prefix"     , emit: index
+    path "versions.yml", emit: versions
 
     script:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
     /opt/edico/bin/dragen --help
+
+    /opt/edico/bin/dragen --version
+
+    /opt/edico/bin/dragen \\
+        --build-hash-table true \\
+        --output-directory $prefix \\
+        --ht-reference $fasta \\
+        $args
+
+    cat <<-END_VERSIONS > versions.yml
+      "${task.process}":
+        dragen: \$(echo \$(/opt/edico/bin/dragen --version))
+    END_VERSIONS
     """
 }
-    // dragen --help
-
-    // dragen --version
-    
-    // dragen \\
-    //     --build-hash-table true \\
-    //     --output-directory $prefix \\
-    //     --ht-reference $fasta \\
-    //     $args
-
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //     dragen: \$(echo \$(dragen --version))
-    // END_VERSIONS
-
