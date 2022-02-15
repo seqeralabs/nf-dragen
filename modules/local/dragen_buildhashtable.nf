@@ -24,7 +24,7 @@ process DRAGEN_BUILDHASHTABLE {
         $args
 
     cat <<-END_VERSIONS > versions.yml
-      "${task.process}":
+    "${task.process}":
         dragen: \$(echo \$(/opt/edico/bin/dragen --version))
     END_VERSIONS
     """
