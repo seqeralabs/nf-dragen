@@ -36,8 +36,8 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // MODULE: Loaded from modules/local/
 //
-include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable'
-include { DRAGEN                } from '../modules/local/dragen'
+include { DRAGEN_BUILDHASHTABLE      } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN as DRAGEN_MAP_READS } from '../modules/local/dragen'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -92,6 +92,7 @@ workflow DRAGEN {
         //
         // MODULE: Generate DRAGEN index if required
         //
+        ch_dragen_index = Channel.empty()
         if (params.dragen_index) {
             ch_dragen_index = file(params.dragen_index)
         } else {
@@ -105,11 +106,11 @@ workflow DRAGEN {
         //
         // MODULE: Run DRAGEN
         //
-        DRAGEN (
+        DRAGEN_MAP_READS (
             INPUT_CHECK.out.reads,
             ch_dragen_index
         )
-        ch_versions = ch_versions.mix(DRAGEN.out.versions)
+        ch_versions = ch_versions.mix(DRAGEN_MAP_READS.out.versions)
     }
 
     // //

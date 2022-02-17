@@ -18,8 +18,8 @@ process DRAGEN {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     // Generate appropriate parameter for input files
-    def file_list = files_in.collect { it.toString() }
     def input = ''
+    def file_list = files_in.collect { it.toString() }
     if (file_list[0].endsWith('.bam')) {
         input = "-b ${files_in}"
     } else {
