@@ -11,11 +11,12 @@ WorkflowDragen.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
+def checkPathParamList = [ params.input, params.fasta, params.multiqc_config ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+if (params.fasta) { ch_fasta = file(params.fasta) } else { exit 1, 'Genome fasta not specified!'      }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,6 +32,15 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+
+//
+// MODULE: Loaded from modules/local/
+//
+include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_DNA } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_RNA } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN as DRAGEN_FASTQ_TO_BAM_DNA } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_FASTQ_TO_VCF_DNA } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_FASTQ_TO_BAM_RNA } from '../modules/local/dragen'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -74,11 +84,62 @@ workflow DRAGEN {
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        INPUT_CHECK.out.reads
-    )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    if (!params.skip_fastqc) {
+        FASTQC (
+            INPUT_CHECK.out.reads
+        )
+        ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    }
 
+    if (!params.skip_dragen) {
+
+        //
+        // MODULE: Generate DRAGEN DNA index
+        //
+        DRAGEN_BUILDHASHTABLE_DNA (
+            ch_fasta
+        )
+        ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
+
+        //
+        // MODULE: Generate DRAGEN RNA index
+        //
+        DRAGEN_BUILDHASHTABLE_RNA (
+            ch_fasta
+        )
+        ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_RNA.out.versions)
+
+        //
+        // MODULE: Run DRAGEN on DNA samples to generate BAM from FastQ
+        //
+        DRAGEN_FASTQ_TO_BAM_DNA (
+            INPUT_CHECK.out.reads,
+            DRAGEN_BUILDHASHTABLE_DNA.out.index
+        )
+        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_DNA.out.versions.first())
+
+        //
+        // MODULE: Run DRAGEN on DNA samples to generate VCF from FastQ
+        //
+        DRAGEN_FASTQ_TO_VCF_DNA (
+            INPUT_CHECK.out.reads,
+            DRAGEN_BUILDHASHTABLE_DNA.out.index
+        )
+        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_VCF_DNA.out.versions.first())
+
+        //
+        // MODULE: Run DRAGEN on RNA samples to generate BAM from FastQ
+        //
+        DRAGEN_FASTQ_TO_BAM_RNA (
+            INPUT_CHECK.out.reads,
+            DRAGEN_BUILDHASHTABLE_RNA.out.index
+        )
+        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_RNA.out.versions.first())
+    }
+
+    //
+    // MODULE: Pipeline software reporting
+    //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
