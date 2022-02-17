@@ -94,13 +94,16 @@ workflow DRAGEN {
     if (!params.skip_dragen) {
 
         //
-        // MODULE: Generate DRAGEN index if required
+        // MODULE: Generate DRAGEN DNA index
         //
         DRAGEN_BUILDHASHTABLE_DNA (
             ch_fasta
         )
         ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
 
+        //
+        // MODULE: Generate DRAGEN RNA index
+        //
         DRAGEN_BUILDHASHTABLE_RNA (
             ch_fasta
         )

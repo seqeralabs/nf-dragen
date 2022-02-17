@@ -7,15 +7,17 @@ process DRAGEN {
     path index
 
     output:
-    tuple val(meta), path('*.bam')    , emit: bam  , optional:true
-    tuple val(meta), path('*.vcf.gz') , emit: vcf  , optional:true
-    tuple val(meta), path('*.tbi')    , emit: tbi  , optional:true
-    tuple val(meta), path('*fastq.gz'), emit: fastq, optional:true
-    path  "versions.yml"              , emit: versions
+    tuple val(meta), path('*.bam')                             , emit: bam         , optional:true
+    tuple val(meta), path('*fastq.gz')                         , emit: fastq       , optional:true
+    tuple val(meta), path("${prefix}.vcf.gz")                  , emit: vcf         , optional:true
+    tuple val(meta), path("${prefix}.vcf.gz.tbi")              , emit: tbi         , optional:true
+    tuple val(meta), path("${prefix}.hard-filtered.vcf.gz")    , emit: vcf_filtered, optional:true
+    tuple val(meta), path("${prefix}.hard-filtered.vcf.gz.tbi"), emit: tbi_filtered, optional:true
+    path  "versions.yml"                                       , emit: versions
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: "${meta.id}"
 
     def ref = index ? "-r $index" : ''
 
