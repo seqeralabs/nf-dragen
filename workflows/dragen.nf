@@ -102,14 +102,14 @@ workflow DRAGEN {
             ch_versions     = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
         }
 
-        // //
-        // // MODULE: Run DRAGEN
-        // //
-        // DRAGEN (
-        //     INPUT_CHECK.out.reads,
-        //     ch_dragen_index
-        // )
-        // ch_versions = ch_versions.mix(DRAGEN.out.versions)
+        //
+        // MODULE: Run DRAGEN
+        //
+        DRAGEN (
+            INPUT_CHECK.out.reads,
+            ch_dragen_index
+        )
+        ch_versions = ch_versions.mix(DRAGEN.out.versions)
     }
 
     // //

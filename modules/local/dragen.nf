@@ -21,15 +21,15 @@ process DRAGEN {
     def file_list = files_in.collect { it.toString() }
     def input = ''
     if (file_list[0].endsWith('.bam')) {
-        input = "-b $files_in"
+        input = "-b ${files_in}"
     } else {
-        input = meta.single_end ? "-1 $files_in" : "-1 ${files_in[0]} -2 ${files_in[1]}"
+        input = meta.single_end ? "-1 ${files_in}" : "-1 ${files_in[0]} -2 ${files_in[1]}"
     }
     def ref = index ? "-r $index" : ''
     def rgid = meta.rgid ? "--RGID ${meta.id}" : ''
     def rgsm = meta.rgsm ? "--RGSM ${meta.id}" : ''
     """
-    dragen \\
+    /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\
         --output-file-prefix $prefix \\
@@ -40,7 +40,7 @@ process DRAGEN {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: \$(echo \$(dragen --version))
+        dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
     END_VERSIONS
     """
 }
