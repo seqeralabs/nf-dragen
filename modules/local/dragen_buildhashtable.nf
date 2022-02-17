@@ -13,10 +13,6 @@ process DRAGEN_BUILDHASHTABLE {
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
-    /opt/edico/bin/dragen --help
-
-    /opt/edico/bin/dragen --version
-    
     mkdir -p $prefix
 
     /opt/edico/bin/dragen \\
@@ -27,7 +23,7 @@ process DRAGEN_BUILDHASHTABLE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: \$(echo \$(/opt/edico/bin/dragen --version))
+        dragen: \$(echo \$(/opt/edico/bin/dragen --version | sed -e "s/dragen Version //g"))
     END_VERSIONS
     """
 }
