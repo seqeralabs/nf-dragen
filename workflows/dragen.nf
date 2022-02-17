@@ -36,10 +36,11 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // MODULE: Loaded from modules/local/
 //
-include { DRAGEN_BUILDHASHTABLE         } from '../modules/local/dragen_buildhashtable'
-include { DRAGEN as DRAGEN_DNA_FASTQ_TO_BAM } from '../modules/local/dragen'
-include { DRAGEN as DRAGEN_DNA_FASTQ_TO_VCF } from '../modules/local/dragen'
-include { DRAGEN as DRAGEN_RNA_FASTQ_TO_BAM } from '../modules/local/dragen'
+include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_DNA } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_RNA } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN as DRAGEN_FASTQ_TO_BAM_DNA } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_FASTQ_TO_VCF_DNA } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_FASTQ_TO_BAM_RNA } from '../modules/local/dragen'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -91,46 +92,46 @@ workflow DRAGEN {
     // }
 
     if (!params.skip_dragen) {
+
         //
         // MODULE: Generate DRAGEN index if required
         //
-        ch_dragen_index = Channel.empty()
-        if (params.dragen_index) {
-            ch_dragen_index = file(params.dragen_index)
-        } else {
-            DRAGEN_BUILDHASHTABLE (
-                ch_fasta
-            )
-            ch_dragen_index = DRAGEN_BUILDHASHTABLE.out.index
-            ch_versions     = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
-        }
+        DRAGEN_BUILDHASHTABLE_DNA (
+            ch_fasta
+        )
+        ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
+
+        DRAGEN_BUILDHASHTABLE_RNA (
+            ch_fasta
+        )
+        ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_RNA.out.versions)
 
         //
         // MODULE: Run DRAGEN on DNA samples to generate BAM from FastQ
         //
-        DRAGEN_DNA_FASTQ_TO_BAM (
+        DRAGEN_FASTQ_TO_BAM_DNA (
             INPUT_CHECK.out.reads,
-            ch_dragen_index
+            DRAGEN_BUILDHASHTABLE_DNA.out.index
         )
-        ch_versions = ch_versions.mix(DRAGEN_DNA_FASTQ_TO_BAM.out.versions.first())
+        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_DNA.out.versions.first())
 
         //
         // MODULE: Run DRAGEN on DNA samples to generate VCF from FastQ
         //
-        DRAGEN_DNA_FASTQ_TO_VCF (
+        DRAGEN_FASTQ_TO_VCF_DNA (
             INPUT_CHECK.out.reads,
-            ch_dragen_index
+            DRAGEN_BUILDHASHTABLE_DNA.out.index
         )
-        ch_versions = ch_versions.mix(DRAGEN_DNA_FASTQ_TO_VCF.out.versions.first())
+        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_VCF_DNA.out.versions.first())
 
         //
         // MODULE: Run DRAGEN on RNA samples to generate BAM from FastQ
         //
-        DRAGEN_RNA_FASTQ_TO_BAM (
+        DRAGEN_FASTQ_TO_BAM_RNA (
             INPUT_CHECK.out.reads,
-            ch_dragen_index
+            DRAGEN_BUILDHASHTABLE_RNA.out.index
         )
-        ch_versions = ch_versions.mix(DRAGEN_RNA_FASTQ_TO_BAM.out.versions.first())
+        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_RNA.out.versions.first())
     }
 
     // //
