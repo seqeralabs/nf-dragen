@@ -26,8 +26,8 @@ process DRAGEN {
         input = meta.single_end ? "-1 ${files_in}" : "-1 ${files_in[0]} -2 ${files_in[1]}"
     }
     def ref = index ? "-r $index" : ''
-    def rgid = meta.rgid ? "--RGID ${meta.id}" : ''
-    def rgsm = meta.rgsm ? "--RGSM ${meta.id}" : ''
+    def rgid = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
+    def rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
     /opt/edico/bin/dragen \\
         $ref \\
