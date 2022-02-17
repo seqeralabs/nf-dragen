@@ -17,17 +17,20 @@ process DRAGEN {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
+    def ref = index ? "-r $index" : ''
+
     // Generate appropriate parameter for input files
     def input = ''
+    def rgid = ''
+    def rgdm = ''
     def file_list = files_in.collect { it.toString() }
     if (file_list[0].endsWith('.bam')) {
         input = "-b ${files_in}"
     } else {
         input = meta.single_end ? "-1 ${files_in}" : "-1 ${files_in[0]} -2 ${files_in[1]}"
+        rgid = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
+        rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     }
-    def ref = index ? "-r $index" : ''
-    def rgid = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
-    def rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
     /opt/edico/bin/dragen \\
         $ref \\

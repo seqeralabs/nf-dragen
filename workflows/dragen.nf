@@ -36,8 +36,10 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // MODULE: Loaded from modules/local/
 //
-include { DRAGEN_BUILDHASHTABLE      } from '../modules/local/dragen_buildhashtable'
-include { DRAGEN as DRAGEN_MAP_READS } from '../modules/local/dragen'
+include { DRAGEN_BUILDHASHTABLE         } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN as DRAGEN_DNA_FASTQ_TO_BAM } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_DNA_FASTQ_TO_VCF } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_RNA_FASTQ_TO_BAM } from '../modules/local/dragen'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -104,13 +106,31 @@ workflow DRAGEN {
         }
 
         //
-        // MODULE: Run DRAGEN
+        // MODULE: Run DRAGEN on DNA samples to generate BAM from FastQ
         //
-        DRAGEN_MAP_READS (
+        DRAGEN_DNA_FASTQ_TO_BAM (
             INPUT_CHECK.out.reads,
             ch_dragen_index
         )
-        ch_versions = ch_versions.mix(DRAGEN_MAP_READS.out.versions)
+        ch_versions = ch_versions.mix(DRAGEN_DNA_FASTQ_TO_BAM.out.versions.first())
+
+        //
+        // MODULE: Run DRAGEN on DNA samples to generate VCF from FastQ
+        //
+        DRAGEN_DNA_FASTQ_TO_VCF (
+            INPUT_CHECK.out.reads,
+            ch_dragen_index
+        )
+        ch_versions = ch_versions.mix(DRAGEN_DNA_FASTQ_TO_VCF.out.versions.first())
+
+        //
+        // MODULE: Run DRAGEN on RNA samples to generate BAM from FastQ
+        //
+        DRAGEN_RNA_FASTQ_TO_BAM (
+            INPUT_CHECK.out.reads,
+            ch_dragen_index
+        )
+        ch_versions = ch_versions.mix(DRAGEN_RNA_FASTQ_TO_BAM.out.versions.first())
     }
 
     // //
