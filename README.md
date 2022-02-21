@@ -5,7 +5,7 @@
 
 ## Introduction
 
-**nf-core/dragen** is a simple, proof-of-concept pipeline to run the [Illumina DRAGEN](https://emea.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html) suite of tools.
+**nf-dragen** is a simple, proof-of-concept pipeline to run the [Illumina DRAGEN](https://emea.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html) suite of tools.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker  containers making installation trivial and results highly reproducible.
 
@@ -13,9 +13,11 @@ DRAGEN is licensed software that you can purchase in the [AWS Marketplace](https
 
 ## Credits
 
-nf-core/dragen was originally written by Harshil Patel, Graham Wright.
+nf-dragen was originally written by Harshil Patel and Graham Wright, [Seqera Labs](https://seqera.io/)
 
 ## Citations
+
+The nf-core pipeline template was used to create the skeleton of this pipeline but there are no plans to contribute it to nf-core at this point.
 
 You can cite the `nf-core` publication as follows:
 
