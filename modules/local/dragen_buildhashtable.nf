@@ -15,6 +15,8 @@ process DRAGEN_BUILDHASHTABLE {
     """
     mkdir -p $prefix
 
+    /opt/edico/bin/dragen_reset
+
     /opt/edico/bin/dragen \\
         --build-hash-table true \\
         --output-directory $prefix \\
