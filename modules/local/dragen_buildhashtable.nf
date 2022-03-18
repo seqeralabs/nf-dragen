@@ -1,7 +1,7 @@
 process DRAGEN_BUILDHASHTABLE {
     tag "$fasta"
     label 'process_medium'
-    labal 'dragen'
+    label 'dragen'
 
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'

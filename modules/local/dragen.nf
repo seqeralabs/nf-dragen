@@ -1,7 +1,7 @@
 process DRAGEN {
     tag "$meta.id"
     label 'process_high'
-    labal 'dragen'
+    label 'dragen'
 
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
