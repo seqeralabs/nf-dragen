@@ -25,7 +25,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory $prefix \\
         --ht-reference $fasta \\
-        --lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com \\
+        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         $args
 
     cat <<-END_VERSIONS > versions.yml

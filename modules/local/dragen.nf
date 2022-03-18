@@ -44,7 +44,7 @@ process DRAGEN {
         $ref \\
         --output-directory ./ \\
         --output-file-prefix $prefix \\
-        --lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com \\
+        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         $input \\
         $rgid \\
         $rgsm \\
