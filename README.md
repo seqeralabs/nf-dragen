@@ -11,7 +11,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Integration with Nextflow Tower
 
-We have streamlined the process of deploying DRAGEN Nextflow workflows on AWS Batch via Nextflow Tower.
+We have streamlined the process of deploying Nextflow workflows that utilise Illumina DRAGEN on AWS Batch via Tower.
 
 ### Prerequisites
 
