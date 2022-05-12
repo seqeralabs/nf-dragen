@@ -40,6 +40,8 @@ process DRAGEN {
         rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     }
     """
+    /opt/edico/bin/dragen_reset
+
     /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\
