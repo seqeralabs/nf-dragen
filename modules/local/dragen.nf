@@ -3,6 +3,10 @@ process DRAGEN {
     label 'process_high'
     label 'dragen'
 
+    cpus 16
+    memory 235.GB
+    time 4.h
+
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
 
