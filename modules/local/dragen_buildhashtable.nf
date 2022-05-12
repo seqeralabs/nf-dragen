@@ -6,10 +6,7 @@ process DRAGEN_BUILDHASHTABLE {
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
 
-    conda (params.enable_conda ? "conda-forge::sed=4.7" : null)
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/ubuntu:20.04' :
-        'ubuntu:20.04' }"
+    container 'centos:8'
 
     input:
     path fasta
@@ -23,8 +20,6 @@ process DRAGEN_BUILDHASHTABLE {
     prefix = task.ext.prefix ?: 'dragen'
     """
     mkdir -p $prefix
-
-    /opt/edico/bin/dragen_reset
 
     /opt/edico/bin/dragen \\
         --build-hash-table true \\
