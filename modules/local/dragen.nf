@@ -2,15 +2,10 @@ process DRAGEN {
     tag "$meta.id"
     label 'process_high'
     label 'dragen'
-
-    cpus 16
-    memory 235.GB
     time 4.h
 
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
-
-    container 'centos:8'
 
     input:
     tuple val(meta), path(files_in)
@@ -44,8 +39,6 @@ process DRAGEN {
         rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     }
     """
-    /opt/edico/bin/dragen_reset
-
     /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\

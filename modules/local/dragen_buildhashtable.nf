@@ -6,8 +6,6 @@ process DRAGEN_BUILDHASHTABLE {
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
 
-    container 'centos:8'
-
     input:
     path fasta
 
