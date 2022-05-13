@@ -1,12 +1,9 @@
 process DRAGEN_BUILDHASHTABLE {
     tag "$fasta"
-    label 'process_medium'
     label 'dragen'
 
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
-
-    container 'centos:8'
 
     input:
     path fasta
