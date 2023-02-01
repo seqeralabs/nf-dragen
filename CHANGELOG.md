@@ -11,7 +11,7 @@ Initial release of nf-core/dragen, created with the [nf-core](https://nf-co.re/)
 
 ### `Fixed`
 
-- Fixed error `Access to 'FASTQC_CHECK.out' is undefined since the workflow 'FASTQC_CHECK' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
+- Fixed error `Access to 'FASTQC.out' is undefined since the workflow 'FASTQC' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
 
 ### `Dependencies`
 
