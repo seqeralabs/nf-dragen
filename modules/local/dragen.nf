@@ -2,9 +2,6 @@ process DRAGEN {
     tag "$meta.id"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     tuple val(meta), path(files_in)
     path index

@@ -2,9 +2,6 @@ process DRAGEN_BUILDHASHTABLE {
     tag "$fasta"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     path fasta
 
