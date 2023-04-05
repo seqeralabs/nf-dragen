@@ -34,9 +34,26 @@ process DRAGEN {
         rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     }
     """
-    wget -L https://raw.githubusercontent.com/seqeralabs/nf-dragen/azure/assets/azure_prerun.sh
-    chmod +x azure_prerun.sh
-    ./azure_prerun.sh
+    yum -y update
+    yum -y install kernel-devel kernel-headers
+
+    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+    curl -L https://www.xilinx.com/bin/public/openDownload?filename=xrt_202020.2.8.832_7.4.1708-x86_64-xrt.rpm -o xrt_202020.2.8.832_7.4.1708-x86_64-xrt.rpm
+    curl -L https://www.xilinx.com/bin/public/openDownload?filename=xrt_202020.2.8.832_7.4.1708-x86_64-azure.rpm -o xrt_202020.2.8.832_7.4.1708-x86_64-azure.rpm
+
+    yum -y install xrt*.rpm
+
+    curl -L https://www.xilinx.com/bin/public/openDownload?filename=xilinx-u250-gen3x16-xdma-platform-2.1-3.noarch.rpm.tar.gz  -o xilinx-u250-gen3x16-xdma-platform-2.1-3.noarch.rpm.tar.gz
+    curl -L https://www.xilinx.com/bin/public/openDownload?filename=xilinx-u250-gen3x16-xdma-validate-2.1-3005608.1.noarch.rpm -o xilinx-u250-gen3x16-xdma-validate-2.1-3005608.1.noarch.rpm
+    tar -zxvf xilinx-u250-gen3x16-xdma-platform-2.1-3.noarch.rpm.tar.gz
+
+    yum -y install xilinx*.rpm
+
+    systemctl enable mpd
+    systemctl start mpd
+
+    /opt/xilinx/xrt/bin/xbutil host_mem -d 0 --enable --size 1G
 
     /opt/edico/bin/dragen \\
         $ref \\
