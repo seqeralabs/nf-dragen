@@ -34,6 +34,10 @@ process DRAGEN {
         rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     }
     """
+    wget -L https://raw.githubusercontent.com/seqeralabs/nf-dragen/azure/assets/azure_prerun.sh
+    chmod +x azure_prerun.sh
+    ./azure_prerun.sh
+
     /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\
