@@ -2,8 +2,6 @@ process DRAGEN {
     tag "$meta.id"
     label 'dragen'
 
-    beforeScript 'wget -L https://raw.githubusercontent.com/seqeralabs/nf-dragen/azure/assets/azure_prerun.sh && chmod +x azure_prerun.sh && ./azure_prerun.sh'
-
     input:
     tuple val(meta), path(files_in)
     path index
