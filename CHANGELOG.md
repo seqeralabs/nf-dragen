@@ -9,6 +9,9 @@ Initial release of nf-core/dragen, created with the [nf-core](https://nf-co.re/)
 
 ### `Added`
 
+- Publish csv outputs from `DRAGEN` for `multiQC` module
+- Stub runs for `DRAGEN`, including creation of a file recognised by the `multiQC` module
+
 ### `Fixed`
 
 - Fixed error `Access to 'FASTQC.out' is undefined since the workflow 'FASTQC' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
