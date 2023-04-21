@@ -95,7 +95,12 @@ workflow DRAGEN {
         ch_multiqc_fastqc = FASTQC.out.zip
     }
 
+    //
+    // SUBWORKFLOW: Build index and run DRAGEN
+    //
     if (!params.skip_dragen) {
+
+        ch_multiqc_dragen = Channel.empty()
 
         //
         // MODULE: Generate DRAGEN DNA index
@@ -121,6 +126,7 @@ workflow DRAGEN {
             DRAGEN_BUILDHASHTABLE_DNA.out.index
         )
         ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_DNA.out.versions.first())
+        ch_multiqc_dragen = ch_multiqc_dragen.mix(DRAGEN_FASTQ_TO_BAM_DNA.out.csv)
 
         //
         // MODULE: Run DRAGEN on DNA samples to generate VCF from FastQ
@@ -130,6 +136,7 @@ workflow DRAGEN {
             DRAGEN_BUILDHASHTABLE_DNA.out.index
         )
         ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_VCF_DNA.out.versions.first())
+        ch_multiqc_dragen = ch_multiqc_dragen.mix(DRAGEN_FASTQ_TO_VCF_DNA.out.csv)
 
         //
         // MODULE: Run DRAGEN on RNA samples to generate BAM from FastQ
@@ -139,6 +146,7 @@ workflow DRAGEN {
             DRAGEN_BUILDHASHTABLE_RNA.out.index
         )
         ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_RNA.out.versions.first())
+        ch_multiqc_dragen = ch_multiqc_dragen.mix(DRAGEN_FASTQ_TO_BAM_RNA.out.csv)
     }
 
     //
@@ -162,6 +170,7 @@ workflow DRAGEN {
     ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_fastqc.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_dragen.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
         ch_multiqc_files.collect(),

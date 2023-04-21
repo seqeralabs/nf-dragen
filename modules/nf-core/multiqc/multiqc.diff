@@ -1,0 +1,21 @@
+Changes in module 'nf-core/multiqc'
+--- modules/nf-core/multiqc/main.nf
++++ modules/nf-core/multiqc/main.nf
+@@ -39,15 +39,4 @@
+     END_VERSIONS
+     """
+ 
+-    stub:
+-    """
+-    touch multiqc_data
+-    touch multiqc_plots
+-    touch multiqc_report.html
+-
+-    cat <<-END_VERSIONS > versions.yml
+-    "${task.process}":
+-        multiqc: \$( multiqc --version | sed -e "s/multiqc, version //g" )
+-    END_VERSIONS
+-    """
+ }
+
+************************************************************
