@@ -98,9 +98,8 @@ workflow DRAGEN {
     //
     // SUBWORKFLOW: Build index and run DRAGEN
     //
+    ch_multiqc_dragen = Channel.empty()
     if (!params.skip_dragen) {
-
-        ch_multiqc_dragen = Channel.empty()
 
         //
         // MODULE: Generate DRAGEN DNA index
