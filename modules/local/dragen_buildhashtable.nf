@@ -30,4 +30,15 @@ process DRAGEN_BUILDHASHTABLE {
         dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
     END_VERSIONS
     """
+
+    stub:
+    prefix = task.ext.prefix ?: 'dragen'
+    """
+    mkdir -p $prefix
+    touch $prefix/dragen.ht
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        dragen: \$(echo "v3.4.12")
+    END_VERSIONS
+    """
 }

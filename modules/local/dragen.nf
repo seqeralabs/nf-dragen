@@ -52,4 +52,18 @@ process DRAGEN {
         dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
     END_VERSIONS
     """
+
+    stub:
+    prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    touch ${prefix}.bam
+    touch ${prefix}.vcf.gz
+    touch ${prefix}.vcf.gz.tbi
+    touch ${prefix}.hard-filtered.vcf.gz
+    touch ${prefix}.hard-filtered.vcf.gz.tbi
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        dragen: \$(echo "vSTUB")
+    END_VERSIONS
+    """
 }
