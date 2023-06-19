@@ -22,9 +22,11 @@ process DRAGEN_BUILDHASHTABLE {
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         $args
 
+    /opt/edico/bin/dragen --version > version.txt
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
+        dragen: \$(cat version.txt | sed -e "s/dragen Version //g")
     END_VERSIONS
     """
 }
