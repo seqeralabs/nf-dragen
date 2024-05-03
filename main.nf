@@ -43,6 +43,7 @@ params.fasta = getGenomeAttribute('fasta')
 workflow SEQERALABS_DRAGEN {
     take:
         samplesheet // channel: samplesheet read in from --input
+        fasta
 
     main:
         //
@@ -50,7 +51,7 @@ workflow SEQERALABS_DRAGEN {
         //
         DRAGEN (
             samplesheet,
-            params.fasta,
+            fasta
         )
 
     emit:
@@ -84,7 +85,8 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     SEQERALABS_DRAGEN (
-        PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.samplesheet,
+        params.fasta
     )
 
     //
