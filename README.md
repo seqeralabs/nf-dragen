@@ -1,88 +1,105 @@
-[![GitHub Actions CI Status](https://github.com/seqeralabs/nf-dragen/actions/workflows/ci.yml/badge.svg)](https://github.com/seqeralabs/nf-dragen/actions/workflows/ci.yml)
-[![GitHub Actions Linting Status](https://github.com/seqeralabs/nf-dragen/actions/workflows/linting.yml/badge.svg)](https://github.com/seqeralabs/nf-dragen/actions/workflows/linting.yml)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)
-[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
-[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
-[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
-[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
-[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/seqeralabs/nf-dragen)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
+
+> THIS IS A PROOF-OF-CONCEPT REPOSITORY THAT IS UNDER ACTIVE DEVELOPMENT. SYNTAX, ORGANISATION AND LAYOUT MAY CHANGE WITHOUT NOTICE!
 
 ## Introduction
 
-**seqeralabs/nf-dragen** is a bioinformatics pipeline that ...
+**nf-dragen** is a simple, proof-of-concept pipeline to run the [Illumina DRAGEN](https://emea.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html) licensed suite of tools.
 
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
+The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker  containers making installation trivial and results highly reproducible. This pipeline has only been tested on AWS Batch.
 
-<!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
-     workflows use the "tube map" design for that. See https://nf-co.re/docs/contributing/design_guidelines#examples for examples.   -->
-<!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
+## Integration with Nextflow Tower
 
-1. Read QC ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-2. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+We have streamlined the process of deploying Nextflow workflows that utilise Illumina DRAGEN on AWS Batch via Tower.
 
-## Usage
+### Prerequisites
 
-> [!NOTE]
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
+#### Credentials
 
-<!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
-     Explain what rows and columns represent. For instance (please edit as appropriate):
+You will need to obtain the following information from the Illumina DRAGEN team:
 
-First, prepare a samplesheet with your input data that looks as follows:
+1. Private AMI id in an AWS region with DRAGEN F1 instance availability
+2. Username to run DRAGEN on the CLI via Nextflow
+3. Password to run DRAGEN on the CLI via Nextflow
 
-`samplesheet.csv`:
+#### Pipeline implementation
 
-```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-```
+Please see the [dragen.nf](modules/local/dragen.nf) module implemented in this pipeline for reference.
 
-Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
+Any Nextflow processes calling the `dragen` command must have:
 
--->
+1. `label dragen` ([see docs](https://www.nextflow.io/docs/latest/process.html?highlight=label#label)). This is how Tower will determine which processes need to be specifically executed on DRAGEN F1 instances.
 
-Now, you can run the pipeline using:
+    ```nextflow
+    process DRAGEN {
+        label 'dragen'
 
-<!-- TODO nf-core: update the following command to include all required parameters for a minimal example -->
+        <truncated>
+    }
+    ```
 
-```bash
-nextflow run seqeralabs/nf-dragen \
-   -profile <docker/singularity/.../institute> \
-   --input samplesheet.csv \
-   --outdir <OUTDIR>
-```
+2. `secret DRAGEN_USERNAME` and `secret DRAGEN_PASSWORD` ([see docs](https://www.nextflow.io/docs/latest/secrets.html?highlight=secrets#secrets)). These Secrets will be provided securely to the `--lic-server` option when running DRAGEN on the CLI to validate the license.
 
-> [!WARNING]
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
-> see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
+    ```nextflow
+    process DRAGEN {
+        secret 'DRAGEN_USERNAME'
+        secret 'DRAGEN_PASSWORD'
+
+        <truncated>
+
+        script:
+        """
+        /opt/edico/bin/dragen \\
+                --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+                <other_options>
+        """
+    }
+    ```
+
+### Compute Environment
+
+You can use Tower Forge to automatically create a separate AWS Batch queue with dedicated F1 instances to run DRAGEN. 
+
+In the Tower UI, go to `Compute Environments` -> `Add Compute Environment` and fill in the appropriate settings for your AWS Batch environment. Additionally, you will be able to paste your private DRAGEN AMI id as shown in the image below:
+
+![Tower enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
+
+Click on `Add` to create the Compute Environment.
+
+> Please ensure that the `Region` you select contains DRAGEN F1 instances.
+
+### Secrets
+
+As outlined in [this blog](https://seqera.io/blog/pipeline-secrets-secure-handling-of-sensitive-information-in-tower/) you can add Secrets to Tower to safely encrypt the username and password information required to run DRAGEN via Nextflow.
+
+In the Tower UI, go to `Secrets` -> `Add Pipeline Secret` and add both of the Secrets as shown in the images below:
+
+1. `DRAGEN_USERNAME`
+
+![Tower Secrets DRAGEN username](docs/images/tower_secrets_dragen_username.png)
+
+2. `DRAGEN_PASSWORD`
+
+![Tower Secrets DRAGEN password](docs/images/tower_secrets_dragen_password.png)
+
+### Pipeline
+
+In the Tower UI, go to `Launchpad` -> `Add Pipeline`. Fill in the appropriate details to add your pipeline and ensure that the Compute Environment and Secrets you created previously are both defined for use by the pipeline:
+
+![Tower Pipeline Secrets](docs/images/tower_pipeline_secrets.png)
+
+Click on `Add` to create the pipeline and launch it when you are ready!
 
 ## Credits
 
-seqeralabs/nf-dragen was originally written by Harshil Patel, Graham Wright.
-
-We thank the following people for their extensive assistance in the development of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
-
-## Contributions and Support
-
-If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
+nf-dragen was originally written by [Harshil Patel](https://github.com/drpatelh) and [Graham Wright](https://github.com/gwright99) and [Paolo Di Tommasso](https://github.com/pditommaso), [Seqera Labs](https://seqera.io/).
 
 ## Citations
 
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use seqeralabs/nf-dragen for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
+The nf-core pipeline template was used to create the skeleton of this pipeline but there are no plans to contribute it to nf-core at this point.
 
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
-
-An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
-
-This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) community, reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
+You can cite the `nf-core` publication as follows:
 
 > **The nf-core framework for community-curated bioinformatics pipelines.**
 >
