@@ -16,10 +16,10 @@ nextflow.enable.dsl = 2
 */
 
 include { DRAGEN                  } from './workflows/dragen'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_nf-dragen_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_nf-dragen_pipeline'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_dragen_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_nf-dragen_pipeline'
+include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 
 
 /*
@@ -43,6 +43,7 @@ params.fasta = getGenomeAttribute('fasta')
 workflow SEQERALABS_DRAGEN {
     take:
         samplesheet // channel: samplesheet read in from --input
+
     main:
         //
         // WORKFLOW: Run pipeline
@@ -53,7 +54,7 @@ workflow SEQERALABS_DRAGEN {
         )
 
     emit:
-        multiqc_report = NF-DRAGEN.out.multiqc_report // channel: /path/to/multiqc_report.html
+        multiqc_report = DRAGEN.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 
 /*
@@ -82,7 +83,7 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    SEQERALABS_NF-DRAGEN (
+    SEQERALABS_DRAGEN (
         PIPELINE_INITIALISATION.out.samplesheet
     )
 
@@ -96,7 +97,7 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        SEQERALABS_NF-DRAGEN.out.multiqc_report
+        SEQERALABS_DRAGEN.out.multiqc_report
     )
 }
 
