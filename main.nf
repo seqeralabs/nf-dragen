@@ -15,6 +15,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { DRAGEN_INDEX            } from './workflows/dragen_index'
 include { DRAGEN                  } from './workflows/dragen'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_dragen_pipeline'
@@ -44,14 +45,25 @@ workflow SEQERALABS_DRAGEN {
     take:
         samplesheet // channel: samplesheet read in from --input
         fasta
+        dna_index
+        rna_index
 
     main:
+        //
+        // WORKFLOW: Prepare index
+        //
+        DRAGEN_INDEX (
+            fasta,
+            dna_index,
+            rna_index
+        )
         //
         // WORKFLOW: Run pipeline
         //
         DRAGEN (
             samplesheet,
-            fasta
+            DRAGEN_INDEX.out.dna,
+            DRAGEN_INDEX.out.rna
         )
 
     emit:
@@ -86,7 +98,9 @@ workflow {
     //
     SEQERALABS_DRAGEN (
         PIPELINE_INITIALISATION.out.samplesheet,
-        params.fasta
+        params.fasta,
+        params.dragen_dna_index,
+        params.dragen_rna_index
     )
 
     //
