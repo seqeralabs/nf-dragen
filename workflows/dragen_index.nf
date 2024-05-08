@@ -15,27 +15,31 @@ include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_RNA } from '../modules/
 
 workflow DRAGEN_INDEX {
     take:
-        ch_fasta
-        ch_dna_index
-        ch_rna_index
+        fasta
+        dna_index
+        rna_index
 
     main:
         ch_versions = Channel.empty()
 
-        if (!ch_dna_index) {
+        if (!dna_index) {
             DRAGEN_BUILDHASHTABLE_DNA (
-                ch_fasta
+                fasta
             )
             ch_dna_index = DRAGEN_BUILDHASHTABLE_DNA.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
+        } else {
+            ch_dna_index = Channel.fromPath(dna_index, checkIfExists: true, type: 'dir')
         }
 
-        if (!ch_rna_index) {
+        if (!rna_index) {
             DRAGEN_BUILDHASHTABLE_RNA (
-                ch_fasta
+                fasta
             )
             ch_rna_index = DRAGEN_BUILDHASHTABLE_RNA.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_RNA.out.versions)
+        } else {
+            ch_rna_index = Channel.fromPath(rna_index, checkIfExists: true, type: 'dir')
         }
     
     emit:
