@@ -6,8 +6,6 @@
 
 include { FASTQC                    } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                   } from '../modules/nf-core/multiqc/main'
-include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_DNA } from '../modules/local/dragen_buildhashtable.nf'
-include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_RNA } from '../modules/local/dragen_buildhashtable.nf'
 include { DRAGEN as DRAGEN_FASTQ_TO_BAM_DNA   } from '../modules/local/dragen.nf'
 include { DRAGEN as DRAGEN_FASTQ_TO_VCF_DNA   } from '../modules/local/dragen.nf'
 include { DRAGEN as DRAGEN_FASTQ_TO_BAM_RNA   } from '../modules/local/dragen.nf'
@@ -26,7 +24,8 @@ workflow DRAGEN {
 
     take:
         ch_input
-        ch_fasta
+        ch_dna_index
+        ch_rna_index
 
     main:
         ch_versions     = Channel.empty()
@@ -44,30 +43,16 @@ workflow DRAGEN {
             ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map { it[1] })
         }
 
+
+
         if (params.dragen) {
-
-            //
-            // MODULE: Generate DRAGEN DNA index
-            //
-            DRAGEN_BUILDHASHTABLE_DNA (
-                ch_fasta
-            )
-            ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
-
-            //
-            // MODULE: Generate DRAGEN RNA index
-            //
-            DRAGEN_BUILDHASHTABLE_RNA (
-                ch_fasta
-            )
-            ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_RNA.out.versions)
 
             //
             // MODULE: Run DRAGEN on DNA samples to generate BAM from FastQ
             //
             DRAGEN_FASTQ_TO_BAM_DNA (
                 ch_input,
-                DRAGEN_BUILDHASHTABLE_DNA.out.index
+                ch_dna_index
             )
             ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_DNA.out.versions.first())
 
@@ -76,7 +61,7 @@ workflow DRAGEN {
             //
             DRAGEN_FASTQ_TO_VCF_DNA (
                 ch_input,
-                DRAGEN_BUILDHASHTABLE_DNA.out.index
+                ch_dna_index
             )
             ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_VCF_DNA.out.versions.first())
 
@@ -85,7 +70,7 @@ workflow DRAGEN {
             //
             DRAGEN_FASTQ_TO_BAM_RNA (
                 ch_input,
-                DRAGEN_BUILDHASHTABLE_RNA.out.index
+                ch_rna_index
             )
             ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_RNA.out.versions.first())
         }
