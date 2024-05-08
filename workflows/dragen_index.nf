@@ -23,18 +23,18 @@ workflow DRAGEN_INDEX {
         ch_versions = Channel.empty()
 
         if (!ch_dna_index) {
-            ch_dna_index_out = DRAGEN_BUILDHASHTABLE_DNA (
+            DRAGEN_BUILDHASHTABLE_DNA (
                 ch_fasta
             )
-            ch_dna_index = ch_dna_index_out.index
+            ch_dna_index = DRAGEN_BUILDHASHTABLE_DNA.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
         }
 
         if (!ch_rna_index) {
-            ch_rna_index_out = DRAGEN_BUILDHASHTABLE_RNA (
+            DRAGEN_BUILDHASHTABLE_RNA (
                 ch_fasta
             )
-            ch_rna_index = ch_rna_index_out.index
+            ch_rna_index = DRAGEN_BUILDHASHTABLE_RNA.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_RNA.out.versions)
         }
     
