@@ -30,4 +30,24 @@ process DRAGEN_BUILDHASHTABLE {
         dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
     END_VERSIONS
     """
+
+    stub:
+    def args = task.ext.args ?: ''
+    prefix = task.ext.prefix ?: 'dragen'
+    """
+    mkdir -p $prefix
+
+    echo /opt/edico/bin/dragen \\
+        --build-hash-table true \\
+        --output-directory $prefix \\
+        --ht-reference $fasta \\
+        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $args
+
+    touch ${prefix}/dragen.ht
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        dragen: v1
+    END_VERSIONS
+    """
 }
