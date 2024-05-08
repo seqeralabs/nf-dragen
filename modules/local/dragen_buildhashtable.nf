@@ -35,7 +35,15 @@ process DRAGEN_BUILDHASHTABLE {
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
-    mkdir ${prefix}
+    mkdir -p $prefix
+
+    echo /opt/edico/bin/dragen \\
+        --build-hash-table true \\
+        --output-directory $prefix \\
+        --ht-reference $fasta \\
+        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $args
+
     touch ${prefix}/dragen.ht
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

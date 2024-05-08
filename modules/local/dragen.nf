@@ -72,6 +72,15 @@ process DRAGEN {
         rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     }
     """
+    echo /opt/edico/bin/dragen \\
+        $ref \\
+        --output-directory ./ \\
+        --output-file-prefix $prefix \\
+        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $input \\
+        $rgid \\
+        $rgsm \\
+        $args
     touch ${prefix}.bam
     touch ${prefix}.1.fastq.gz
     touch ${prefix}.2.fastq.gz
