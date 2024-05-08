@@ -6,7 +6,7 @@ process DRAGEN {
     secret 'DRAGEN_PASSWORD'
 
     input:
-    tuple val(meta), path(files_in)
+    tuple val(meta), path(fastq_1), path(fastq_2)
     path index
 
     output:
@@ -25,17 +25,9 @@ process DRAGEN {
     def ref = index ? "-r $index" : ''
 
     // Generate appropriate parameter for input files
-    def input = ''
-    def rgid = ''
-    def rgdm = ''
-    def file_list = files_in.collect { it.toString() }
-    if (file_list[0].endsWith('.bam')) {
-        input = "-b ${files_in}"
-    } else {
-        input = meta.single_end ? "-1 ${files_in}" : "-1 ${files_in[0]} -2 ${files_in[1]}"
-        rgid = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
-        rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
-    }
+    def input = "-1 ${fastq_1} -2 ${fastq_2}"
+    def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
+    def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
     /opt/edico/bin/dragen \\
         $ref \\
@@ -60,17 +52,9 @@ process DRAGEN {
     def ref = index ? "-r $index" : ''
 
     // Generate appropriate parameter for input files
-    def input = ''
-    def rgid = ''
-    def rgdm = ''
-    def file_list = files_in.collect { it.toString() }
-    if (file_list[0].endsWith('.bam')) {
-        input = "-b ${files_in}"
-    } else {
-        input = meta.single_end ? "-1 ${files_in}" : "-1 ${files_in[0]} -2 ${files_in[1]}"
-        rgid = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
-        rgsm = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
-    }
+    def input = "-1 ${fastq_1} -2 ${fastq_2}"
+    def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
+    def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
     echo /opt/edico/bin/dragen \\
         $ref \\

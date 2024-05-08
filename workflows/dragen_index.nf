@@ -15,16 +15,20 @@ include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_RNA } from '../modules/
 
 workflow DRAGEN_INDEX {
     take:
-        fasta
-        dna_index
-        rna_index
+        input_dna
+        input_rna
+        fasta      // FASTA file
+        dna_index  // Optional path to DNA index
+        rna_index  // Optional path to RNA index
 
     main:
         ch_versions = Channel.empty()
 
+        ch_fasta = params.fasta ? Channel.fromPath(fasta, checkIfExists: true, type: 'file') : Channel.empty()
+
         if (!dna_index) {
             DRAGEN_BUILDHASHTABLE_DNA (
-                fasta
+                input_dna.combine(ch_fasta).map { meta, fastq_1, fastq_2, fasta -> fasta }.first()
             )
             ch_dna_index = DRAGEN_BUILDHASHTABLE_DNA.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_DNA.out.versions)
@@ -34,7 +38,7 @@ workflow DRAGEN_INDEX {
 
         if (!rna_index) {
             DRAGEN_BUILDHASHTABLE_RNA (
-                fasta
+                input_rna.combine(ch_fasta).map { meta, fastq_1, fastq_2, fasta -> fasta }.first()
             )
             ch_rna_index = DRAGEN_BUILDHASHTABLE_RNA.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE_RNA.out.versions)
