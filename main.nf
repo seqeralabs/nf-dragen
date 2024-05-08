@@ -99,8 +99,8 @@ workflow {
     SEQERALABS_DRAGEN (
         PIPELINE_INITIALISATION.out.samplesheet,
         params.fasta,
-        params.dragen_dna_index,
-        params.dragen_rna_index
+        params.dragen_index_dna,
+        params.dragen_index_rna
     )
 
     //
