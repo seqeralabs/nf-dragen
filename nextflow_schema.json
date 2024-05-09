@@ -33,7 +33,8 @@
                     "type": "string",
                     "default": "dna",
                     "description": "Default type of sequencing (dna, rna etc). Can be overridden in the samplesheet using the column `seq_type`.",
-                    "fa_icon": "fas fa-dna"
+                    "fa_icon": "fas fa-dna",
+                    "enum": ["dna", "rna"]
                 },
                 "email": {
                     "type": "string",

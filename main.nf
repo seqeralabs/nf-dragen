@@ -65,11 +65,13 @@ workflow SEQERALABS_DRAGEN {
         //
         input
             .filter { params.fastqc }
+            // Coerce input to format for FASTQC input
             .map { meta, fastq_1, fastq_2 -> [meta, fastq_1 + fastq_2]}
             | FASTQC
         ch_versions     = ch_versions.mix(FASTQC.out.versions)
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map { it[1] })
 
+        // Branch DNA and RNA samples
         input
             .branch { meta, fastq_1, fastq_2 ->
                 dna: meta.seq_type == 'dna'
@@ -88,7 +90,7 @@ workflow SEQERALABS_DRAGEN {
         ch_versions = ch_versions.mix(DRAGEN_DNA.out.versions)
 
         //
-        // WORKFLOW: Run DNA pipeline
+        // WORKFLOW: Run RNA pipeline
         //
         DRAGEN_RNA (
             input_branched.rna,
