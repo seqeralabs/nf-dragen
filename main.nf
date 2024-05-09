@@ -67,6 +67,8 @@ workflow SEQERALABS_DRAGEN {
             .filter { params.fastqc }
             .map { meta, fastq_1, fastq_2 -> [meta, fastq_1 + fastq_2]}
             | FASTQC
+        ch_versions     = ch_versions.mix(FASTQC.out.versions)
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map { it[1] })
 
         input
             .branch { meta, fastq_1, fastq_2 ->
