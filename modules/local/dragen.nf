@@ -6,7 +6,7 @@ process DRAGEN {
     secret 'DRAGEN_PASSWORD'
 
     input:
-    tuple val(meta), path(fastq_1), path(fastq_2)
+    tuple val(meta), path(fastq_1, stageAs: "input_S1_L001_R1_00*.fastq.gz"), path(fastq_2, stageAs: "input_S1_L001_R2_00*.fastq.gz")
     path index
 
     output:
@@ -25,7 +25,8 @@ process DRAGEN {
     def ref = index ? "-r $index" : ''
 
     // Generate appropriate parameter for input files
-    def input = "-1 ${fastq_1} -2 ${fastq_2}"
+    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : "" 
+    r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
     def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
     def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
@@ -34,7 +35,8 @@ process DRAGEN {
         --output-directory ./ \\
         --output-file-prefix $prefix \\
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $input \\
+        $r1_in \\
+        $r2_in \\
         $rgid \\
         $rgsm \\
         $args
@@ -52,7 +54,8 @@ process DRAGEN {
     def ref = index ? "-r $index" : ''
 
     // Generate appropriate parameter for input files
-    def input = "-1 ${fastq_1} -2 ${fastq_2}"
+    r1_in = fastq_1 ? "-1 ${prefix}_S1_L001_R1_001.fastq.gz" : "" 
+    r2_in = fastq_2 ? "-2 ${prefix}_S1_L001_R2_001.fastq.gz" : ""
     def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
     def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
@@ -61,7 +64,8 @@ process DRAGEN {
         --output-directory ./ \\
         --output-file-prefix $prefix \\
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $input \\
+        $r1_in \\
+        $r2_in \\
         $rgid \\
         $rgsm \\
         $args
