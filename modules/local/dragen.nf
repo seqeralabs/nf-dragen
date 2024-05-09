@@ -10,7 +10,7 @@ process DRAGEN {
     path index
 
     output:
-    tuple val(meta), path('*.bam')                             , emit: bam        , optional:true
+    tuple val(meta), path('*.{bam,sam,cram}')                  , emit: bam        , optional:true
     tuple val(meta), path('*fastq.gz')                         , emit: fastq      , optional:true
     tuple val(meta), path("${prefix}.vcf.gz")                   , emit: vcf        , optional:true
     tuple val(meta), path("${prefix}.vcf.gz.tbi")               , emit: tbi        , optional:true
@@ -23,6 +23,15 @@ process DRAGEN {
     prefix = task.ext.prefix ?: "${meta.id}"
 
     def ref = index ? "-r $index" : ''
+
+
+    // Check FASTQ numbers match
+    def num_r1 = fastq_1 instanceof List ? fastq_1.size() : 1
+    def num_r2 = fastq_2 instanceof List ? fastq_2.size() : 1
+
+    if ( fastq_2 && num_r1 != num_r2 ) {
+        error "Number of R1 and R2 FASTQ files do not match"
+    }
 
     // Generate appropriate parameter for input files
     r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : "" 
@@ -53,9 +62,18 @@ process DRAGEN {
 
     def ref = index ? "-r $index" : ''
 
+
+    // Check FASTQ numbers match
+    def num_r1 = fastq_1 instanceof List ? fastq_1.size() : 1
+    def num_r2 = fastq_2 instanceof List ? fastq_2.size() : 1
+
+    if ( fastq_2 && num_r1 != num_r2 ) {
+        error "Number of R1 and R2 FASTQ files do not match for sample ${prefix}"
+    }
+
     // Generate appropriate parameter for input files
-    r1_in = fastq_1 ? "-1 ${prefix}_S1_L001_R1_001.fastq.gz" : "" 
-    r2_in = fastq_2 ? "-2 ${prefix}_S1_L001_R2_001.fastq.gz" : ""
+    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : "" 
+    r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
     def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
     def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
     """
@@ -69,16 +87,10 @@ process DRAGEN {
         $rgid \\
         $rgsm \\
         $args
-    touch ${prefix}.bam
-    touch ${prefix}.1.fastq.gz
-    touch ${prefix}.2.fastq.gz
-    touch ${prefix}.vcf.gz
-    touch ${prefix}.vcf.gz.tbi
-    touch ${prefix}.hard-filtered.vcf.gz
-    touch ${prefix}.hard-filtered.vcf.gz.tbi
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: v1
+        dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
     END_VERSIONS
     """
 }
