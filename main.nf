@@ -68,11 +68,18 @@ workflow SEQERALABS_DRAGEN {
             .map { meta, fastq_1, fastq_2 -> [meta, fastq_1 + fastq_2]}
             | FASTQC
 
+        input
+            .branch { meta, fastq_1, fastq_2 ->
+                dna: meta.seq_type == 'dna'
+                rna: meta.seq_type == 'rna'
+            }
+            .set { input_branched}
+
         //
         // WORKFLOW: Run DNA pipeline
         //
         DRAGEN_DNA (
-            input,
+            input_branched.dna,
             dna_index,
             fasta
         )
@@ -82,7 +89,7 @@ workflow SEQERALABS_DRAGEN {
         // WORKFLOW: Run DNA pipeline
         //
         DRAGEN_RNA (
-            input,
+            input_branched.rna,
             rna_index,
             fasta
         )

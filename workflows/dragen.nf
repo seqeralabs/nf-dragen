@@ -33,6 +33,7 @@ workflow DRAGEN_WORKFLOW {
 
         if (!index) {
             ch_fasta = Channel.fromPath(fasta, checkIfExists: true, type: 'file')
+            // Use combine to not run the process if ch_input is empty
             DRAGEN_BUILDHASHTABLE (
                 ch_input.combine(ch_fasta).map { meta, fastq_1, fastq_2, fasta -> fasta }.first()
             )
