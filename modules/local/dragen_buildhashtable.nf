@@ -6,7 +6,7 @@ process DRAGEN_BUILDHASHTABLE {
     secret 'DRAGEN_PASSWORD'
 
     input:
-    path fasta
+    path(fasta)
 
     output:
     path "$prefix"     , emit: index

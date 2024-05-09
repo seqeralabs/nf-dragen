@@ -4,11 +4,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQC                    } from '../modules/nf-core/fastqc/main'
-include { MULTIQC                   } from '../modules/nf-core/multiqc/main'
-include { DRAGEN as DRAGEN_FASTQ_TO_BAM_DNA   } from '../modules/local/dragen.nf'
-include { DRAGEN as DRAGEN_FASTQ_TO_VCF_DNA   } from '../modules/local/dragen.nf'
-include { DRAGEN as DRAGEN_FASTQ_TO_BAM_RNA   } from '../modules/local/dragen.nf'
+include { FASTQC                } from '../modules/nf-core/fastqc/main'
+include { MULTIQC               } from '../modules/nf-core/multiqc/main'
+include { DRAGEN                } from '../modules/local/dragen.nf'
+include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable.nf'
+
 include { paramsSummaryMap          } from 'plugin/nf-validation'
 include { paramsSummaryMultiqc      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -20,95 +20,47 @@ include { methodsDescriptionText    } from '../subworkflows/local/utils_nfcore_d
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow DRAGEN {
+workflow DRAGEN_WORKFLOW {
 
     take:
         ch_input
-        ch_dna_index
-        ch_rna_index
+        index
+        fasta
 
     main:
         ch_versions     = Channel.empty()
         ch_multiqc_files = Channel.empty()
 
-        //
-        // MODULE: Run FastQC
-        //
-        ch_input
-            .filter { params.fastqc }
-            .map { meta, fastq_1, fastq_2 -> [meta, fastq_1 + fastq_2]}
-            | FASTQC
-        ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map { it[1] })
-
-        ch_input
-            .filter { params.dragen }
-            .branch { meta, fastq_1, fastq_2 ->
-                dna: meta.seq_type == 'dna'
-                rna: meta.seq_type == 'rna'  
-            }
-            .set { ch_split_input }
+        if (!index) {
+            ch_fasta = Channel.fromPath(fasta, checkIfExists: true, type: 'file')
+            DRAGEN_BUILDHASHTABLE (
+                ch_input.combine(ch_fasta).map { meta, fastq_1, fastq_2, fasta -> fasta }.first()
+            )
+            ch_index    = DRAGEN_BUILDHASHTABLE.out.index
+            ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
+        } else {
+            ch_index = Channel.fromPath(index, checkIfExists: true, type: 'dir')
+        }
 
         //
         // MODULE: Run DRAGEN on DNA samples to generate BAM from FastQ
         //
-        DRAGEN_FASTQ_TO_BAM_DNA (
-            ch_split_input.dna,
-            ch_dna_index.collect()
+        DRAGEN (
+            ch_input,
+            ch_index.collect()
         )
-        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_DNA.out.versions.first())
+        ch_versions = ch_versions.mix(DRAGEN.out.versions.first())
 
-        //
-        // MODULE: Run DRAGEN on DNA samples to generate VCF from FastQ
-        //
-        DRAGEN_FASTQ_TO_VCF_DNA (
-            ch_split_input.rna,
-            ch_dna_index.collect()
-        )
-        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_VCF_DNA.out.versions.first())
-
-        //
-        // MODULE: Run DRAGEN on RNA samples to generate BAM from FastQ
-        //
-        DRAGEN_FASTQ_TO_BAM_RNA (
-            ch_split_input.rna,
-            ch_rna_index.collect()
-        )
-        ch_versions = ch_versions.mix(DRAGEN_FASTQ_TO_BAM_RNA.out.versions.first())
-
-        if ( params.multiqc ) {
-            //
-            // MODULE: MultiQC
-            //
-            softwareVersionsToYAML(ch_versions)
-                .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'nf_core_pipeline_software_mqc_versions.yml', sort: true, newLine: true)
-                .set { ch_collated_versions }
-
-            ch_multiqc_config                      = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-            ch_multiqc_custom_config               = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
-            ch_multiqc_logo                       = params.multiqc_logo ? Channel.fromPath(params.multiqc_logo, checkIfExists: true) : Channel.empty()
-            summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-            ch_workflow_summary                    = Channel.value(paramsSummaryMultiqc(summary_params))
-            ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-            ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
-            ch_multiqc_files                       = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-            ch_multiqc_files                       = ch_multiqc_files.mix(ch_collated_versions)
-            ch_multiqc_files                       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: false))
-
-            MULTIQC (
-                ch_multiqc_files.collect(),
-                ch_multiqc_config.toList(),
-                ch_multiqc_custom_config.toList(),
-                ch_multiqc_logo.toList()
-            )
-            multiqc_report = MULTIQC.out.report.toList()
-            ch_versions    = ch_versions.mix(MULTIQC.out.versions)
-        } else {
-            multiqc_report = Channel.empty()
-        }
 
     emit:
-        multiqc_report
+        index       = ch_index
+        bam         = DRAGEN.out.bam
+        fastq       = DRAGEN.out.fastq
+        vcf         = DRAGEN.out.vcf
+        tbi         = DRAGEN.out.tbi
+        vcf_filtered = DRAGEN.out.vcf_filtered
+        tbi_filtered = DRAGEN.out.tbi_filtered
+        versions    = DRAGEN.out.versions
 }
 
 /*
