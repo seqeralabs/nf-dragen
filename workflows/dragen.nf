@@ -54,14 +54,14 @@ workflow DRAGEN_WORKFLOW {
 
 
     emit:
-        index       = ch_index
-        bam         = DRAGEN.out.bam
-        fastq       = DRAGEN.out.fastq
-        vcf         = DRAGEN.out.vcf
-        tbi         = DRAGEN.out.tbi
+        index        = ch_index
+        bam          = DRAGEN.out.bam
+        fastq        = DRAGEN.out.fastq
+        vcf          = DRAGEN.out.vcf
+        tbi          = DRAGEN.out.tbi
         vcf_filtered = DRAGEN.out.vcf_filtered
         tbi_filtered = DRAGEN.out.tbi_filtered
-        versions    = DRAGEN.out.versions
+        versions     = DRAGEN.out.versions
 }
 
 /*

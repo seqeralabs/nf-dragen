@@ -137,9 +137,9 @@ workflow SEQERALABS_DRAGEN {
         fastq          = DRAGEN_DNA.out.fastq
         vcf            = DRAGEN_DNA.out.vcf
         tbi            = DRAGEN_DNA.out.tbi
-        vcf_filtered    = DRAGEN_DNA.out.vcf_filtered
+        vcf_filtered   = DRAGEN_DNA.out.vcf_filtered
         tbi_filtered    = DRAGEN_DNA.out.tbi_filtered
-        multiqc_report = Channel.empty()
+        multiqc_report  = Channel.empty()
         versions       = DRAGEN_DNA.out.versions
 }
 

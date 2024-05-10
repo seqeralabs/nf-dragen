@@ -10,8 +10,8 @@ process DRAGEN {
     path index
 
     output:
-    tuple val(meta), path('*.{bam,sam,cram}')                  , emit: bam        , optional:true
-    tuple val(meta), path('*fastq.gz')                         , emit: fastq      , optional:true
+    tuple val(meta), path('*.{bam,sam,cram}')                   , emit: bam        , optional:true
+    tuple val(meta), path('*fastq.gz')                          , emit: fastq      , optional:true
     tuple val(meta), path("${prefix}.vcf.gz")                   , emit: vcf        , optional:true
     tuple val(meta), path("${prefix}.vcf.gz.tbi")               , emit: tbi        , optional:true
     tuple val(meta), path("${prefix}.hard-filtered.vcf.gz")      , emit: vcf_filtered, optional:true
