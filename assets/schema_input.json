@@ -11,7 +11,20 @@
                 "type": "string",
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
-                "meta": ["id"]
+                "meta": [
+                    "id"
+                ]
+            },
+            "seq_type": {
+                "type": "string",
+                "enum": [
+                    "dna",
+                    "rna"
+                ],
+                "errorMessage": "Type of sequencing data must be provided and must be either 'DNA' or 'RNA'",
+                "meta": [
+                    "seq_type"
+                ]
             },
             "fastq_1": {
                 "type": "string",
@@ -28,6 +41,9 @@
                 "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             }
         },
-        "required": ["sample", "fastq_1"]
+        "required": [
+            "sample",
+            "fastq_1"
+        ]
     }
 }

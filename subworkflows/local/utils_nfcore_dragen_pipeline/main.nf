@@ -29,13 +29,13 @@ include { workflowCitation          } from '../../nf-core/utils_nfcore_pipeline'
 workflow PIPELINE_INITIALISATION {
 
     take:
-    version           // boolean: Display version and exit
-    help              // boolean: Display help text
-    validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
-    monochrome_logs   // boolean: Do not use coloured log outputs
-    nextflow_cli_args //   array: List of positional nextflow CLI args
-    outdir            //  string: The output directory where the results will be saved
-    input             //  string: Path to input samplesheet
+        version           // boolean: Display version and exit
+        help              // boolean: Display help text
+        validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
+        monochrome_logs   // boolean: Do not use coloured log outputs
+        nextflow_cli_args //   array: List of positional nextflow CLI args
+        outdir            //  string: The output directory where the results will be saved
+        input             //  string: Path to input samplesheet
 
     main:
 
@@ -82,27 +82,24 @@ workflow PIPELINE_INITIALISATION {
     //
     Channel
         .fromSamplesheet("input")
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
+        // Populate sequencing type if not provided in samplesheet
+        .map { meta, fastq_1, fastq_2 ->
+            return [ 
+                meta + [ seq_type: meta.seq_type ?: params.seq_type],
+                fastq_1,
+                fastq_2
+            ]
         }
         .groupTuple()
         .map {
-            validateInputSamplesheet(it)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
+            meta, fastq_1, fastq_2 ->
+                return [ meta, fastq_1.flatten(), fastq_2.flatten() ]
         }
         .set { ch_samplesheet }
 
     emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
+        samplesheet = ch_samplesheet
+        versions    = ch_versions
 }
 
 /*
@@ -158,7 +155,9 @@ def validateInputParameters() {
 // Validate channels from input samplesheet
 //
 def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
+    def (metas, fastqs) = input[0..1]
+
+    println "$metas"
 
     // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
     def endedness_ok = metas.collect{ it.single_end }.unique().size == 1
