@@ -4,8 +4,6 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTQC                } from '../modules/nf-core/fastqc/main'
-include { MULTIQC               } from '../modules/nf-core/multiqc/main'
 include { DRAGEN                } from '../modules/local/dragen.nf'
 include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable.nf'
 
@@ -29,7 +27,6 @@ workflow DRAGEN_WORKFLOW {
 
     main:
         ch_versions     = Channel.empty()
-        ch_multiqc_files = Channel.empty()
 
         if (!index) {
             ch_fasta = Channel.fromPath(fasta, checkIfExists: true, type: 'file')

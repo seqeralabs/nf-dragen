@@ -21,14 +21,12 @@ include { softwareVersionsToYAML        } from './subworkflows/nf-core/utils_nfc
 include { paramsSummaryMultiqc          } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText        } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 
+include { PIPELINE_INITIALISATION       } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 include { FASTQC                        } from './modules/nf-core/fastqc/main'
-include { MULTIQC                       } from './modules/nf-core/multiqc/main'
 include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
 include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
-include { PIPELINE_INITIALISATION       } from './subworkflows/local/utils_nfcore_dragen_pipeline'
+include { MULTIQC                       } from './modules/nf-core/multiqc/main'
 include { PIPELINE_COMPLETION           } from './subworkflows/local/utils_nfcore_dragen_pipeline'
-
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,7 +137,7 @@ workflow SEQERALABS_DRAGEN {
         tbi            = DRAGEN_DNA.out.tbi
         vcf_filtered   = DRAGEN_DNA.out.vcf_filtered
         tbi_filtered    = DRAGEN_DNA.out.tbi_filtered
-        multiqc_report  = Channel.empty()
+        multiqc_report = multiqc_report
         versions       = DRAGEN_DNA.out.versions
 }
 
