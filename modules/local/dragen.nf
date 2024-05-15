@@ -6,7 +6,7 @@ process DRAGEN {
     secret 'DRAGEN_PASSWORD'
 
     input:
-    tuple val(meta), path(fastq_1, stageAs: "input_S1_L001_R1_00*.fastq.gz"), path(fastq_2, stageAs: "input_S1_L001_R2_00*.fastq.gz")
+    tuple val(meta), path(fastq_1, stageAs: "input_S1_L001_R1_???.fastq.gz"), path(fastq_2, stageAs: "input_S1_L001_R2_???.fastq.gz")
     path index
 
     output:
