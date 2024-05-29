@@ -43,31 +43,6 @@
                 }
             }
         },
-        "tools": {
-            "title": "Tools",
-            "type": "object",
-            "description": "Enable or disable tools",
-            "default": "",
-            "properties": {
-                "dragen": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable Dragen processes.",
-                    "fa_icon": "fas fa-dragon"
-                },
-                "fastqc": {
-                    "type": "boolean",
-                    "description": "Run FASTQC on raw sequencing data",
-                    "fa_icon": "fas fa-check-double"
-                },
-                "multiqc": {
-                    "type": "boolean",
-                    "description": "Run MultiQC on results",
-                    "fa_icon": "fas fa-chart-bar"
-                }
-            },
-            "fa_icon": "fas fa-toggle-off"
-        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
@@ -290,6 +265,13 @@
                     "description": "Validation of parameters in lenient more.",
                     "hidden": true,
                     "help_text": "Allows string values that are parseable as numbers or booleans. For further information see [JSONSchema docs](https://github.com/everit-org/json-schema#lenient-mode)."
+                },
+                "pipelines_testdata_base_path": {
+                    "type": "string",
+                    "fa_icon": "far fa-check-circle",
+                    "description": "Base URL or local path to location of pipeline test dataset files",
+                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
+                    "hidden": true
                 }
             }
         }
@@ -297,9 +279,6 @@
     "allOf": [
         {
             "$ref": "#/definitions/input_output_options"
-        },
-        {
-            "$ref": "#/definitions/tools"
         },
         {
             "$ref": "#/definitions/reference_genome_options"
