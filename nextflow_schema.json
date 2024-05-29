@@ -29,6 +29,13 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
+                "seq_type": {
+                    "type": "string",
+                    "default": "dna",
+                    "description": "Default type of sequencing (dna, rna etc). Can be overridden in the samplesheet using the column `seq_type`.",
+                    "fa_icon": "fas fa-dna",
+                    "enum": ["dna", "rna"]
+                },
                 "email": {
                     "type": "string",
                     "description": "Email address for completion summary.",
@@ -64,6 +71,20 @@
                     "description": "Path to FASTA genome file.",
                     "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
                     "fa_icon": "far fa-file-code"
+                },
+                "dragen_index_dna": {
+                    "type": "string",
+                    "description": "Path to DNA index created by Dragen.",
+                    "help_text": "Use a DNA index created using Dragen with argument '--build-hash-table true'. This parameter is *mandatory* if `--fasta` or `--genome` is not specified.",
+                    "fa_icon": "far fa-file-alt",
+                    "format": "directory-path"
+                },
+                "dragen_index_rna": {
+                    "type": "string",
+                    "description": "Path to RNA index created by Dragen.",
+                    "help_text": "Use a DNA index created using Dragen with argument '--build-hash-table true' and '--ht-build-rna-hashtable true'. This parameter is *mandatory* if `--fasta` or `--genome` is not specified.",
+                    "fa_icon": "far fa-file-alt",
+                    "format": "directory-path"
                 },
                 "igenomes_ignore": {
                     "type": "boolean",

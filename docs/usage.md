@@ -4,8 +4,6 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
-
 ## Samplesheet input
 
 You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
@@ -16,13 +14,23 @@ You will need to create a samplesheet with information about the samples you wou
 
 ### Multiple runs of the same sample
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will analyse the raw reads together in the Dragen software before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
 
 ```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
 CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
 CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
 CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+```
+
+### Sequencing type
+
+The pipeline can handle RNA or DNA samples, including a mixture of both. By default, every sample will be considered to be the type defined as `--seq_type`, which defaults to `dna`. You can override this on a per-sample basis using the `seq_type` column:
+
+```csv
+sample,seq_type,fastq_1,fastq_2
+dnaSample,dna,dna_R1_001.fastq.gz,dna_R2_001.fastq.gz
+rnaSample,rna,rna_R1_001.fastq.gz,rna_R2_001.fastq.gz
 ```
 
 ### Full samplesheet
@@ -42,20 +50,29 @@ TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
 TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
 ```
 
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+| Column         | Description                                                                                                                                                                                                                                                             |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sample`       | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                  |
+| `seq_type`     | Sequencing type, currently restricted to `dna` or `rna`. This decides the sequencing pathway to take when running the pipeline. The pipeline can handle a mixture of sequencing types. If this is left empty, it will use `params.seq_type` as the value, default `dna`.|
+| `fastq_1`      | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                                                                                                               |
+| `fastq_2`      | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                                                                                                               |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+
+## Configuring the genome
+
+We can configure a genome in multiple ways:
+
+1. Supply a `--genome`, which retrieves uses the genome build FASTA automatically and proceeds from step 2.
+2. Supply a `--fasta` and which Dragen will build a genome index for alignment
+3. If you have already performed a pipeline run using `1.` or `.2.`, the reference index will be written to a results directory at `${params.outdir}/genome/index/dragen_index_dna` or `${params.outdir}/genome/index/dragen_index_rna`. You can reuse these indexes by supplying the parameter `--dragen_index_dna` and/or `--dragen_index_rna` which will skip 1 and 2 for DNA and RNA respectively.
 
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run seqeralabs/nf-dragen --input ./samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
+nextflow run seqeralabs/nf-dragen --input samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
