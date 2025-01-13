@@ -34,19 +34,22 @@ include { PIPELINE_COMPLETION           } from './subworkflows/local/utils_nfcor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+// TODO nf-core: Remove this line if you don't need a FASTA file
+//   This is an example of how to use getGenomeAttribute() to fetch parameters
+//   from igenomes.config using `--genome`
 params.fasta = getGenomeAttribute('fasta')
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOW FOR PIPELINE
+    NAMED WORKFLOWS FOR PIPELINE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 //
-// WORKFLOW: Run main nf-core/dragen analysis pipeline
+// WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow SEQERALABS_DRAGEN {
+workflow SEQERALABS_NF-DRAGEN {
+
     take:
         input
         fasta
@@ -141,6 +144,7 @@ workflow SEQERALABS_DRAGEN {
         versions       = DRAGEN_DNA.out.versions
 }
 
+}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -184,7 +188,7 @@ workflow {
         params.outdir,
         params.monochrome_logs,
         params.hook_url,
-        SEQERALABS_DRAGEN.out.multiqc_report
+        SEQERALABS_NF-DRAGEN.out.multiqc_report
     )
 }
 
