@@ -60,7 +60,7 @@ template:
   author: Adam Talbot, Harshil Patel, Graham Wright
   version: 1.0.0dev
   force: true
-  outdir: nf-dragen
+  outdir: .
   skip_features:
     - ci
     - nf_core_configs
