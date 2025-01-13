@@ -1,44 +1,98 @@
+repository_type: pipeline
+
+nf_core_version: 3.1.1
+
 lint:
-  actions_ci: false
-  files_exist:
+  files_unchanged:
+    - .github/CONTRIBUTING.md
+    - .prettierignore
+    - .prettierignore
+    - .prettierignore
+    - .prettierignore
+    - .github/CONTRIBUTING.md
+    - .prettierignore
+    - .prettierignore
+    - .prettierignore
+    - .prettierignore
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_dark.png
-    - .github/ISSUE_TEMPLATE/config.yml
-    - .github/workflows/awstest.yml
-    - .github/workflows/awsfulltest.yml
+    - assets/nf-core-nf_dragen_logo_light.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/CONTRIBUTING.md
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - assets/email_template.txt
+    - docs/README.md
+  nextflow_config:
+    - process.cpus
+    - process.memory
+    - process.time
+    - custom_config
+    - params.custom_config_version
+    - params.custom_config_base
+    - manifest.name
+    - manifest.homePage
+    - validation.help.beforeText
+    - validation.help.afterText
+    - validation.summary.beforeText
+    - validation.summary.afterText
+  multiqc_config:
+    - report_comment
+  files_exist:
     - .github/workflows/branch.yml
     - .github/workflows/ci.yml
     - .github/workflows/linting_comment.yml
     - .github/workflows/linting.yml
-  files_unchanged:
+    - conf/igenomes.config
+    - CITATIONS.md
+    - CHANGELOG.md
+    - assets/email_template.html
+    - assets/sendmail_template.txt
+    - assets/email_template.txt
+    - docs/output.md
+    - docs/README.md
+    - docs/usage.md
+    - .github/workflows/branch.yml
+    - .github/workflows/ci.yml
+    - .github/workflows/linting_comment.yml
+    - .github/workflows/linting.yml
+    - CITATIONS.md
+    - CHANGELOG.md
+    - assets/email_template.html
+    - assets/sendmail_template.txt
+    - assets/email_template.txt
+    - docs/output.md
+    - docs/README.md
+    - docs/usage.md
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_dark.png
-    - .github/ISSUE_TEMPLATE/bug_report.yml
-  multiqc_config:
-    - report_comment
-  nextflow_config:
-    - manifest.name
-    - manifest.homePage
-    - manifest.author
-nf_core_version: 2.14.1
-repository_type: pipeline
+    - assets/nf-core-nf_dragen_logo_light.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
+  included_configs: false
+
 template:
-  description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the Illumina DRAGEN licensed suite of tools.
-  force: false
-  is_nfcore: false
-  name: nf-seqerakit
   org: seqeralabs
-  outdir: .
+  name: nf_dragen
+  description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the
+    Illumina DRAGEN licensed suite of tools.
+  author: Adam Talbot, Harshil Patel, Graham Wright
+  version: 1.0.0dev
+  force: true
+  outdir: nf_dragen_2
   skip_features:
+    - ci
     - nf_core_configs
-    - license
+    - citations
+    - gitpod
+    - codespaces
+    - changelog
     - email
     - adaptivecard
     - slackreport
     - documentation
     - rocrate
-  version: 0.1.0dev
+    - vscode
+  is_nfcore: false
