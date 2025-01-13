@@ -32,6 +32,7 @@ lint:
     - params.custom_config_base
     - manifest.name
     - manifest.homePage
+    - manifest.author
     - validation.help.beforeText
     - validation.help.afterText
     - validation.summary.beforeText
