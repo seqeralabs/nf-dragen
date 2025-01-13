@@ -14,6 +14,9 @@ lint:
     - docs/images/nf-core-nf_dragen_logo_dark.png
     - docs/images/nf-core-nf_dragen_logo_light.png
     - docs/README.md
+  included_configs: false
+  multiqc_config:
+    - report_comment
   nextflow_config:
     - custom_config
     - manifest.homePage
@@ -27,8 +30,6 @@ lint:
     - validation.help.beforeText
     - validation.summary.afterText
     - validation.summary.beforeText
-  multiqc_config:
-    - report_comment
   files_exist:
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/workflows/awsfulltest.yml
@@ -50,16 +51,15 @@ lint:
     - docs/output.md
     - docs/README.md
     - docs/usage.md
-  included_configs: false
 
 template:
-  org: seqeralabs
-  name: dragen
+  author: Adam Talbot, Harshil Patel, Graham Wright
   description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the
     Illumina DRAGEN licensed suite of tools.
-  author: Adam Talbot, Harshil Patel, Graham Wright
-  version: 1.0.0dev
-  force: true
+  force: false
+  is_nfcore: false
+  name: dragen
+  org: seqeralabs
   outdir: .
   skip_features:
     - ci
@@ -74,4 +74,4 @@ template:
     - documentation
     - rocrate
     - vscode
-  is_nfcore: false
+  version: 1.0.0dev
