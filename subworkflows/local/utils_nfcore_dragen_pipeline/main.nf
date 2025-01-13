@@ -81,6 +81,14 @@ workflow PIPELINE_INITIALISATION {
             ]
         }
         .groupTuple()
+        .map { meta, fastq_1, fastq_2 ->
+            return [
+                meta,
+                fastq_1.flatten(),
+                fastq_2.flatten()
+            ]
+        }
+        .view()
         .set { ch_samplesheet }
 
     emit:
