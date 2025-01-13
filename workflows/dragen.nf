@@ -7,7 +7,7 @@
 include { DRAGEN                } from '../modules/local/dragen.nf'
 include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable.nf'
 
-include { paramsSummaryMap          } from 'plugin/nf-validation'
+include { paramsSummaryMap          } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 

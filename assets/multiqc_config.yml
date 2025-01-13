@@ -6,7 +6,7 @@ report_section_order:
     order: -1000
   software_versions:
     order: -1001
-  "seqeralabs-dragen-summary":
+  "seqeralabs-nf-dragen-summary":
     order: -1002
 
 export_plots: true
