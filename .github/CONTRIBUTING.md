@@ -1,9 +1,9 @@
 # `seqeralabs/dragen`: Contributing Guidelines
 
 Hi there!
-Many thanks for taking an interest in improving seqeralabs/dragen.
+Many thanks for taking an interest in improving seqeralabs/nf-dragen.
 
-We try to manage the required tasks for seqeralabs/dragen using GitHub issues, you probably came to this page when creating one.
+We try to manage the required tasks for seqeralabs/nf-dragen using GitHub issues, you probably came to this page when creating one.
 Please use the pre-filled template to save time.
 
 However, don't be put off by this template - other more general issues and suggestions are welcome!
@@ -11,7 +11,7 @@ Contributions to the code are even more welcome ;)
 
 ## Contribution workflow
 
-If you'd like to write some code for seqeralabs/dragen, the standard workflow is as follows:
+If you'd like to write some code for seqeralabs/nf-dragen, the standard workflow is as follows:
 
 1. Check that there isn't already an issue about your idea in the [seqeralabs/dragen issues](https://github.com/seqeralabs/dragen/issues) to avoid duplicating work. If there isn't one already, please create one so that others know you're working on this
 2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [seqeralabs/dragen repository](https://github.com/seqeralabs/dragen) to your GitHub account

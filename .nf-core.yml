@@ -46,7 +46,6 @@ lint:
     - CHANGELOG.md
     - CITATIONS.md
     - CODE_OF_CONDUCT.md
-    - conf/igenomes.config
     - docs/images/nf-core-nf-dragen_logo_light.png
     - docs/images/nf-core-nf-dragen_logo_dark.png
     - docs/output.md

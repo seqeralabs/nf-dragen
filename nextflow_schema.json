@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/seqeralabs/dragen/master/nextflow_schema.json",
     "title": "seqeralabs/dragen pipeline parameters",
-    "description": "nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the Illumina DRAGEN licensed suite of tools.",
+    "description": "dragen is a simple, proof-of-concept Nextflow pipeline to run the Illumina DRAGEN licensed suite of tools.",
     "type": "object",
     "$defs": {
         "input_output_options": {
