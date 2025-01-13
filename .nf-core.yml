@@ -75,7 +75,7 @@ lint:
 
 template:
   org: seqeralabs
-  name: nf_dragen
+  name: nf-dragen
   description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the
     Illumina DRAGEN licensed suite of tools.
   author: Adam Talbot, Harshil Patel, Graham Wright
