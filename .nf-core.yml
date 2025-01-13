@@ -5,83 +5,62 @@ nf_core_version: 3.1.1
 lint:
   files_unchanged:
     - .github/CONTRIBUTING.md
-    - .prettierignore
-    - .prettierignore
-    - .prettierignore
-    - .prettierignore
-    - .github/CONTRIBUTING.md
-    - .prettierignore
-    - .prettierignore
-    - .prettierignore
-    - .prettierignore
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf_dragen_logo_light.png
-    - docs/images/nf-core-nf_dragen_logo_light.png
-    - docs/images/nf-core-nf_dragen_logo_dark.png
     - .github/ISSUE_TEMPLATE/bug_report.yml
-    - .github/CONTRIBUTING.md
     - .github/PULL_REQUEST_TEMPLATE.md
+    - .prettierignore
     - assets/email_template.txt
+    - assets/nf-core-nf_dragen_logo_light.png
+    - CODE_OF_CONDUCT.md
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
     - docs/README.md
   nextflow_config:
+    - custom_config
+    - manifest.homePage
+    - manifest.name
+    - params.custom_config_base
+    - params.custom_config_version
     - process.cpus
     - process.memory
     - process.time
-    - custom_config
-    - params.custom_config_version
-    - params.custom_config_base
-    - manifest.name
-    - manifest.homePage
-    - validation.help.beforeText
     - validation.help.afterText
-    - validation.summary.beforeText
+    - validation.help.beforeText
     - validation.summary.afterText
+    - validation.summary.beforeText
   multiqc_config:
     - report_comment
   files_exist:
-    - .github/workflows/branch.yml
-    - .github/workflows/ci.yml
-    - .github/workflows/linting_comment.yml
-    - .github/workflows/linting.yml
-    - conf/igenomes.config
-    - CITATIONS.md
-    - CHANGELOG.md
-    - assets/email_template.html
-    - assets/sendmail_template.txt
-    - assets/email_template.txt
-    - docs/output.md
-    - docs/README.md
-    - docs/usage.md
-    - .github/workflows/branch.yml
-    - .github/workflows/ci.yml
-    - .github/workflows/linting_comment.yml
-    - .github/workflows/linting.yml
-    - CITATIONS.md
-    - CHANGELOG.md
-    - assets/email_template.html
-    - assets/sendmail_template.txt
-    - assets/email_template.txt
-    - docs/output.md
-    - docs/README.md
-    - docs/usage.md
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf_dragen_logo_light.png
-    - docs/images/nf-core-nf_dragen_logo_light.png
-    - docs/images/nf-core-nf_dragen_logo_dark.png
     - .github/ISSUE_TEMPLATE/config.yml
-    - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/branch.yml
+    - .github/workflows/ci.yml
+    - .github/workflows/linting_comment.yml
+    - .github/workflows/linting.yml
+    - assets/email_template.html
+    - assets/email_template.txt
+    - assets/nf-core-nf_dragen_logo_light.png
+    - assets/sendmail_template.txt
+    - CHANGELOG.md
+    - CITATIONS.md
+    - CODE_OF_CONDUCT.md
+    - conf/igenomes.config
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
+    - docs/output.md
+    - docs/README.md
+    - docs/usage.md
   included_configs: false
 
 template:
   org: seqeralabs
-  name: nf-dragen
+  name: dragen
   description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the
     Illumina DRAGEN licensed suite of tools.
   author: Adam Talbot, Harshil Patel, Graham Wright
   version: 1.0.0dev
   force: true
-  outdir: nf_dragen_2
+  outdir: nf-dragen
   skip_features:
     - ci
     - nf_core_configs
