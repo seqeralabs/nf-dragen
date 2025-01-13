@@ -27,7 +27,7 @@ process DRAGEN_BUILDHASHTABLE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
+        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
     END_VERSIONS
     """
 
@@ -47,7 +47,7 @@ process DRAGEN_BUILDHASHTABLE {
     touch ${prefix}/dragen.ht
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: v1
+        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
     END_VERSIONS
     """
 }

@@ -88,7 +88,6 @@ workflow PIPELINE_INITIALISATION {
                 fastq_2.flatten()
             ]
         }
-        .view()
         .set { ch_samplesheet }
 
     emit:

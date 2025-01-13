@@ -69,7 +69,7 @@ workflow SEQERALABS_DRAGEN {
         // WORKFLOW: Run DNA pipeline
         //
         DRAGEN_DNA (
-            input.filter { meta -> meta.seq_type == 'dna' && !params.skip_dragen },
+            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'dna' && !params.skip_dragen },
             dna_index,
             fasta
         )
@@ -79,7 +79,7 @@ workflow SEQERALABS_DRAGEN {
         // WORKFLOW: Run RNA pipeline
         //
         DRAGEN_RNA (
-            input.filter { meta -> meta.seq_type == 'rna' && !params.skip_dragen },
+            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'rna' && !params.skip_dragen },
             rna_index,
             fasta
         )
