@@ -1,13 +1,11 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    seqeralabs/nf-dragen
+    seqeralabs/dragen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/seqeralabs/nf-dragen
+    Github : https://github.com/seqeralabs/dragen
 ----------------------------------------------------------------------------------------
 */
-
-nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15,11 +13,10 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { NF-DRAGEN  } from './workflows/nf-dragen'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_nf-dragen_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_nf-dragen_pipeline'
-
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_nf-dragen_pipeline'
+include { DRAGEN  } from './workflows/dragen'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_dragen_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_dragen_pipeline'
+include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +38,7 @@ params.fasta = getGenomeAttribute('fasta')
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow SEQERALABS_NF-DRAGEN {
+workflow SEQERALABS_DRAGEN {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -51,13 +48,11 @@ workflow SEQERALABS_NF-DRAGEN {
     //
     // WORKFLOW: Run pipeline
     //
-    NF-DRAGEN (
+    DRAGEN (
         samplesheet
     )
-
     emit:
-    multiqc_report = NF-DRAGEN.out.multiqc_report // channel: /path/to/multiqc_report.html
-
+    multiqc_report = DRAGEN.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,13 +63,11 @@ workflow SEQERALABS_NF-DRAGEN {
 workflow {
 
     main:
-
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
     PIPELINE_INITIALISATION (
         params.version,
-        params.help,
         params.validate_params,
         params.monochrome_logs,
         args,
@@ -85,21 +78,16 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    SEQERALABS_NF-DRAGEN (
+    SEQERALABS_DRAGEN (
         PIPELINE_INITIALISATION.out.samplesheet
     )
-
     //
     // SUBWORKFLOW: Run completion tasks
     //
     PIPELINE_COMPLETION (
-        params.email,
-        params.email_on_fail,
-        params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
-        SEQERALABS_NF-DRAGEN.out.multiqc_report
+        SEQERALABS_DRAGEN.out.multiqc_report
     )
 }
 

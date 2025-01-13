@@ -1,30 +1,74 @@
 lint:
   files_exist:
-    - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_dark.png
     - .github/ISSUE_TEMPLATE/config.yml
-    - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    - .github/workflows/awstest.yml
     - .github/workflows/branch.yml
     - .github/workflows/ci.yml
     - .github/workflows/linting_comment.yml
     - .github/workflows/linting.yml
-  files_unchanged:
+    - assets/email_template.html
+    - assets/email_template.txt
+    - assets/nf-core-nf_dragen_logo_light.png
+    - assets/sendmail_template.txt
+    - CHANGELOG.md
+    - CITATIONS.md
     - CODE_OF_CONDUCT.md
-    - assets/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_light.png
-    - docs/images/nf-core-nf-dragen_logo_dark.png
+    - conf/igenomes.config
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
+    - docs/output.md
+    - docs/README.md
+    - docs/usage.md
+  files_unchanged:
+    - .github/CONTRIBUTING.md
     - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .prettierignore
+    - assets/email_template.txt
+    - assets/nf-core-nf_dragen_logo_light.png
+    - CODE_OF_CONDUCT.md
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
+    - docs/README.md
+  included_configs: false
   multiqc_config:
     - report_comment
   nextflow_config:
-    - manifest.name
+    - custom_config
     - manifest.homePage
-nf_core_version: 2.14.1
+    - manifest.name
+    - params.custom_config_base
+    - params.custom_config_version
+    - process.cpus
+    - process.memory
+    - process.time
+    - validation.help.afterText
+    - validation.help.beforeText
+    - validation.summary.afterText
+    - validation.summary.beforeText
+nf_core_version: 3.1.2.dev0
 repository_type: pipeline
 template:
-  prefix: seqeralabs
-  skip:
+  author: Adam Talbot, Harshil Patel, Graham Wright
+  description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the
+    Illumina DRAGEN licensed suite of tools.
+  force: false
+  is_nfcore: false
+  name: dragen
+  org: seqeralabs
+  outdir: .
+  skip_features:
     - ci
+    - nf_core_configs
+    - citations
+    - gitpod
+    - codespaces
+    - changelog
+    - email
+    - adaptivecard
+    - slackreport
+    - documentation
+    - rocrate
+    - vscode
+  version: 1.0.0dev
