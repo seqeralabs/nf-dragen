@@ -1,4 +1,5 @@
 lint:
+  actions_ci: false
   files_exist:
     - CODE_OF_CONDUCT.md
     - assets/nf-core-nf-dragen_logo_light.png
@@ -25,6 +26,19 @@ lint:
 nf_core_version: 2.14.1
 repository_type: pipeline
 template:
-  prefix: seqeralabs
-  skip:
-    - ci
+  author: seqera
+  description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the Illumina DRAGEN licensed suite of tools.
+  force: false
+  is_nfcore: false
+  name: nf-seqerakit
+  org: seqeralabs
+  outdir: .
+  skip_features:
+    - nf_core_configs
+    - license
+    - email
+    - adaptivecard
+    - slackreport
+    - documentation
+    - rocrate
+  version: 0.1.0dev
