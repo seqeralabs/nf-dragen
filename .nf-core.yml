@@ -68,7 +68,6 @@ template:
     - citations
     - gitpod
     - codespaces
-    - changelog
     - email
     - adaptivecard
     - slackreport
