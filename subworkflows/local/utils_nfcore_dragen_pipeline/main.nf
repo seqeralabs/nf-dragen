@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the seqeralabs/dragen pipeline
+// Subworkflow with functionality specific to the seqeralabs/nf-dragen pipeline
 //
 
 /*
