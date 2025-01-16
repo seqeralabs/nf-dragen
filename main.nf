@@ -7,19 +7,16 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl = 2
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryMap              } from 'plugin/nf-validation'
+include { paramsSummaryMap              } from 'plugin/nf-schema'
 include { getGenomeAttribute            } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 include { softwareVersionsToYAML        } from './subworkflows/nf-core/utils_nfcore_pipeline'
 include { paramsSummaryMultiqc          } from './subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText        } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 
 include { PIPELINE_INITIALISATION       } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 include { FASTQC                        } from './modules/nf-core/fastqc/main'
@@ -34,24 +31,23 @@ include { PIPELINE_COMPLETION           } from './subworkflows/local/utils_nfcor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-params.fasta = getGenomeAttribute('fasta')
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOW FOR PIPELINE
+    NAMED WORKFLOWS FOR PIPELINE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 //
-// WORKFLOW: Run main nf-core/dragen analysis pipeline
+// WORKFLOW: Run main analysis pipeline depending on type of input
 //
 workflow SEQERALABS_DRAGEN {
+
     take:
-        input
-        fasta
-        dna_index
-        rna_index
+        input     // tuple: [ meta, [fastq_1, ...], [fastq_2, ...] ]
+        fasta     // str: path to fasta file
+        dna_index // str: path to dragen index directory for dna
+        rna_index // str: path to dragen index directory for rna
 
     main:
 
@@ -62,26 +58,18 @@ workflow SEQERALABS_DRAGEN {
         // FASTQC
         //
         input
-            .filter { params.fastqc }
+            .filter { !params.skip_fastqc }
             // Coerce input to format for FASTQC input
             .map { meta, fastq_1, fastq_2 -> [meta, fastq_1 + fastq_2]}
             | FASTQC
         ch_versions     = ch_versions.mix(FASTQC.out.versions)
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map { it[1] })
 
-        // Branch DNA and RNA samples
-        input
-            .branch { meta, fastq_1, fastq_2 ->
-                dna: meta.seq_type == 'dna'
-                rna: meta.seq_type == 'rna'
-            }
-            .set { input_branched}
-
         //
         // WORKFLOW: Run DNA pipeline
         //
         DRAGEN_DNA (
-            input_branched.dna,
+            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'dna' && !params.skip_dragen },
             dna_index,
             fasta
         )
@@ -91,13 +79,13 @@ workflow SEQERALABS_DRAGEN {
         // WORKFLOW: Run RNA pipeline
         //
         DRAGEN_RNA (
-            input_branched.rna,
+            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'rna' && !params.skip_dragen },
             rna_index,
             fasta
         )
         ch_versions = ch_versions.mix(DRAGEN_RNA.out.versions)
 
-        if ( params.multiqc ) {
+        if ( !params.skip_multiqc ) {
             //
             // MODULE: MultiQC
             //
@@ -111,17 +99,16 @@ workflow SEQERALABS_DRAGEN {
             ch_multiqc_logo                       = params.multiqc_logo ? Channel.fromPath(params.multiqc_logo, checkIfExists: true) : Channel.empty()
             summary_params                        = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
             ch_workflow_summary                    = Channel.value(paramsSummaryMultiqc(summary_params))
-            ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-            ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
             ch_multiqc_files                       = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
             ch_multiqc_files                       = ch_multiqc_files.mix(ch_collated_versions)
-            ch_multiqc_files                       = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: false))
 
             MULTIQC (
                 ch_multiqc_files.collect(),
                 ch_multiqc_config.toList(),
                 ch_multiqc_custom_config.toList(),
-                ch_multiqc_logo.toList()
+                ch_multiqc_logo.toList(),
+                [],
+                []
             )
             multiqc_report = MULTIQC.out.report.toList()
             ch_versions    = ch_versions.mix(MULTIQC.out.versions)
@@ -136,7 +123,7 @@ workflow SEQERALABS_DRAGEN {
         vcf            = DRAGEN_DNA.out.vcf
         tbi            = DRAGEN_DNA.out.tbi
         vcf_filtered   = DRAGEN_DNA.out.vcf_filtered
-        tbi_filtered    = DRAGEN_DNA.out.tbi_filtered
+        tbi_filtered   = DRAGEN_DNA.out.tbi_filtered
         multiqc_report = multiqc_report
         versions       = DRAGEN_DNA.out.versions
 }
@@ -150,7 +137,6 @@ workflow SEQERALABS_DRAGEN {
 workflow {
 
     main:
-
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -169,21 +155,16 @@ workflow {
     //
     SEQERALABS_DRAGEN (
         PIPELINE_INITIALISATION.out.samplesheet,
-        params.fasta,
-        params.dragen_index_dna,
-        params.dragen_index_rna
+        params.fasta ?: getGenomeAttribute('fasta'),
+        params.dragen_index_dna ?: getGenomeAttribute('dragen_index_dna'),
+        params.dragen_index_rna ?: getGenomeAttribute('dragen_index_rna')
     )
-
     //
     // SUBWORKFLOW: Run completion tasks
     //
     PIPELINE_COMPLETION (
-        params.email,
-        params.email_on_fail,
-        params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
         SEQERALABS_DRAGEN.out.multiqc_report
     )
 }

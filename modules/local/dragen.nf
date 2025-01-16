@@ -34,7 +34,7 @@ process DRAGEN {
     }
 
     // Generate appropriate parameter for input files
-    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : "" 
+    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : ""
     r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
     def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
     def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
@@ -52,7 +52,7 @@ process DRAGEN {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
+        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
     END_VERSIONS
     """
 
@@ -72,7 +72,7 @@ process DRAGEN {
     }
 
     // Generate appropriate parameter for input files
-    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : "" 
+    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : ""
     r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
     def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
     def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
@@ -90,7 +90,7 @@ process DRAGEN {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: \$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")
+        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
     END_VERSIONS
     """
 }

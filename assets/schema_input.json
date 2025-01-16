@@ -1,7 +1,7 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/seqeralabs/nf-dragen/master/assets/schema_input.json",
-    "title": "seqeralabs/nf-dragen pipeline - params.input schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/seqeralabs/dragen/master/assets/schema_input.json",
+    "title": "seqeralabs/dragen pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {
@@ -11,20 +11,13 @@
                 "type": "string",
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
-                "meta": [
-                    "id"
-                ]
+                "meta": ["id"]
             },
             "seq_type": {
                 "type": "string",
-                "enum": [
-                    "dna",
-                    "rna"
-                ],
+                "enum": ["dna", "rna"],
                 "errorMessage": "Type of sequencing data must be provided and must be either 'DNA' or 'RNA'",
-                "meta": [
-                    "seq_type"
-                ]
+                "meta": ["seq_type"]
             },
             "fastq_1": {
                 "type": "string",
@@ -41,9 +34,6 @@
                 "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             }
         },
-        "required": [
-            "sample",
-            "fastq_1"
-        ]
+        "required": ["sample", "fastq_1"]
     }
 }
