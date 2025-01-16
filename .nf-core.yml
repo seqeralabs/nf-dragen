@@ -43,7 +43,6 @@ lint:
     - assets/email_template.txt
     - assets/nf-core-nf-dragen_logo_light.png
     - assets/sendmail_template.txt
-    - CHANGELOG.md
     - CITATIONS.md
     - CODE_OF_CONDUCT.md
     - docs/images/nf-core-nf-dragen_logo_light.png
