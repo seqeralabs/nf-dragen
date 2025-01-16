@@ -9,6 +9,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 ### `Added`
 
+- (10)[https://github.com/seqeralabs/nf-dragen/pull/10] - Use nf-core template v3.1.1
+
 ### `Fixed`
 
 - Fixed error `Access to 'FASTQC.out' is undefined since the workflow 'FASTQC' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
