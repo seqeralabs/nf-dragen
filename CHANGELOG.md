@@ -1,13 +1,15 @@
-# nf-core/dragen: Changelog
+# seqeralabs/nf-dragen: Changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## v1.0dev - [date]
 
-Initial release of nf-core/dragen, created with the [nf-core](https://nf-co.re/) template.
+Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-co.re/) template.
 
 ### `Added`
+
+- (10)[https://github.com/seqeralabs/nf-dragen/pull/10] - Use nf-core template v3.1.1
 
 ### `Fixed`
 

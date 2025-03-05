@@ -1,0 +1,77 @@
+repository_type: pipeline
+
+nf_core_version: 3.1.1
+
+lint:
+  files_exist:
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awsfulltest.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/branch.yml
+    - .github/workflows/ci.yml
+    - .github/workflows/linting_comment.yml
+    - .github/workflows/linting.yml
+    - assets/email_template.html
+    - assets/email_template.txt
+    - assets/nf-core-nf-dragen_logo_light.png
+    - assets/sendmail_template.txt
+    - CITATIONS.md
+    - CODE_OF_CONDUCT.md
+    - docs/images/nf-core-nf-dragen_logo_light.png
+    - docs/images/nf-core-nf-dragen_logo_dark.png
+    - docs/output.md
+    - docs/README.md
+    - docs/usage.md
+    - ro-crate-metadata.json
+    - LICENSE
+  files_unchanged:
+    - .github/CONTRIBUTING.md
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/ISSUE_TEMPLATE/feature_request.yml
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .prettierignore
+    - assets/email_template.txt
+    - assets/nf-core-nf_dragen_logo_light.png
+    - CODE_OF_CONDUCT.md
+    - docs/images/nf-core-nf_dragen_logo_dark.png
+    - docs/images/nf-core-nf_dragen_logo_light.png
+    - docs/README.md
+  included_configs: false
+  multiqc_config:
+    - report_comment
+  nextflow_config:
+    - custom_config
+    - manifest.homePage
+    - manifest.name
+    - params.custom_config_base
+    - params.custom_config_version
+    - process.cpus
+    - process.memory
+    - process.time
+    - validation.help.afterText
+    - validation.help.beforeText
+    - validation.summary.afterText
+    - validation.summary.beforeText
+
+template:
+  author: Adam Talbot, Harshil Patel, Graham Wright
+  description: nf-dragen is a simple, proof-of-concept Nextflow pipeline to run the
+    Illumina DRAGEN licensed suite of tools.
+  force: false
+  is_nfcore: false
+  name: dragen
+  org: seqeralabs
+  outdir: .
+  skip_features:
+    - ci
+    - nf_core_configs
+    - citations
+    - gitpod
+    - codespaces
+    - email
+    - adaptivecard
+    - slackreport
+    - documentation
+    - rocrate
+    - vscode
+  version: 1.0.0dev
