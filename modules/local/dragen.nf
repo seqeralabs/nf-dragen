@@ -1,9 +1,12 @@
+include { executeOnJarvice } from './executeOnJarvice.nf'
+
 process DRAGEN {
     tag "$meta.id"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
+    cpus 1
+    memory 1.GB
+    container 'us-docker.pkg.dev/jarvice/images/jarvice-dragen-service:1.2-seqera-gcsfuse'
 
     input:
     tuple val(meta), path(fastq_1, stageAs: "input_S1_L001_R1_???.fastq.gz"), path(fastq_2, stageAs: "input_S1_L001_R2_???.fastq.gz")
@@ -38,7 +41,7 @@ process DRAGEN {
     r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
     def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
     def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
-    """
+    def dragen_cmd = """
     /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\
@@ -55,42 +58,5 @@ process DRAGEN {
         dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
     END_VERSIONS
     """
-
-    stub:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
-
-    def ref = index ? "-r $index" : ''
-
-
-    // Check FASTQ numbers match
-    def num_r1 = fastq_1 instanceof List ? fastq_1.size() : 1
-    def num_r2 = fastq_2 instanceof List ? fastq_2.size() : 1
-
-    if ( fastq_2 && num_r1 != num_r2 ) {
-        error "Number of R1 and R2 FASTQ files do not match for sample ${prefix}"
-    }
-
-    // Generate appropriate parameter for input files
-    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : ""
-    r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
-    def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
-    def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
-    """
-    echo /opt/edico/bin/dragen \\
-        $ref \\
-        --output-directory ./ \\
-        --output-file-prefix $prefix \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $r1_in \\
-        $r2_in \\
-        $rgid \\
-        $rgsm \\
-        $args
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
-    END_VERSIONS
-    """
+    executeOnJarvice(dragen_cmd)
 }
