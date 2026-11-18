@@ -40,6 +40,28 @@
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
                     "fa_icon": "fas fa-file-signature"
+                },
+                "skip_dragen_preflight": {
+                    "type": "boolean",
+                    "description": "Skip the DRAGEN pre-flight check (host mounts, FPGA device, dragen --version) that runs before any DRAGEN task"
+                }
+            }
+        },
+        "dragen_options": {
+            "title": "DRAGEN options",
+            "type": "object",
+            "fa_icon": "fas fa-microchip",
+            "description": "DRAGEN licensing and options",
+            "properties": {
+                "dragen_license": {
+                    "type": "string",
+                    "default": "marketplace",
+                    "enum": ["marketplace", "byol"],
+                    "description": "DRAGEN licensing model. 'marketplace' for AWS Marketplace AMIs (no credentials needed); 'byol' to pass the DRAGEN_USERNAME/DRAGEN_PASSWORD pipeline secrets to the Illumina license server"
+                },
+                "skip_pangenome_validation": {
+                    "type": "boolean",
+                    "description": "Pass --validate-pangenome-reference=false to DRAGEN. Needed for linear references (e.g. a hash table built from a GATK GRCh38 FASTA) with DRAGEN 4.x"
                 }
             }
         },
@@ -192,6 +214,9 @@
     "allOf": [
         {
             "$ref": "#/$defs/input_output_options"
+        },
+        {
+            "$ref": "#/$defs/dragen_options"
         },
         {
             "$ref": "#/$defs/tools"

@@ -2,9 +2,6 @@ process DRAGEN {
     tag "$meta.id"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     tuple val(meta), path(fastq_1, stageAs: "input_S1_L001_R1_???.fastq.gz"), path(fastq_2, stageAs: "input_S1_L001_R2_???.fastq.gz")
     path index
@@ -20,6 +17,10 @@ process DRAGEN {
 
     script:
     def args = task.ext.args ?: ''
+    def args2 = task.ext.args2 ?: ''
+    // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
+    // Marketplace AMIs are metered by AWS and take no license arguments.
+    def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
     prefix = task.ext.prefix ?: "${meta.id}"
 
     def ref = index ? "-r $index" : ''
@@ -43,12 +44,13 @@ process DRAGEN {
         $ref \\
         --output-directory ./ \\
         --output-file-prefix $prefix \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $lic \\
         $r1_in \\
         $r2_in \\
         $rgid \\
         $rgsm \\
-        $args
+        $args \\
+        $args2
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -58,6 +60,10 @@ process DRAGEN {
 
     stub:
     def args = task.ext.args ?: ''
+    def args2 = task.ext.args2 ?: ''
+    // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
+    // Marketplace AMIs are metered by AWS and take no license arguments.
+    def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
     prefix = task.ext.prefix ?: "${meta.id}"
 
     def ref = index ? "-r $index" : ''
@@ -81,12 +87,13 @@ process DRAGEN {
         $ref \\
         --output-directory ./ \\
         --output-file-prefix $prefix \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $lic \\
         $r1_in \\
         $r2_in \\
         $rgid \\
         $rgsm \\
-        $args
+        $args \\
+        $args2
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

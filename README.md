@@ -10,85 +10,60 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 ## Integration with Seqera Platform
 
-We have streamlined the process of deploying Nextflow workflows that utilise Illumina DRAGEN on AWS Batch via Seqera.
+Seqera Batch Forge can create an AWS Batch compute environment with a separate queue of DRAGEN F2 instances. Any process with `label 'dragen'` runs on that queue.
 
-### Prerequisites
+### 1. Choose a licensing model
 
-#### Credentials
+| `--dragen_license`      | AMI                                                     | Credentials                                                                                       |
+| ----------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `marketplace` (default) | Illumina DRAGEN from AWS Marketplace (subscribe first)  | None. AWS meters the DRAGEN software per instance-hour                                            |
+| `byol`                  | Private AMI supplied by Illumina                        | Pipeline secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`, passed to `--lic-server` by the pipeline |
 
-You will need to obtain the following information from the Illumina DRAGEN team:
-
-1. Private AMI id in an AWS region with DRAGEN F1 instance availability
-2. Username to run DRAGEN on the CLI via Nextflow
-3. Password to run DRAGEN on the CLI via Nextflow
-
-#### Pipeline implementation
-
-Please see the [dragen.nf](modules/local/dragen.nf) module implemented in this pipeline for reference.
-
-Any Nextflow processes calling the `dragen` command must have:
-
-1. `label dragen` ([see docs](https://www.nextflow.io/docs/latest/process.html?highlight=label#label)). This is how Seqera will determine which processes need to be specifically executed on DRAGEN F1 instances.
-
-   ```nextflow
-   process DRAGEN {
-       label 'dragen'
-
-       <truncated>
-   }
-   ```
-
-2. `secret DRAGEN_USERNAME` and `secret DRAGEN_PASSWORD` ([see docs](https://www.nextflow.io/docs/latest/secrets.html?highlight=secrets#secrets)). These Secrets will be provided securely to the `--lic-server` option when running DRAGEN on the CLI to validate the license.
-
-   ```nextflow
-   process DRAGEN {
-       secret 'DRAGEN_USERNAME'
-       secret 'DRAGEN_PASSWORD'
-
-       <truncated>
-
-       script:
-       """
-       /opt/edico/bin/dragen \\
-               --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-               <other_options>
-       """
-   }
-   ```
-
-### Compute Environment
-
-You can use Seqera Batch Forge to automatically create a separate AWS Batch queue with dedicated F1 instances to run DRAGEN.
-
-In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment` and fill in the appropriate settings for your AWS Batch environment. Additionally, you will be able to paste your private DRAGEN AMI id as shown in the image below:
-
-![Seqera enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
-
-Click on `Add` to create the Compute Environment.
-
-> Please ensure that the `Region` you select contains DRAGEN F1 instances.
-
-### Secrets
-
-As outlined in [this blog](https://seqera.io/blog/pipeline-secrets-secure-handling-of-sensitive-information-in-tower/) you can add Secrets to Seqera to safely encrypt the username and password information required to run DRAGEN via Nextflow.
-
-In the Seqera UI, go to `Secrets` -> `Add Pipeline Secret` and add both of the Secrets as shown in the images below:
-
-1. `DRAGEN_USERNAME`
+For BYOL, add both secrets in Seqera (`Secrets` -> `Add Pipeline Secret`) and select them when adding the pipeline:
 
 ![Seqera Secrets DRAGEN username](docs/images/tower_secrets_dragen_username.png)
 
-2. `DRAGEN_PASSWORD`
-
 ![Seqera Secrets DRAGEN password](docs/images/tower_secrets_dragen_password.png)
 
-### Pipeline
+The run fails at launch with `Required secrets are missing` if `--dragen_license byol` is set without them. Marketplace runs need no secrets.
 
-In the Seqera UI, go to `Launchpad` -> `Add Pipeline`. Fill in the appropriate details to add your pipeline and ensure that the Compute Environment and Secrets you created previously are both defined for use by the pipeline:
+### 2. Create the compute environment
 
-![Seqera Pipeline Secrets](docs/images/tower_pipeline_secrets.png)
+In Seqera, go to `Compute Environments` -> `Add Compute Environment` -> AWS Batch (Batch Forge) and set:
 
-Click on `Add` to create the pipeline and launch it when you are ready!
+- **Region** with F2 instances, e.g. `us-east-1`
+- **Enable DRAGEN**: the DRAGEN AMI ID and an F2 instance type (`f2.6xlarge` is the smallest and cheapest)
+- **Wave**, **Fusion v2** and **fast instance storage (NVMe)** enabled
+- **Provisioning model**: on-demand is recommended. The DRAGEN software fee is the same on Spot, and a Spot reclaim means paying it again for the retry
+- **Nextflow config**: paste [`docs/compute_env_aws_f2.config`](docs/compute_env_aws_f2.config), with the `libdragen.so` version matching the AMI's DRAGEN version
+
+![Seqera enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
+
+The compute environment config mounts the DRAGEN install from the F2 host into the task container and keeps DRAGEN's scratch on the local NVMe disk. These settings depend on the AMI and the compute environment, so they live there rather than in the pipeline.
+
+> [!WARNING]
+> `aws.batch.volumes` is a single value: whichever config sets it last replaces it completely. Set it only in the compute environment, not also in the Launchpad config.
+
+### 3. Add and launch the pipeline
+
+In Seqera, go to `Launchpad` -> `Add Pipeline`, select the compute environment and, for BYOL only, the two secrets.
+
+Before any data is staged, the pipeline runs `DRAGEN_PREFLIGHT` on the DRAGEN queue. It checks that `/opt/edico/bin/dragen`, `/lib64/libdragen.so.*` and `/dev/dragen` are visible and that `dragen --version` works, and writes `pipeline_info/dragen_preflight.txt`. Skip it with `--skip_dragen_preflight`.
+
+Useful options:
+
+- `--dragen_index_dna` / `--dragen_index_rna`: reuse a pre-built hash table instead of building one (the hash table must match the DRAGEN version)
+- `--skip_pangenome_validation`: needed with DRAGEN 4.x for linear references, e.g. a hash table built from a GATK GRCh38 FASTA
+
+### Smoke test
+
+To check a new compute environment as cheaply as possible:
+
+```bash
+nextflow run seqeralabs/nf-dragen -profile test_smoke --outdir <OUTDIR>
+```
+
+`test_smoke` runs one small sample against a yeast reference, skips FastQC and MultiQC, and runs DRAGEN tasks one at a time with no retries. Cap the compute environment's maximum CPUs at one F2 instance (24 for `f2.6xlarge`) so the test can only start one DRAGEN instance.
 
 ## Credits
 

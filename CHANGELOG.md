@@ -10,6 +10,11 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 ### `Added`
 
 - (10)[https://github.com/seqeralabs/nf-dragen/pull/10] - Use nf-core template v3.1.1
+- `--dragen_license marketplace|byol` (default `marketplace`). Only BYOL passes `--lic-server` and requires the `DRAGEN_USERNAME`/`DRAGEN_PASSWORD` secrets; AWS Marketplace AMIs need no credentials
+- `DRAGEN_PREFLIGHT` check (host mounts, `/dev/dragen`, `dragen --version`) that gates all DRAGEN tasks; skip with `--skip_dragen_preflight`
+- `test_smoke` profile: one sample, no QC, DRAGEN tasks serial with no retries, for minimal-cost compute environment checks
+- `docs/compute_env_aws_f2.config`: compute environment Nextflow config for DRAGEN on AWS Batch F2 (host mounts, `/ephemeral` scratch, Fusion settings)
+- `--skip_pangenome_validation` and default `--ht-num-threads <task.cpus> --shared-thread-odirect-output true` for DRAGEN mapping
 
 ### `Fixed`
 
