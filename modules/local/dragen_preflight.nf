@@ -12,7 +12,7 @@ process DRAGEN_PREFLIGHT {
     """
     fail() {
         cat dragen_preflight.txt >&2
-        echo "ERROR: DRAGEN pre-flight failed: \$1. Check aws.batch.volumes in the compute environment's Nextflow config (see docs/compute_env_aws_f2.config) and that the task runs on the DRAGEN queue." >&2
+        echo "ERROR: DRAGEN pre-flight failed: \$1. Check aws.batch.volumes in the Launchpad Nextflow config (see docs/launchpad_aws_f2.config) and that the task runs on the DRAGEN queue." >&2
         exit 1
     }
 

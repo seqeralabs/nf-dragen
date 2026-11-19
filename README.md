@@ -35,18 +35,18 @@ In Seqera, go to `Compute Environments` -> `Add Compute Environment` -> AWS Batc
 - **Enable DRAGEN**: the DRAGEN AMI ID and an F2 instance type (`f2.6xlarge` is the smallest and cheapest)
 - **Wave**, **Fusion v2** and **fast instance storage (NVMe)** enabled
 - **Provisioning model**: on-demand is recommended. The DRAGEN software fee is the same on Spot, and a Spot reclaim means paying it again for the retry
-- **Nextflow config**: paste [`docs/compute_env_aws_f2.config`](docs/compute_env_aws_f2.config), with the `libdragen.so` version matching the AMI's DRAGEN version
+- **Nextflow config**: leave empty (see step 3)
 
 ![Seqera enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
 
-The compute environment config mounts the DRAGEN install from the F2 host into the task container and keeps DRAGEN's scratch on the local NVMe disk. These settings depend on the AMI and the compute environment, so they live there rather than in the pipeline.
-
-> [!WARNING]
-> `aws.batch.volumes` is a single value: whichever config sets it last replaces it completely. Set it only in the compute environment, not also in the Launchpad config.
-
 ### 3. Add and launch the pipeline
 
-In Seqera, go to `Launchpad` -> `Add Pipeline`, select the compute environment and, for BYOL only, the two secrets.
+In Seqera, go to `Launchpad` -> `Add Pipeline`, select the compute environment and, for BYOL only, the two secrets. In **Nextflow config**, paste [`docs/launchpad_aws_f2.config`](docs/launchpad_aws_f2.config), with the `libdragen.so` version matching the AMI's DRAGEN version.
+
+This config mounts the DRAGEN install from the F2 host into the task container and keeps DRAGEN's scratch on the local NVMe disk. These settings depend on the AMI, so they live in the Launchpad rather than in the pipeline.
+
+> [!WARNING]
+> Do not put `aws.batch.volumes` in the compute environment's Nextflow config. For DRAGEN-enabled compute environments, Seqera Platform appends its own `aws.batch.volumes` after that field, and because the setting is a single value, Platform's line replaces yours without libdragen or `/ephemeral`. The Launchpad config is applied last, so set it there.
 
 Before any data is staged, the pipeline runs `DRAGEN_PREFLIGHT` on the DRAGEN queue. It checks that `/opt/edico/bin/dragen`, `/lib64/libdragen.so.*` and `/dev/dragen` are visible and that `dragen --version` works, and writes `pipeline_info/dragen_preflight.txt`. Skip it with `--skip_dragen_preflight`.
 
