@@ -63,7 +63,7 @@ To check a new compute environment as cheaply as possible:
 nextflow run seqeralabs/nf-dragen -profile test_smoke --outdir <OUTDIR>
 ```
 
-`test_smoke` runs one small sample against a yeast reference, skips FastQC and MultiQC, and runs DRAGEN tasks one at a time with no retries. Cap the compute environment's maximum CPUs at one F2 instance (24 for `f2.6xlarge`) so the test can only start one DRAGEN instance.
+`test_smoke` runs one small sample against a yeast reference and skips FastQC and MultiQC. Cap the compute environment's maximum CPUs at one F2 instance (24 for `f2.6xlarge`) so the test can only start one DRAGEN instance.
 
 ## Credits
 
