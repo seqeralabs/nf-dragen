@@ -55,7 +55,7 @@
             "properties": {
                 "dragen_license": {
                     "type": "string",
-                    "default": "marketplace",
+                    "default": "byol",
                     "enum": ["marketplace", "byol"],
                     "description": "DRAGEN licensing model. 'marketplace' for AWS Marketplace AMIs (no credentials needed); 'byol' to pass the DRAGEN_USERNAME/DRAGEN_PASSWORD pipeline secrets to the Illumina license server"
                 }

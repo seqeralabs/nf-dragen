@@ -16,8 +16,8 @@ Seqera Batch Forge can create an AWS Batch compute environment with a separate q
 
 | `--dragen_license`      | AMI                                                     | Credentials                                                                                       |
 | ----------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `marketplace` (default) | Illumina DRAGEN from AWS Marketplace (subscribe first)  | None. AWS meters the DRAGEN software per instance-hour                                            |
-| `byol`                  | Private AMI supplied by Illumina                        | Pipeline secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`, passed to `--lic-server` by the pipeline |
+| `marketplace`           | Illumina DRAGEN from AWS Marketplace (subscribe first)  | None. AWS meters the DRAGEN software per instance-hour                                            |
+| `byol` (default)        | Private AMI supplied by Illumina                        | Pipeline secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`, passed to `--lic-server` by the pipeline |
 
 For BYOL, add both secrets in Seqera (`Secrets` -> `Add Pipeline Secret`) and select them when adding the pipeline:
 
@@ -25,7 +25,7 @@ For BYOL, add both secrets in Seqera (`Secrets` -> `Add Pipeline Secret`) and se
 
 ![Seqera Secrets DRAGEN password](docs/images/tower_secrets_dragen_password.png)
 
-The run fails at launch with `Required secrets are missing` if `--dragen_license byol` is set without them. Marketplace runs need no secrets.
+BYOL is the default, as in earlier releases. The run fails at launch with `Required secrets are missing` if the secrets are not selected. For a Marketplace AMI, set `--dragen_license marketplace`: no secrets are needed.
 
 ### 2. Create the compute environment
 
