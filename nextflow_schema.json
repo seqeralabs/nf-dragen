@@ -58,10 +58,6 @@
                     "default": "marketplace",
                     "enum": ["marketplace", "byol"],
                     "description": "DRAGEN licensing model. 'marketplace' for AWS Marketplace AMIs (no credentials needed); 'byol' to pass the DRAGEN_USERNAME/DRAGEN_PASSWORD pipeline secrets to the Illumina license server"
-                },
-                "skip_pangenome_validation": {
-                    "type": "boolean",
-                    "description": "Pass --validate-pangenome-reference=false to DRAGEN. Needed for linear references (e.g. a hash table built from a GATK GRCh38 FASTA) with DRAGEN 4.x"
                 }
             }
         },

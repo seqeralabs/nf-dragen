@@ -17,7 +17,6 @@ process DRAGEN {
 
     script:
     def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
     // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
     // Marketplace AMIs are metered by AWS and take no license arguments.
     def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
@@ -49,8 +48,7 @@ process DRAGEN {
         $r2_in \\
         $rgid \\
         $rgsm \\
-        $args \\
-        $args2
+        $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -60,7 +58,6 @@ process DRAGEN {
 
     stub:
     def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
     // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
     // Marketplace AMIs are metered by AWS and take no license arguments.
     def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
@@ -92,8 +89,7 @@ process DRAGEN {
         $r2_in \\
         $rgid \\
         $rgsm \\
-        $args \\
-        $args2
+        $args
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

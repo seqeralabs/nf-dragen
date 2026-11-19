@@ -53,7 +53,6 @@ Before any data is staged, the pipeline runs `DRAGEN_PREFLIGHT` on the DRAGEN qu
 Useful options:
 
 - `--dragen_index_dna` / `--dragen_index_rna`: reuse a pre-built hash table instead of building one (the hash table must match the DRAGEN version)
-- `--skip_pangenome_validation`: needed with DRAGEN 4.x for linear references, e.g. a hash table built from a GATK GRCh38 FASTA
 
 ### Smoke test
 

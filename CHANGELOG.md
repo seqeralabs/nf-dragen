@@ -14,7 +14,6 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - `DRAGEN_PREFLIGHT` check (host mounts, `/dev/dragen`, `dragen --version`) that gates all DRAGEN tasks; skip with `--skip_dragen_preflight`
 - `test_smoke` profile: one sample, no QC, for minimal-cost compute environment checks
 - `docs/launchpad_aws_f2.config`: Launchpad Nextflow config for DRAGEN on AWS Batch F2 (host mounts, `/ephemeral` scratch, Fusion settings, DRAGEN retries for host start-up)
-- `--skip_pangenome_validation` and default `--ht-num-threads <task.cpus> --shared-thread-odirect-output true` for DRAGEN mapping
 
 ### `Fixed`
 
