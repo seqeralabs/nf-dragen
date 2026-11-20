@@ -31,7 +31,7 @@ PY
 | `fasta/ref.fa` | 400 bp random sequence (`chr_test`), 60 bp lines |
 | `fastq/sample1_R1.fastq.gz`, `fastq/sample1_R2.fastq.gz` | 20 read pairs of 50 bp sampled from `ref.fa` (R2 is the reverse complement) |
 | `fastq/sample2_L001_R1.fastq.gz`, `fastq/sample2_L002_R1.fastq.gz` | 20 single-end reads of 50 bp each, one file per lane |
-| `samplesheets/samplesheet_test.csv` | Written by hand: one paired-end sample and one single-end sample on two lanes |
+| `samplesheets/samplesheet_test.csv` | Written by hand, reusing the FASTQs above: a tumour/normal pair (P1), a single-end sample on two lanes (P2) and an RNA sample (P3) |
 | `samplesheets/samplesheet_sarek.csv` | Written by hand: nf-core/sarek column order, lane names, an RNA sample and an extra `strandedness` column |
 | `samplesheets/samplesheet_modes.csv` | Written by hand: a tumour/normal pair, two tumours with one normal, a normal alone and an RNA sample with status 1 |
 | `target.bed` | Written by hand: one target over all of `chr_test` |

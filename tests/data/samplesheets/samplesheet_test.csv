@@ -1,4 +1,6 @@
-sample,fastq_1,fastq_2
-SAMPLE1_PE,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz
-SAMPLE2_SE,tests/data/fastq/sample2_L001_R1.fastq.gz,
-SAMPLE2_SE,tests/data/fastq/sample2_L002_R1.fastq.gz,
+patient,status,sample,lane,fastq_1,fastq_2,seq_type
+P1,0,P1_N,,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna
+P1,1,P1_T,,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna
+P2,0,P2_SE,,tests/data/fastq/sample2_L001_R1.fastq.gz,,dna
+P2,0,P2_SE,,tests/data/fastq/sample2_L002_R1.fastq.gz,,dna
+P3,0,P3_RNA,,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,rna
