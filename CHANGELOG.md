@@ -10,6 +10,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 ### `Added`
 
 - (10)[https://github.com/seqeralabs/nf-dragen/pull/10] - Use nf-core template v3.1.1
+- Somatic tumour/normal calling: for DNA samples, a patient with a normal and one or more tumours gets one somatic run per tumour (small variants, SV and CNV; HRD, TMB, HLA and MSI can be switched on through `ext.args`), published to `dragen/dna_fastq_to_vcf/<tumour>_vs_<normal>.*`. A normal without a tumour gets a germline run. A tumour without a normal, or two normals for one patient, stop the pipeline with an error naming the patient.
+- `--target_bed`: exome or panel target regions for germline and somatic runs (not RNA runs).
 
 ### `Removed`
 

@@ -20,6 +20,7 @@ nextflow_process {
                     fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")]
                 ))
                 input[1] = file("${projectDir}/tests/data/fasta")
+                input[2] = null
                 """
             }
         }

@@ -9,6 +9,7 @@ Github : https://github.com/seqeralabs/nf-dragen
 
 include { validateParameters            } from 'plugin/nf-schema'
 include { PARSE_SAMPLESHEET             } from './subworkflows/local/parse_samplesheet'
+include { SELECT_DRAGEN_MODE            } from './subworkflows/local/select_dragen_mode'
 include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
 include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
 
@@ -21,6 +22,7 @@ params {
     fasta: Path?
     dragen_index_dna: Path?
     dragen_index_rna: Path?
+    target_bed: Path?
 
     // Tools
     skip_dragen: Boolean = false
@@ -43,6 +45,7 @@ workflow {
         params.fasta,
         params.dragen_index_dna,
         params.dragen_index_rna,
+        params.target_bed,
         params.skip_dragen,
     )
 
@@ -56,6 +59,7 @@ workflow {
     dragen_index_dna = SEQERALABS_DRAGEN.out.dna_index
     dragen_index_rna = SEQERALABS_DRAGEN.out.rna_index
     dragen_dna       = SEQERALABS_DRAGEN.out.dna
+    dragen_somatic   = SEQERALABS_DRAGEN.out.somatic
     dragen_rna       = SEQERALABS_DRAGEN.out.rna
     versions         = ch_versions
 }
@@ -68,6 +72,9 @@ output {
         path 'genome/index'
     }
     dragen_dna {
+        path 'dragen/dna_fastq_to_vcf'
+    }
+    dragen_somatic {
         path 'dragen/dna_fastq_to_vcf'
     }
     dragen_rna {
@@ -87,27 +94,36 @@ workflow SEQERALABS_DRAGEN {
     fasta       // path: fasta file
     dna_index   // path: dragen index directory for dna
     rna_index   // path: dragen index directory for rna
+    target_bed  // path: exome targets for germline and somatic runs, or null
     skip_dragen // bool: skip all DRAGEN steps
 
     main:
 
     ch_input = input.filter { _sample -> !skip_dragen }
 
+    SELECT_DRAGEN_MODE(ch_input)
+
+    // Germline and somatic runs share one DNA hash table
     DRAGEN_DNA(
-        ch_input.filter { sample -> sample.seq_type == 'dna' },
+        SELECT_DRAGEN_MODE.out.germline,
+        SELECT_DRAGEN_MODE.out.somatic,
         dna_index,
         fasta,
+        target_bed,
     )
 
     DRAGEN_RNA(
-        ch_input.filter { sample -> sample.seq_type == 'rna' },
+        SELECT_DRAGEN_MODE.out.rna,
+        channel.of(), // not channel.empty(): a typed workflow cannot read that twice (Nextflow 26.10.6)
         rna_index,
         fasta,
+        null,
     )
 
     emit:
     dna_index = DRAGEN_DNA.out.index_built
     rna_index = DRAGEN_RNA.out.index_built
     dna       = DRAGEN_DNA.out.results
+    somatic   = DRAGEN_DNA.out.somatic
     rna       = DRAGEN_RNA.out.results
 }

@@ -29,6 +29,9 @@ input:
   - index:
       type: Path
       description: DRAGEN hash table directory
+  - target_bed:
+      type: Path?
+      description: Target regions BED, passed as `--vc-target-bed`; null for whole-genome and RNA runs
 output:
   - sample:
       type: record
