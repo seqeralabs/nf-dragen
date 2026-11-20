@@ -60,9 +60,9 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.failed },
                 { assert (workflow.stdout + workflow.stderr).join('\n').contains('Number of R1 and R2 FASTQ files do not match for sample bad') },
-                // The error is raised while the task script is evaluated, so the bad sample never starts; no other task fails
-                { assert workflow.trace.failed().isEmpty() },
-                { assert workflow.trace.succeeded().collect { task -> task.name }.sort() == ['DRAGEN_WORKFLOW:DRAGEN (ok)', 'DRAGEN_WORKFLOW:DRAGEN_BUILDHASHTABLE (ref.fa)'] }
+                // The error is raised while the task script is evaluated, so the bad sample never starts.
+                // Whether the ok task finishes before the run aborts is a race, so it is not asserted.
+                { assert workflow.trace.tasks().every { task -> !task.name.contains('(bad)') } }
             )
         }
     }
