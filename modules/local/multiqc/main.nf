@@ -25,7 +25,7 @@ process MULTIQC {
         data: file("*_data"),
         plots: file("*_plots", optional: true),
         process: task.process,
-        version: eval('multiqc --version | sed "s/.* //g"')
+        version: eval('multiqc --version | sed "s/.* //g"'),
     )
 
     script:
