@@ -1,4 +1,4 @@
-include { MULTIQC } from '../../../modules/nf-core/multiqc/main'
+include { MULTIQC } from '../../../modules/local/multiqc/main'
 
 workflow MULTIQC_REPORT {
     take:
@@ -13,10 +13,10 @@ workflow MULTIQC_REPORT {
     ch_config = [file("${moduleDir}/../../../assets/multiqc_config.yml"), multiqc_config].findAll { config -> config }
 
     MULTIQC(
-        metrics.mix(ch_versions_mqc).collect().map { files -> [[id: 'multiqc'], files, ch_config, multiqc_logo ?: [], [], []] }
+        metrics.mix(ch_versions_mqc).collect().map { files -> record(id: 'multiqc', files: files.toSet(), configs: ch_config.toSet(), logo: multiqc_logo) }
     )
 
     emit:
-    report   = MULTIQC.out.report.mix(MULTIQC.out.data, MULTIQC.out.plots).map { _meta, report_file -> report_file } // HTML, multiqc_data/ and plots
-    versions = MULTIQC.out.versions.map { process, tool, version -> "\"${process}\":\n    ${tool}: ${version}" }
+    report   = MULTIQC.out.flatMap { run -> [run.report, run.data, run.plots].findAll { f -> f } } // HTML, multiqc_data/ and plots
+    versions = MULTIQC.out.map { run -> "\"${run.process}\":\n    multiqc: ${run.version}" }
 }

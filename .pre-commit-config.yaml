@@ -1,6 +1,3 @@
-# Installed nf-core components stay as nf-core ships them, so nf-core tooling can update them
-exclude: ^modules/nf-core/
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0

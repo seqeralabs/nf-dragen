@@ -1,0 +1,12 @@
+{
+    "real DRAGEN mapping metrics, config, title and logo": {
+        "content": [
+            "1.35"
+        ],
+        "timestamp": "2026-11-20T18:03:50.565631963",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

@@ -35,5 +35,6 @@ PY
 | `samplesheets/samplesheet_sarek.csv` | Written by hand: nf-core/sarek column order, lane names, an RNA sample and an extra `strandedness` column |
 | `samplesheets/samplesheet_modes.csv` | Written by hand: a tumour/normal pair, two tumours with one normal, a normal alone and an RNA sample with status 1 |
 | `target.bed` | Written by hand: one target over all of `chr_test` |
+| `logo.png` | A 1x1 PNG, the MultiQC logo in the module test |
 | `samplesheets/samplesheet_no_fastq_1.csv`, `samplesheet_missing_fastq.csv`, `samplesheet_patient_mismatch.csv` | Written by hand: invalid samplesheets for the samplesheet parsing tests |
 | `dragen_metrics/TEST.mapping_metrics.csv` | Real DRAGEN output, copied unchanged from MultiQC's test data: [MultiQC/test-data](https://github.com/MultiQC/test-data) `data/modules/dragen/alignment/TEST.mapping_metrics.csv` at commit `ae5e10025fa1b0fd6792f8f2b513e160d78474fe`. Its name matches the DRAGEN module's `<prefix>.mapping_metrics.csv` |
