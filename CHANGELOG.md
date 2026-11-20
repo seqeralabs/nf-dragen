@@ -21,7 +21,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 ### `Changed`
 
-- The software versions report is always written, to `pipeline_info/software_versions.yml`.
+- The pipeline requires Nextflow 26.10.6 or later.
+- The software versions report is written to `pipeline_info/software_versions.yml` and lists the versions of every process, including the RNA steps.
 - The `test` profile uses small synthetic data in `tests/data/` and only works with `-stub`.
 
 ### `Fixed`
@@ -29,5 +30,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - Fixed error `Access to 'FASTQC.out' is undefined since the workflow 'FASTQC' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
 
 ### `Dependencies`
+
+- nf-schema 3.1.0
 
 ### `Deprecated`

@@ -21,15 +21,15 @@ workflow DRAGEN_WORKFLOW {
         fasta
 
     main:
-        ch_versions = channel.empty()
+        ch_index_built = channel.empty()
         if (!index) {
             ch_fasta = channel.fromPath(fasta, checkIfExists: true, type: 'file')
             // Use combine to not run the process if ch_input is empty
             DRAGEN_BUILDHASHTABLE (
                 ch_input.combine(ch_fasta).map { meta, fastq_1, fastq_2, _fasta -> _fasta }.first()
             )
-            ch_index    = DRAGEN_BUILDHASHTABLE.out.index
-            ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
+            ch_index       = DRAGEN_BUILDHASHTABLE.out.index
+            ch_index_built = ch_index
         } else {
             ch_index = channel.fromPath(index, checkIfExists: true, type: 'dir')
         }
@@ -41,18 +41,23 @@ workflow DRAGEN_WORKFLOW {
             ch_input,
             ch_index.collect()
         )
-        ch_versions = ch_versions.mix(DRAGEN.out.versions.first())
-
 
     emit:
         index        = ch_index
+        index_built  = ch_index_built // only a hash table built here, not one the user supplied
         bam          = DRAGEN.out.bam
         fastq        = DRAGEN.out.fastq
         vcf          = DRAGEN.out.vcf
         tbi          = DRAGEN.out.tbi
-        vcf_filtered  = DRAGEN.out.vcf_filtered
-        tbi_filtered  = DRAGEN.out.tbi_filtered
-        versions     = ch_versions
+        vcf_filtered = DRAGEN.out.vcf_filtered
+        tbi_filtered = DRAGEN.out.tbi_filtered
+        results      = DRAGEN.out.bam.mix(
+            DRAGEN.out.fastq,
+            DRAGEN.out.vcf,
+            DRAGEN.out.tbi,
+            DRAGEN.out.vcf_filtered,
+            DRAGEN.out.tbi_filtered
+        )
 }
 
 /*

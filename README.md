@@ -1,4 +1,4 @@
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.3-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A526.10.6-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 
 > THIS IS A PROOF-OF-CONCEPT REPOSITORY THAT IS UNDER ACTIVE DEVELOPMENT. SYNTAX, ORGANISATION AND LAYOUT MAY CHANGE WITHOUT NOTICE!
 
@@ -18,7 +18,7 @@ We have streamlined the process of deploying Nextflow workflows that utilise Ill
 
 You will need to obtain the following information from the Illumina DRAGEN team:
 
-1. Private AMI id in an AWS region with DRAGEN F1 instance availability
+1. Private AMI id in an AWS region with DRAGEN F2 instance availability
 2. Username to run DRAGEN on the CLI via Nextflow
 3. Password to run DRAGEN on the CLI via Nextflow
 
@@ -28,7 +28,7 @@ Please see the [dragen.nf](modules/local/dragen.nf) module implemented in this p
 
 Any Nextflow processes calling the `dragen` command must have:
 
-1. `label dragen` ([see docs](https://www.nextflow.io/docs/latest/process.html?highlight=label#label)). This is how Seqera will determine which processes need to be specifically executed on DRAGEN F1 instances.
+1. `label dragen` ([see docs](https://www.nextflow.io/docs/latest/process.html?highlight=label#label)). This is how Seqera will determine which processes need to be specifically executed on DRAGEN F2 instances.
 
    ```nextflow
    process DRAGEN {
@@ -58,7 +58,7 @@ Any Nextflow processes calling the `dragen` command must have:
 
 ### Compute Environment
 
-You can use Seqera Batch Forge to automatically create a separate AWS Batch queue with dedicated F1 instances to run DRAGEN.
+You can use Seqera Batch Forge to automatically create a separate AWS Batch queue with dedicated F2 instances to run DRAGEN.
 
 In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment` and fill in the appropriate settings for your AWS Batch environment. Additionally, you will be able to paste your private DRAGEN AMI id as shown in the image below:
 
@@ -66,7 +66,7 @@ In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment` and 
 
 Click on `Add` to create the Compute Environment.
 
-> Please ensure that the `Region` you select contains DRAGEN F1 instances.
+> Please ensure that the `Region` you select contains DRAGEN F2 instances.
 
 ### Secrets
 

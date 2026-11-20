@@ -1,0 +1,25 @@
+{
+    "-profile test -stub": {
+        "content": [
+            [
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.bam",
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.vcf.gz",
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.bam",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.vcf.gz",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.vcf.gz.tbi",
+                "genome/index/dragen_index_dna/dragen.ht",
+                "pipeline_info/software_versions.yml"
+            ]
+        ],
+        "timestamp": "2026-11-20T12:57:43.171121427",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}
