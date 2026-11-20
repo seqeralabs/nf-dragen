@@ -10,7 +10,7 @@ process DRAGEN_BUILDHASHTABLE {
 
     output:
     path "$prefix"     , emit: index
-    path "versions.yml", emit: versions
+    path "versions.yml", emit: versions, topic: versions
 
     script:
     def args = task.ext.args ?: ''

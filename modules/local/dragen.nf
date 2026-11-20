@@ -16,7 +16,7 @@ process DRAGEN {
     tuple val(meta), path("${prefix}.vcf.gz.tbi")               , emit: tbi        , optional:true
     tuple val(meta), path("${prefix}.hard-filtered.vcf.gz")      , emit: vcf_filtered, optional:true
     tuple val(meta), path("${prefix}.hard-filtered.vcf.gz.tbi")  , emit: tbi_filtered, optional:true
-    path  "versions.yml"                                       , emit: versions
+    path  "versions.yml"                                       , emit: versions, topic: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -87,6 +87,10 @@ process DRAGEN {
         $rgid \\
         $rgsm \\
         $args
+
+    touch ${prefix}.bam ${prefix}.bam.bai
+    touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi
+    touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

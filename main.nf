@@ -12,42 +12,63 @@ include { validateParameters            } from 'plugin/nf-schema'
 include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
 include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
 
+params {
+    // Input options
+    input: Path
+    seq_type: String = 'dna'
+
+    // References
+    fasta: Path?
+    dragen_index_dna: Path?
+    dragen_index_rna: Path?
+
+    // Tools
+    skip_dragen: Boolean = false
+
+    // Boilerplate options
+    outdir: String
+    publish_dir_mode: String = 'copy'
+    monochrome_logs: Boolean = false
+    config_profile_name: String?
+    config_profile_description: String?
+}
+
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
 workflow SEQERALABS_DRAGEN {
 
     take:
-        input     // tuple: [ meta, [fastq_1, ...], [fastq_2, ...] ]
-        fasta     // str: path to fasta file
-        dna_index // str: path to dragen index directory for dna
-        rna_index // str: path to dragen index directory for rna
+        input       // tuple: [ meta, [fastq_1, ...], [fastq_2, ...] ]
+        fasta       // path: fasta file
+        dna_index   // path: dragen index directory for dna
+        rna_index   // path: dragen index directory for rna
+        seq_type    // str: seq_type for samplesheet rows without one
+        skip_dragen // bool: skip all DRAGEN steps
 
     main:
 
+        ch_input = input
+            .map { meta, fastq_1, fastq_2 -> [ meta + [ seq_type: meta.seq_type ?: seq_type ], fastq_1, fastq_2 ] }
+            .filter { _meta, _fastq_1, _fastq_2 -> !skip_dragen }
+
         DRAGEN_DNA (
-            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'dna' && !params.skip_dragen },
+            ch_input.filter { meta, _fastq_1, _fastq_2 -> meta.seq_type == 'dna' },
             dna_index,
             fasta
         )
 
         DRAGEN_RNA (
-            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'rna' && !params.skip_dragen },
+            ch_input.filter { meta, _fastq_1, _fastq_2 -> meta.seq_type == 'rna' },
             rna_index,
             fasta
         )
 
-        ch_versions = DRAGEN_DNA.out.versions.mix(DRAGEN_RNA.out.versions)
-
     emit:
-        index          = DRAGEN_DNA.out.index
-        bam            = DRAGEN_DNA.out.bam
-        fastq          = DRAGEN_DNA.out.fastq
-        vcf            = DRAGEN_DNA.out.vcf
-        tbi            = DRAGEN_DNA.out.tbi
-        vcf_filtered   = DRAGEN_DNA.out.vcf_filtered
-        tbi_filtered   = DRAGEN_DNA.out.tbi_filtered
-        versions       = ch_versions
+        dna_index = DRAGEN_DNA.out.index_built
+        rna_index = DRAGEN_RNA.out.index_built
+        dna       = DRAGEN_DNA.out.results
+        rna       = DRAGEN_RNA.out.results
 }
 
 workflow {
@@ -57,13 +78,6 @@ workflow {
 
     ch_samplesheet = channel
         .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, fastq_1, fastq_2 ->
-            return [
-                meta + [ seq_type: meta.seq_type ?: params.seq_type],
-                fastq_1,
-                fastq_2
-            ]
-        }
         .groupTuple()
         .map { meta, fastq_1, fastq_2 ->
             return [
@@ -77,9 +91,39 @@ workflow {
         ch_samplesheet,
         params.fasta,
         params.dragen_index_dna,
-        params.dragen_index_rna
+        params.dragen_index_rna,
+        params.seq_type,
+        params.skip_dragen
     )
 
-    SEQERALABS_DRAGEN.out.versions
-        .collectFile(storeDir: "${params.outdir}/pipeline_info", name: 'software_versions.yml', sort: true, newLine: true)
+    // One entry per distinct process/tool version, from every process
+    ch_versions = channel.topic('versions')
+        .map { versions -> versions.text }
+        .unique()
+        .collectFile(name: 'software_versions.yml', sort: true, newLine: true)
+
+    publish:
+    dragen_index_dna = SEQERALABS_DRAGEN.out.dna_index
+    dragen_index_rna = SEQERALABS_DRAGEN.out.rna_index
+    dragen_dna       = SEQERALABS_DRAGEN.out.dna
+    dragen_rna       = SEQERALABS_DRAGEN.out.rna
+    versions         = ch_versions
+}
+
+output {
+    dragen_index_dna {
+        path 'genome/index'
+    }
+    dragen_index_rna {
+        path 'genome/index'
+    }
+    dragen_dna {
+        path 'dragen/dna_fastq_to_vcf'
+    }
+    dragen_rna {
+        path 'dragen/rna_fastq_to_bam'
+    }
+    versions {
+        path 'pipeline_info'
+    }
 }

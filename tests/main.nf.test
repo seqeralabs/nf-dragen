@@ -1,0 +1,33 @@
+nextflow_pipeline {
+
+    name "Test pipeline"
+    script "../main.nf"
+    profile "test"
+    options "-stub"
+
+    test("-profile test -stub") {
+
+        when {
+            // shortcut: the test samplesheet holds repo-relative paths, so link tests/ into nf-test's launch dir; drop once the samplesheet resolves its own paths
+            def link = java.nio.file.Paths.get(launchDir.toString(), 'tests')
+            if (!java.nio.file.Files.exists(link)) {
+                java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(baseDir.toString(), 'tests'))
+            }
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: false)
+            def versions    = path("$outputDir/pipeline_info/software_versions.yml").text
+            assertAll(
+                { assert workflow.success },
+                // shortcut: versions content is host-dependent until the stubs write a fixed version; snapshot it then
+                { assert versions.contains('DRAGEN"') },
+                { assert versions.contains('DRAGEN_BUILDHASHTABLE"') },
+                { assert snapshot(stable_name.sort()).match() }
+            )
+        }
+    }
+}

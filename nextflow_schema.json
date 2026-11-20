@@ -52,7 +52,8 @@
             "properties": {
                 "skip_dragen": {
                     "type": "boolean",
-                    "description": "Skip running DRAGEN steps"
+                    "description": "Skip running DRAGEN steps",
+                    "default": false
                 }
             }
         },
@@ -94,7 +95,7 @@
                     "type": "string",
                     "default": "copy",
                     "description": "Method used to save pipeline results to output directory.",
-                    "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
+                    "help_text": "Sets the workflow output mode, i.e. how published files are written to the output directory. See [Nextflow docs](https://www.nextflow.io/docs/latest/workflow.html#workflow-outputs) for details.",
                     "fa_icon": "fas fa-copy",
                     "enum": [
                         "symlink",
@@ -110,6 +111,19 @@
                     "type": "boolean",
                     "description": "Do not use coloured log outputs.",
                     "fa_icon": "fas fa-palette",
+                    "hidden": true,
+                    "default": false
+                },
+                "config_profile_name": {
+                    "type": "string",
+                    "description": "Name of the loaded configuration profile.",
+                    "fa_icon": "fas fa-users-cog",
+                    "hidden": true
+                },
+                "config_profile_description": {
+                    "type": "string",
+                    "description": "Description of the loaded configuration profile.",
+                    "fa_icon": "fas fa-users-cog",
                     "hidden": true
                 }
             }
