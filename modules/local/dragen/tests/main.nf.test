@@ -26,12 +26,99 @@ nextflow_process {
         }
 
         then {
-            def fastq_list = path(process.out[0][0].bam).parent.resolve('fastq_list.csv').readLines()
+            def fastq_list = path(process.out[0][0].vcf).parent.resolve('fastq_list.csv').readLines()
             assertAll(
                 { assert process.success },
                 { assert snapshot(
-                    process.out[0].collect { sample -> [sample.id, [sample.bam, sample.bai, sample.vcf, sample.tbi, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics].collect { f -> path(f).fileName.toString() }] },
+                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf, sample.tbi, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics].collect { f -> path(f).fileName.toString() }] },
                     fastq_list
+                ).match() }
+            )
+        }
+    }
+
+    test("single-end two-lane tumour with paired-end normal, target BED - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'N',
+                    lanes: ['1'],
+                    fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")],
+                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")],
+                    tumour_id: 'T',
+                    tumour_lanes: ['L1', 'L2'],
+                    tumour_fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")],
+                    tumour_fastq_2: []
+                ))
+                input[1] = file("${projectDir}/tests/data/fasta")
+                input[2] = file("${projectDir}/tests/data/target.bed")
+                """
+            }
+        }
+
+        then {
+            def task_dir = path(process.out[0][0].vcf).parent
+            def command = task_dir.resolve('.command.sh').text
+            assertAll(
+                { assert process.success },
+                { assert command.contains('--tumor-fastq-list tumour_fastq_list.csv') },
+                { assert command.contains('--fastq-list normal_fastq_list.csv') },
+                { assert command.contains('--vc-target-bed target.bed') },
+                { assert command.contains('--sv-exome true --sv-call-regions-bed target.bed') },
+                { assert !command.contains('--enable-cnv') && !command.contains('--cnv-') },
+                { assert process.out[0][0].cnv_vcf == null && process.out[0][0].cnv_tbi == null },
+                { assert snapshot(
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, *pair.metrics].collect { f -> path(f).fileName.toString() }.sort()] },
+                    task_dir.resolve('tumour_fastq_list.csv').readLines(),
+                    task_dir.resolve('normal_fastq_list.csv').readLines()
+                ).match() }
+            )
+        }
+    }
+
+    test("whole-genome tumour/normal runs CNV - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'N',
+                    lanes: ['1'],
+                    fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")],
+                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")],
+                    tumour_id: 'T',
+                    tumour_lanes: ['L1', 'L2'],
+                    tumour_fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")],
+                    tumour_fastq_2: []
+                ))
+                input[1] = file("${projectDir}/tests/data/fasta")
+                input[2] = null
+                """
+            }
+        }
+
+        then {
+            def task_dir = path(process.out[0][0].vcf).parent
+            def command = task_dir.resolve('.command.sh').text
+            assertAll(
+                { assert process.success },
+                { assert command.contains('--tumor-fastq-list tumour_fastq_list.csv') },
+                { assert command.contains('--fastq-list normal_fastq_list.csv') },
+                { assert command.contains('--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true') },
+                { assert !command.contains('target-bed') },
+                { assert !command.contains('--sv-exome') },
+                { assert path(process.out[0][0].cnv_vcf).fileName.toString() == 'T_vs_N.cnv.vcf.gz' },
+                { assert path(process.out[0][0].cnv_tbi).fileName.toString() == 'T_vs_N.cnv.vcf.gz.tbi' },
+                { assert snapshot(
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, pair.cnv_vcf, pair.cnv_tbi, *pair.metrics].collect { f -> path(f).fileName.toString() }.sort()] },
+                    task_dir.resolve('tumour_fastq_list.csv').readLines(),
+                    task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }
             )
         }

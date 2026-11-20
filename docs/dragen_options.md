@@ -103,7 +103,7 @@ RNA runs never get `--target_bed`.
 
 **Is `--sv-call-regions-bed` right for exome?** Yes, it is the option the v4.4 [WES recipes][SWES] use. The v4.4 [SV page][SV] documents the same behaviour under the name `--sv-target-bed` (SVs with both breakends in the regions are called) and offers `--sv-locus-node-target-file` for calls with at least one breakend in the regions. The pipeline keeps the recipe's name. Check in the first real Platform run that DRAGEN accepts `--sv-call-regions-bed` without a deprecation warning.
 
-**What are the tumour/normal output names?** Compared with `modules/local/dragen_somatic/main.nf`:
+**What are the tumour/normal output names?** Compared with the tumour/normal outputs of `modules/local/dragen/main.nf`:
 
 | Output                       | Pipeline expects                                             | Docs                                                                                            | Verdict                                                            |
 | ---------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
