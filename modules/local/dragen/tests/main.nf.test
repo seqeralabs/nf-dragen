@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test Process DRAGEN"
+    script "../main.nf"
+    process "DRAGEN"
+    tag "dragen"
+
+    test("paired-end two-lane DNA sample - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'test',
+                    // shortcut: lane 2 reuses the single-end FASTQs as a pair; content does not matter to a stub
+                    fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz")],
+                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")]
+                ))
+                input[1] = file("${projectDir}/tests/data/fasta")
+                """
+            }
+        }
+
+        then {
+            def fastq_list = path(process.out[0][0].bam).parent.resolve('fastq_list.csv').readLines()
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out[0].collect { sample -> [sample.id, [sample.bam, sample.bai, sample.vcf, sample.tbi, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics].collect { f -> path(f).fileName.toString() }] },
+                    fastq_list
+                ).match() }
+            )
+        }
+    }
+}

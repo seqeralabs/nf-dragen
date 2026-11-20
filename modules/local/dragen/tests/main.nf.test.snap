@@ -1,0 +1,30 @@
+{
+    "paired-end two-lane DNA sample - stub": {
+        "content": [
+            [
+                [
+                    "test",
+                    [
+                        "test.bam",
+                        "test.bam.bai",
+                        "test.vcf.gz",
+                        "test.vcf.gz.tbi",
+                        "test.hard-filtered.vcf.gz",
+                        "test.hard-filtered.vcf.gz.tbi",
+                        "test.mapping_metrics.csv"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "test.1,test,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz",
+                "test.2,test,UnknownLibrary,2,sample2_L001_R1.fastq.gz,sample2_L002_R1.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-20T13:14:59.19868795",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

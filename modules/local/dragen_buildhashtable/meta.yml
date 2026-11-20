@@ -1,0 +1,27 @@
+name: dragen_buildhashtable
+description: Build a DRAGEN hash table from a FASTA reference
+keywords:
+  - dragen
+  - index
+  - hash table
+tools:
+  - dragen:
+      description: Illumina DRAGEN Bio-IT Platform, run from the licensed DRAGEN AMI
+      homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
+      licence: ["Commercial"]
+input:
+  - fasta:
+      type: Path
+      description: Reference FASTA
+      pattern: "*.{fa,fasta}"
+output:
+  - index:
+      type: Path
+      description: Hash table directory, named by `ext.prefix` (default `dragen`)
+topics:
+  - versions:
+      type: Path
+      pattern: versions.yml
+notes: Add `--ht-build-rna-hashtable true` through `ext.args` for an RNA hash table. Needs the DRAGEN_USERNAME and DRAGEN_PASSWORD secrets.
+authors:
+  - "@adamrtalbot"

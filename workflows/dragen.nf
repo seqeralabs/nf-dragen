@@ -4,8 +4,10 @@ IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
-include { DRAGEN                } from '../modules/local/dragen.nf'
-include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable.nf'
+nextflow.enable.types = true
+
+include { DRAGEN                } from '../modules/local/dragen'
+include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15,49 +17,39 @@ RUN MAIN WORKFLOW
 
 workflow DRAGEN_WORKFLOW {
     take:
-    ch_input
-    index
-    fasta
+    ch_input: Channel<DragenSample>
+    index: Path?
+    fasta: Path?
 
     main:
     ch_index_built = channel.empty()
     if (!index) {
-        ch_fasta = channel.fromPath(fasta, checkIfExists: true, type: 'file')
-        // Use combine to not run the process if ch_input is empty
-        DRAGEN_BUILDHASHTABLE(
-            ch_input.combine(ch_fasta).map { meta, fastq_1, fastq_2, _fasta -> _fasta }.first()
-        )
-        ch_index = DRAGEN_BUILDHASHTABLE.out.index
-        ch_index_built = ch_index
+        // Built from the samples so that no samples means no build
+        ch_index_built = DRAGEN_BUILDHASHTABLE(ch_input.map { _sample -> fasta }.unique())
+        // One hash table; reduce makes it a value that every sample reads (null when no samples, so nothing reads it)
+        ch_index = ch_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
     else {
-        ch_index = channel.fromPath(index, checkIfExists: true, type: 'dir')
+        ch_index = channel.value(index)
     }
 
     //
-    // MODULE: Run DRAGEN on DNA samples to generate BAM from FastQ
+    // MODULE: Run DRAGEN on each sample
     //
-    DRAGEN(
-        ch_input,
-        ch_index.collect(),
-    )
+    ch_results = DRAGEN(ch_input, ch_index)
 
     emit:
-    index        = ch_index
-    index_built  = ch_index_built          // only a hash table built here, not one the user supplied
-    bam          = DRAGEN.out.bam
-    fastq        = DRAGEN.out.fastq
-    vcf          = DRAGEN.out.vcf
-    tbi          = DRAGEN.out.tbi
-    vcf_filtered = DRAGEN.out.vcf_filtered
-    tbi_filtered = DRAGEN.out.tbi_filtered
-    results      = DRAGEN.out.bam.mix(
-        DRAGEN.out.fastq,
-        DRAGEN.out.vcf,
-        DRAGEN.out.tbi,
-        DRAGEN.out.vcf_filtered,
-        DRAGEN.out.tbi_filtered,
-    )
+    index       = ch_index
+    index_built = ch_index_built // only a hash table built here, not one the user supplied
+    results     = ch_results
+}
+
+// One sample: every lane's FASTQs, in lane order (fastq_2 is empty for single-end)
+record DragenSample {
+    id: String
+    seq_type: String
+    fastq_1: List<Path>
+    fastq_2: List<Path>
 }
 
 /*

@@ -98,17 +98,17 @@ workflow SEQERALABS_DRAGEN {
     main:
 
     ch_input = input
-        .map { meta, fastq_1, fastq_2 -> [meta + [seq_type: meta.seq_type ?: seq_type], fastq_1, fastq_2] }
         .filter { _meta, _fastq_1, _fastq_2 -> !skip_dragen }
+        .map { meta, fastq_1, fastq_2 -> record(id: meta.id, seq_type: meta.seq_type ?: seq_type, fastq_1: fastq_1, fastq_2: fastq_2) }
 
     DRAGEN_DNA(
-        ch_input.filter { meta, _fastq_1, _fastq_2 -> meta.seq_type == 'dna' },
+        ch_input.filter { sample -> sample.seq_type == 'dna' },
         dna_index,
         fasta,
     )
 
     DRAGEN_RNA(
-        ch_input.filter { meta, _fastq_1, _fastq_2 -> meta.seq_type == 'rna' },
+        ch_input.filter { sample -> sample.seq_type == 'rna' },
         rna_index,
         fasta,
     )

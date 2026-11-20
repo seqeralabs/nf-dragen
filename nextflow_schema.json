@@ -60,21 +60,25 @@
                 "fasta": {
                     "type": "string",
                     "description": "Path to FASTA file",
-                    "fa_icon": "fas fa-dna"
+                    "fa_icon": "fas fa-dna",
+                    "format": "file-path",
+                    "exists": true
                 },
                 "dragen_index_dna": {
                     "type": "string",
                     "description": "Path to DNA index created by Dragen.",
                     "help_text": "Use a DNA index created using Dragen with argument '--build-hash-table true'. If not set, an index is built from `--fasta`.",
                     "fa_icon": "far fa-file-alt",
-                    "format": "directory-path"
+                    "format": "directory-path",
+                    "exists": true
                 },
                 "dragen_index_rna": {
                     "type": "string",
                     "description": "Path to RNA index created by Dragen.",
                     "help_text": "Use an RNA index created using Dragen with arguments '--build-hash-table true' and '--ht-build-rna-hashtable true'. If not set, an index is built from `--fasta`.",
                     "fa_icon": "far fa-file-alt",
-                    "format": "directory-path"
+                    "format": "directory-path",
+                    "exists": true
                 }
             }
         },

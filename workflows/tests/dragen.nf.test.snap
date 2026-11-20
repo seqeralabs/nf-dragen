@@ -1,0 +1,23 @@
+{
+    "two samples, no index - stub": {
+        "content": [
+            [
+                "DRAGEN_WORKFLOW:DRAGEN (pe)",
+                "DRAGEN_WORKFLOW:DRAGEN (se)",
+                "DRAGEN_WORKFLOW:DRAGEN_BUILDHASHTABLE (ref.fa)"
+            ],
+            [
+                "dragen"
+            ],
+            [
+                "pe",
+                "se"
+            ]
+        ],
+        "timestamp": "2026-11-20T13:15:36.866775713",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

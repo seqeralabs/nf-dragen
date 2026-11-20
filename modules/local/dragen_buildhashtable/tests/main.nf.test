@@ -1,0 +1,27 @@
+nextflow_process {
+
+    name "Test Process DRAGEN_BUILDHASHTABLE"
+    script "../main.nf"
+    process "DRAGEN_BUILDHASHTABLE"
+    tag "dragen_buildhashtable"
+
+    test("fasta - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = file("${projectDir}/tests/data/fasta/ref.fa")
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(getAllFilesFromDir(process.out[0][0], relative: true, includeDir: false)).match() }
+            )
+        }
+    }
+}
