@@ -174,4 +174,29 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("no fasta and no DRAGEN index fails before any DRAGEN task -stub") {
+
+        when {
+            def link = java.nio.file.Paths.get(launchDir.toString(), 'tests')
+            if (!java.nio.file.Files.exists(link)) {
+                java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(baseDir.toString(), 'tests'))
+            }
+            params {
+                outdir = "$outputDir"
+                fasta  = null
+            }
+        }
+
+        then {
+            def output = workflow.stdout.join('\n') + workflow.stderr.join('\n')
+            assertAll(
+                { assert workflow.failed },
+                { assert output =~ /Sample 'P\d_\w+' \(seq_type 'dna'\)/ },
+                { assert output.contains('--fasta') },
+                { assert output.contains('--dragen_index_dna') },
+                { assert !workflow.trace.tasks().any { task -> task.name.contains('DRAGEN') } }
+            )
+        }
+    }
 }
