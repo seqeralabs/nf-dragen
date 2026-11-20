@@ -154,7 +154,7 @@ Note that multiple profiles can be loaded; the order of arguments is important, 
 
 - `test`
   - A profile with a complete configuration for automated testing
-  - Uses the small synthetic data in `tests/data/`, so needs no other parameters except `--outdir`. Only works with `-stub`, because DRAGEN is not available outside its licensed environment.
+  - Uses small public test data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), so needs no other parameters except `--outdir`. Only works with `-stub`, because DRAGEN is not available outside its licensed environment.
 
 ### `-resume`
 

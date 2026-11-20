@@ -5,17 +5,8 @@ nextflow_workflow {
     workflow "PARSE_SAMPLESHEET"
     tag "parse_samplesheet"
 
-    // The fixture sheets hold repo-relative FASTQ paths, which nf-schema resolves from the launch dir
-    def linkTests = { launch_dir, base_dir ->
-        def link = java.nio.file.Paths.get(launch_dir.toString(), 'tests')
-        if (!java.nio.file.Files.exists(link)) {
-            java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(base_dir.toString(), 'tests'))
-        }
-    }
-
     test("three-column sheet") {
         when {
-            linkTests(launchDir, baseDir)
             workflow {
                 """
                 input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_test.csv")
@@ -33,7 +24,6 @@ nextflow_workflow {
 
     test("sarek sheet with status, sex, seq_type and extra lane and strandedness columns") {
         when {
-            linkTests(launchDir, baseDir)
             workflow {
                 """
                 input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_sarek.csv")
@@ -51,7 +41,6 @@ nextflow_workflow {
 
     test("missing fastq_1 column fails") {
         when {
-            linkTests(launchDir, baseDir)
             workflow {
                 """
                 input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_no_fastq_1.csv")
@@ -67,7 +56,6 @@ nextflow_workflow {
 
     test("non-existent FASTQ fails") {
         when {
-            linkTests(launchDir, baseDir)
             workflow {
                 """
                 input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_missing_fastq.csv")
@@ -77,13 +65,12 @@ nextflow_workflow {
         }
         then {
             assert workflow.failed
-            assert workflow.stderr.any { line -> line.contains("'tests/data/fastq/does_not_exist_R1.fastq.gz' does not exist") }
+            assert workflow.stderr.any { line -> line.contains("'tests/data/does_not_exist_R1.fastq.gz' does not exist") }
         }
     }
 
     test("sample name on two rows fails") {
         when {
-            linkTests(launchDir, baseDir)
             workflow {
                 """
                 input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_duplicate_sample.csv")

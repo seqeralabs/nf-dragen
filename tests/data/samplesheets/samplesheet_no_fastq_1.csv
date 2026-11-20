@@ -1,2 +1,2 @@
 sample,fastq_2
-SAMPLE1,tests/data/fastq/sample1_R2.fastq.gz
+SAMPLE1,https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz

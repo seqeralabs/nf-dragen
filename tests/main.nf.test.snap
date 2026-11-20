@@ -9,13 +9,13 @@
                     ]
                 ],
                 [
-                    "SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_DNA (ref.fa)",
+                    "SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_DNA (genome.fasta)",
                     [
                         "--ht-build-cnv-hashtable true"
                     ]
                 ],
                 [
-                    "SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_RNA (ref.fa)",
+                    "SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_RNA (genome.fasta)",
                     [
                         
                     ]
@@ -23,7 +23,7 @@
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_DNA (P3_N)",
                     [
-                        "--vc-target-bed target.bed",
+                        "--vc-target-bed genome.bed",
                         "--enable-variant-caller true"
                     ]
                 ],
@@ -36,7 +36,7 @@
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)",
                     [
-                        "--vc-target-bed target.bed",
+                        "--vc-target-bed genome.bed",
                         "--enable-sv true",
                         "--enable-variant-caller true"
                     ]
@@ -44,7 +44,7 @@
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T1_vs_P2_N)",
                     [
-                        "--vc-target-bed target.bed",
+                        "--vc-target-bed genome.bed",
                         "--enable-sv true",
                         "--enable-variant-caller true"
                     ]
@@ -52,7 +52,7 @@
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T2_vs_P2_N)",
                     [
-                        "--vc-target-bed target.bed",
+                        "--vc-target-bed genome.bed",
                         "--enable-sv true",
                         "--enable-variant-caller true"
                     ]
@@ -110,7 +110,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T20:19:44.939903903",
+        "timestamp": "2026-11-20T22:21:56.282839751",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -150,7 +150,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T20:27:26.63817908",
+        "timestamp": "2026-11-20T22:22:36.975516409",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -176,7 +176,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T20:27:37.31041129",
+        "timestamp": "2026-11-20T22:22:50.87309007",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -238,7 +238,7 @@
                 "    seqeralabs/nf-dragen: 1.0.0dev"
             ]
         ],
-        "timestamp": "2026-11-20T20:19:33.057259628",
+        "timestamp": "2026-11-20T22:21:40.262840064",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

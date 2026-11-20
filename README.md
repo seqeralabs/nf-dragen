@@ -34,7 +34,7 @@ flowchart LR
 
 ## Quickstart
 
-Run the test profile in stub mode from the repository root. Stub mode does not run DRAGEN, so it needs neither the AMI nor a licence:
+Run the test profile in stub mode from the repository root. Stub mode does not run DRAGEN, so it needs neither the AMI nor a licence. The test profile and the nf-test tests read their input data from nf-core/test-datasets, so they need network access to raw.githubusercontent.com:
 
 ```bash
 nextflow run . -profile test -stub --outdir results

@@ -42,7 +42,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 - The pipeline requires Nextflow 26.10.6 or later.
 - The software versions report is written to `pipeline_info/software_versions.yml` and lists the versions of every process, including the RNA steps.
-- The `test` profile uses small synthetic data in `tests/data/` and only works with `-stub`.
+- The `test` profile uses small public data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), and only works with `-stub`.
 - DRAGEN reads each sample as one read group named after the sample. The BAM index and DRAGEN's `*metrics.csv` files are now published; FASTQ files are not.
 
 ### `Dependencies`
