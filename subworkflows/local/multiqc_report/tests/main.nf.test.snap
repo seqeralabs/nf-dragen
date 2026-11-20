@@ -1,0 +1,14 @@
+{
+    "real DRAGEN mapping metrics and versions": {
+        "content": [
+            [
+                "\"MULTIQC_REPORT:MULTIQC\":\n    multiqc: 1.35"
+            ]
+        ],
+        "timestamp": "2026-11-20T13:43:19.971317056",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

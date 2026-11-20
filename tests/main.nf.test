@@ -80,7 +80,8 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert workflow.trace.tasks().size() == 0 }
+                // No DRAGEN task; MultiQC still reports the versions
+                { assert workflow.trace.tasks().collect { task -> task.name } == ['MULTIQC_REPORT:MULTIQC (multiqc)'] }
             )
         }
     }

@@ -69,6 +69,10 @@ Somatic runs call small variants, structural variants (SV) and copy number varia
 
 For exome or panel data, give the target regions with `--target_bed targets.bed`. Germline runs get it as `--vc-target-bed`; somatic runs also as `--sv-call-regions-bed` and `--cnv-target-bed`. RNA runs never get it.
 
+## MultiQC report
+
+MultiQC runs after DRAGEN on the DRAGEN metrics and the software versions (see [Output](output.md)). It runs in a Docker container, so the pipeline needs Docker on the machine that runs MultiQC; the DRAGEN processes have no container and run on the host. Skip it with `--skip_multiqc`.
+
 ## Configuring the reference
 
 We can configure the reference in two ways:

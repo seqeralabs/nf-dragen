@@ -48,6 +48,11 @@
                     "type": "boolean",
                     "description": "Skip running DRAGEN steps",
                     "default": false
+                },
+                "skip_multiqc": {
+                    "type": "boolean",
+                    "description": "Skip the MultiQC report",
+                    "default": false
                 }
             }
         },
@@ -115,6 +120,34 @@
                     "default": false
                 }
             }
+        },
+        "multiqc_options": {
+            "title": "MultiQC options",
+            "type": "object",
+            "fa_icon": "fas fa-chart-bar",
+            "description": "Options for the MultiQC report.",
+            "properties": {
+                "multiqc_config": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "description": "Custom config file to supply to MultiQC.",
+                    "fa_icon": "fas fa-cog"
+                },
+                "multiqc_title": {
+                    "type": "string",
+                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
+                    "fa_icon": "fas fa-file-signature"
+                },
+                "multiqc_logo": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Custom logo file to supply to MultiQC",
+                    "fa_icon": "fas fa-image"
+                }
+            }
         }
     },
     "allOf": [
@@ -126,6 +159,9 @@
         },
         {
             "$ref": "#/$defs/reference_genome_options"
+        },
+        {
+            "$ref": "#/$defs/multiqc_options"
         },
         {
             "$ref": "#/$defs/generic_options"

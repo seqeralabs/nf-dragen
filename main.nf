@@ -12,6 +12,7 @@ include { PARSE_SAMPLESHEET             } from './subworkflows/local/parse_sampl
 include { SELECT_DRAGEN_MODE            } from './subworkflows/local/select_dragen_mode'
 include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
 include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
+include { MULTIQC_REPORT                } from './subworkflows/local/multiqc_report'
 
 params {
     // Input options
@@ -26,6 +27,12 @@ params {
 
     // Tools
     skip_dragen: Boolean = false
+    skip_multiqc: Boolean = false
+
+    // MultiQC options
+    multiqc_config: Path?
+    multiqc_title: String?
+    multiqc_logo: Path?
 
     // Boilerplate options
     outdir: String
@@ -49,11 +56,26 @@ workflow {
         params.skip_dragen,
     )
 
-    // One entry per distinct process/tool version, from every process
-    ch_versions = channel.topic('versions')
+    // One entry per distinct process/tool version, from every process; the Workflow entry keeps the report non-empty when no task runs
+    ch_versions_text = channel.topic('versions')
         .map { versions -> versions.text }
         .unique()
-        .collectFile(name: 'software_versions.yml', sort: true, newLine: true)
+        .mix(channel.of("Workflow:\n    Nextflow: ${workflow.nextflow.version}\n    ${workflow.manifest.name}: ${workflow.manifest.version}"))
+
+    ch_multiqc = channel.empty()
+    if (!params.skip_multiqc) {
+        MULTIQC_REPORT(
+            SEQERALABS_DRAGEN.out.dna.mix(SEQERALABS_DRAGEN.out.somatic, SEQERALABS_DRAGEN.out.rna).map { result -> result.metrics.toList() }, // a Set, which collect() would not flatten
+            ch_versions_text,
+            params.multiqc_config,
+            params.multiqc_logo,
+        )
+        ch_multiqc = MULTIQC_REPORT.out.report
+        // MULTIQC cannot report to the versions topic, as its input waits on that topic
+        ch_versions_text = ch_versions_text.mix(MULTIQC_REPORT.out.versions)
+    }
+
+    ch_versions = ch_versions_text.collectFile(name: 'software_versions.yml', sort: true, newLine: true)
 
     publish:
     dragen_index_dna = SEQERALABS_DRAGEN.out.dna_index
@@ -61,6 +83,7 @@ workflow {
     dragen_dna       = SEQERALABS_DRAGEN.out.dna
     dragen_somatic   = SEQERALABS_DRAGEN.out.somatic
     dragen_rna       = SEQERALABS_DRAGEN.out.rna
+    multiqc          = ch_multiqc
     versions         = ch_versions
 }
 
@@ -79,6 +102,9 @@ output {
     }
     dragen_rna {
         path 'dragen/rna_fastq_to_bam'
+    }
+    multiqc {
+        path 'multiqc'
     }
     versions {
         path 'pipeline_info'
