@@ -54,6 +54,21 @@ PATIENT2,XY,0,PATIENT2_RNA,L001,P2R_L001_R1.fastq.gz,P2R_L001_R2.fastq.gz,rna
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+### Germline, somatic and RNA runs
+
+The pipeline picks the DRAGEN run for each DNA sample from `patient` and `status`:
+
+- A patient with a normal and a tumour gets one **somatic** (tumour/normal) run. The normal gets no germline run.
+- A patient with several tumours and one normal gets one somatic run per tumour, each with that normal.
+- A normal without a tumour gets a **germline** run.
+- A tumour without a normal, or a patient with two or more normals, stops the pipeline before any DNA task runs, with a message naming the patient. Tumour-only calling is not supported.
+
+RNA samples ignore `patient` and `status` and each get an **RNA** run.
+
+Somatic runs call small variants, structural variants (SV) and copy number variants (CNV). HRD, TMB, HLA and MSI are off; switch them on by adding the DRAGEN options (for example `--enable-hrd true`, `--enable-tmb true`, `--enable-hla true`, `--msi-command tumor-normal`) to `ext.args` of `.*:DRAGEN_DNA:DRAGEN_SOMATIC` in a custom config (see [Custom Tool Arguments](#custom-tool-arguments)).
+
+For exome or panel data, give the target regions with `--target_bed targets.bed`. Germline runs get it as `--vc-target-bed`; somatic runs also as `--sv-call-regions-bed` and `--cnv-target-bed`. RNA runs never get it.
+
 ## Configuring the reference
 
 We can configure the reference in two ways:

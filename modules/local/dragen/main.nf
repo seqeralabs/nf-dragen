@@ -15,6 +15,7 @@ process DRAGEN {
         fastq_2: List<Path>
     )
     index: Path
+    target_bed: Path?
 
     output:
     record(
@@ -37,6 +38,7 @@ process DRAGEN {
     if (fastq_2 && fastq_1.size() != fastq_2.size()) {
         error("Number of R1 and R2 FASTQ files do not match for sample ${id}")
     }
+    def targets = target_bed ? "--vc-target-bed ${target_bed}" : ''
     // One row, and so one read group, per lane; DRAGEN needs a number in Lane, so the lane name goes into RGID
     def fastq_list = fastq_1.withIndex().collect { r1, i -> "'${id}.${lanes[i]},${id},UnknownLibrary,${i + 1},${r1.name},${fastq_2 ? fastq_2[i].name : ''}'" }.join(' ')
     """
@@ -48,6 +50,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         --fastq-list fastq_list.csv \\
+        ${targets} \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -62,6 +65,7 @@ process DRAGEN {
     if (fastq_2 && fastq_1.size() != fastq_2.size()) {
         error("Number of R1 and R2 FASTQ files do not match for sample ${id}")
     }
+    def targets = target_bed ? "--vc-target-bed ${target_bed}" : ''
     def fastq_list = fastq_1.withIndex().collect { r1, i -> "'${id}.${lanes[i]},${id},UnknownLibrary,${i + 1},${r1.name},${fastq_2 ? fastq_2[i].name : ''}'" }.join(' ')
     """
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${fastq_list} > fastq_list.csv
@@ -72,6 +76,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         --fastq-list fastq_list.csv \\
+        ${targets} \\
         ${args}
 
     touch ${prefix}.bam ${prefix}.bam.bai

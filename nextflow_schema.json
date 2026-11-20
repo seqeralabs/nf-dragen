@@ -79,6 +79,15 @@
                     "fa_icon": "far fa-file-alt",
                     "format": "directory-path",
                     "exists": true
+                },
+                "target_bed": {
+                    "type": "string",
+                    "description": "BED file of exome or panel target regions.",
+                    "help_text": "Passed to DRAGEN for germline and somatic DNA runs (`--vc-target-bed`; somatic runs also `--sv-call-regions-bed` and `--cnv-target-bed`), never to RNA runs. Leave unset for whole-genome data.",
+                    "fa_icon": "fas fa-bullseye",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.bed$"
                 }
             }
         },

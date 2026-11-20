@@ -1,4 +1,121 @@
 {
+    "tumour/normal, germline and RNA samples with target_bed -stub": {
+        "content": [
+            [
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN (P3_N)",
+                    [
+                        "--vc-target-bed target.bed"
+                    ]
+                ],
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN_BUILDHASHTABLE (ref.fa)",
+                    [
+                        
+                    ]
+                ],
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN_SOMATIC (P1_T_vs_P1_N)",
+                    [
+                        "--vc-target-bed target.bed",
+                        "--enable-sv true",
+                        "--enable-cnv true"
+                    ]
+                ],
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN_SOMATIC (P2_T1_vs_P2_N)",
+                    [
+                        "--vc-target-bed target.bed",
+                        "--enable-sv true",
+                        "--enable-cnv true"
+                    ]
+                ],
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN_SOMATIC (P2_T2_vs_P2_N)",
+                    [
+                        "--vc-target-bed target.bed",
+                        "--enable-sv true",
+                        "--enable-cnv true"
+                    ]
+                ],
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_RNA:DRAGEN (P4_RNA)",
+                    [
+                        "--enable-rna true"
+                    ]
+                ],
+                [
+                    "SEQERALABS_DRAGEN:DRAGEN_RNA:DRAGEN_BUILDHASHTABLE (ref.fa)",
+                    [
+                        
+                    ]
+                ]
+            ],
+            [
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.bam",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.cnv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.cnv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.sv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.sv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N_tumor.bam",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N_tumor.bam.bai",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.bam",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.cnv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.cnv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.sv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.sv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N_tumor.bam",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N_tumor.bam.bai",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.bam",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.cnv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.cnv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.sv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.sv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N_tumor.bam",
+                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N_tumor.bam.bai",
+                "dragen/dna_fastq_to_vcf/P3_N.bam",
+                "dragen/dna_fastq_to_vcf/P3_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P3_N.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P3_N.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/P3_N.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/P3_N.vcf.gz",
+                "dragen/dna_fastq_to_vcf/P3_N.vcf.gz.tbi",
+                "dragen/rna_fastq_to_bam/P4_RNA.bam",
+                "dragen/rna_fastq_to_bam/P4_RNA.bam.bai",
+                "dragen/rna_fastq_to_bam/P4_RNA.hard-filtered.vcf.gz",
+                "dragen/rna_fastq_to_bam/P4_RNA.hard-filtered.vcf.gz.tbi",
+                "dragen/rna_fastq_to_bam/P4_RNA.mapping_metrics.csv",
+                "dragen/rna_fastq_to_bam/P4_RNA.vcf.gz",
+                "dragen/rna_fastq_to_bam/P4_RNA.vcf.gz.tbi",
+                "genome/index/dragen_index_dna/dragen.ht",
+                "genome/index/dragen_index_rna/dragen.ht",
+                "pipeline_info/software_versions.yml"
+            ]
+        ],
+        "timestamp": "2026-11-20T13:34:55.161285267",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
     "-profile test -stub": {
         "content": [
             [

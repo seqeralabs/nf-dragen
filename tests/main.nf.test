@@ -29,4 +29,59 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("tumour/normal, germline and RNA samples with target_bed -stub") {
+
+        when {
+            def link = java.nio.file.Paths.get(launchDir.toString(), 'tests')
+            if (!java.nio.file.Files.exists(link)) {
+                java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(baseDir.toString(), 'tests'))
+            }
+            params {
+                outdir     = "$outputDir"
+                input      = "${baseDir}/tests/data/samplesheets/samplesheet_modes.csv"
+                target_bed = "${baseDir}/tests/data/target.bed"
+            }
+        }
+
+        then {
+            // DRAGEN flags of each task, read from its command line (config selectors are not checked by name)
+            def flags = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').exists() }
+                .collect { task_dir ->
+                    def name = new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1')
+                    def command = new File(task_dir, '.command.sh').text
+                    [name, ['--vc-target-bed target.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true'].findAll { flag -> command.contains(flag) }]
+                }
+                .sort { entry -> entry[0] }
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    flags,
+                    getAllFilesFromDir(params.outdir, relative: true, includeDir: false).sort()
+                ).match() }
+            )
+        }
+    }
+
+    test("--skip_dragen true -stub") {
+
+        when {
+            def link = java.nio.file.Paths.get(launchDir.toString(), 'tests')
+            if (!java.nio.file.Files.exists(link)) {
+                java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(baseDir.toString(), 'tests'))
+            }
+            params {
+                outdir      = "$outputDir"
+                skip_dragen = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.trace.tasks().size() == 0 }
+            )
+        }
+    }
 }

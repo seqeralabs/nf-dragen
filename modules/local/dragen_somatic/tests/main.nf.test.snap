@@ -1,0 +1,40 @@
+{
+    "single-end two-lane tumour with paired-end normal, target BED - stub": {
+        "content": [
+            [
+                [
+                    "T_vs_N",
+                    [
+                        "T_vs_N.bam",
+                        "T_vs_N.bam.bai",
+                        "T_vs_N.cnv.vcf.gz",
+                        "T_vs_N.cnv.vcf.gz.tbi",
+                        "T_vs_N.hard-filtered.vcf.gz",
+                        "T_vs_N.hard-filtered.vcf.gz.tbi",
+                        "T_vs_N.mapping_metrics.csv",
+                        "T_vs_N.sv.vcf.gz",
+                        "T_vs_N.sv.vcf.gz.tbi",
+                        "T_vs_N.vcf.gz",
+                        "T_vs_N.vcf.gz.tbi",
+                        "T_vs_N_tumor.bam",
+                        "T_vs_N_tumor.bam.bai"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "T.L1,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,",
+                "T.L2,T,UnknownLibrary,2,sample2_L002_R1.fastq.gz,"
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "N.1,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-20T13:34:43.877551599",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

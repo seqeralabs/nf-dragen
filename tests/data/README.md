@@ -33,4 +33,6 @@ PY
 | `fastq/sample2_L001_R1.fastq.gz`, `fastq/sample2_L002_R1.fastq.gz` | 20 single-end reads of 50 bp each, one file per lane |
 | `samplesheets/samplesheet_test.csv` | Written by hand: one paired-end sample and one single-end sample on two lanes |
 | `samplesheets/samplesheet_sarek.csv` | Written by hand: nf-core/sarek column order, lane names, an RNA sample and an extra `strandedness` column |
+| `samplesheets/samplesheet_modes.csv` | Written by hand: a tumour/normal pair, two tumours with one normal, a normal alone and an RNA sample with status 1 |
+| `target.bed` | Written by hand: one target over all of `chr_test` |
 | `samplesheets/samplesheet_no_fastq_1.csv`, `samplesheet_missing_fastq.csv`, `samplesheet_patient_mismatch.csv` | Written by hand: invalid samplesheets for the samplesheet parsing tests |
