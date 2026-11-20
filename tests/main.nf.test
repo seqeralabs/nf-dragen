@@ -204,6 +204,35 @@ nextflow_pipeline {
         }
     }
 
+    test("one DRAGEN task exits 137: retried once, others finish, run fails naming the sample -stub") {
+
+        config "./fail_one_sample.config"
+
+        when {
+            def link = java.nio.file.Paths.get(launchDir.toString(), 'tests')
+            if (!java.nio.file.Files.exists(link)) {
+                java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(baseDir.toString(), 'tests'))
+            }
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            def output = workflow.stdout.join('\n') + workflow.stderr.join('\n')
+            def dragen = { tasks -> tasks.collect { task -> task.name }.findAll { name -> name.contains('DRAGEN_') && !name.contains('BUILDHASHTABLE') } }
+            assertAll(
+                { assert workflow.failed },
+                { assert dragen(workflow.trace.failed()) == ['SEQERALABS_DRAGEN:DRAGEN_DNA (P2_SE)'] * 2 },
+                { assert dragen(workflow.trace.succeeded()).sort() == [
+                    'SEQERALABS_DRAGEN:DRAGEN_RNA (P3_RNA)',
+                    'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)',
+                ] },
+                { assert output.contains('P2_SE') }
+            )
+        }
+    }
+
     test("no fasta and no DRAGEN index fails before any DRAGEN task -stub") {
 
         when {
