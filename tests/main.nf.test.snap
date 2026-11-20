@@ -116,7 +116,7 @@
             "nextflow": "26.10.6"
         }
     },
-    "Platform verification run 1: built hash tables, germline, WGS tumour/normal and RNA -stub": {
+    "Platform verification run 1: given DNA and RNA indexes, germline, WGS tumour/normal and RNA -stub": {
         "content": [
             [
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.bam",
@@ -142,15 +142,13 @@
                 "dragen/rna_fastq_to_bam/GM12878_REP1.bam",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.bam.bai",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.mapping_metrics.csv",
-                "genome/index/dragen_index_dna/dragen.ht",
-                "genome/index/dragen_index_rna/dragen.ht",
                 "multiqc/multiqc_data/.stub",
                 "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T22:22:36.975516409",
+        "timestamp": "2026-11-20T22:34:28.918858232",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
