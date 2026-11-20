@@ -20,7 +20,7 @@ The pipeline writes these files to the directory given with `--outdir`:
 │   │   ├── <tumour>_vs_<normal>.*        # somatic runs: the same files as above, plus
 │   │   ├── <tumour>_vs_<normal>.sv.vcf.gz(.tbi)   # structural variants
 │   │   └── <tumour>_vs_<normal>.cnv.vcf.gz(.tbi)  # copy number variants, whole-genome somatic runs only
-│   └── rna_fastq_to_bam/              # RNA samples, same files as for DNA
+│   └── rna_fastq_to_bam/              # RNA samples: <sample>.bam, .bam.bai and *metrics.csv, no VCFs
 ├── multiqc/                           # unless --skip_multiqc
 │   ├── multiqc_report.html            # MultiQC report: DRAGEN metrics and software versions
 │   ├── multiqc_data/                  # the report's data, as text files
