@@ -1,0 +1,7 @@
+.nextflow*
+work/
+results/
+.nf-test*
+tests/data/
+modules/nf-core/
+*.snap

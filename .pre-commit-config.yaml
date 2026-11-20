@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v3.1.0"
+    hooks:
+      - id: prettier
+        additional_dependencies:
+          - prettier@3.2.5
+
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: "3.0.3"
+    hooks:
+      - id: editorconfig-checker
+        alias: ec
+
+  - repo: local
+    hooks:
+      - id: nextflow-lint
+        name: nextflow lint -format
+        entry: nextflow lint -format -sort-declarations -harshil-alignment
+        language: system
+        files: \.(nf|config)$
