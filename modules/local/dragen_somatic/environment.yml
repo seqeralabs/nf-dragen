@@ -1,3 +1,0 @@
-# DRAGEN is not packaged for conda: the process runs /opt/edico/bin/dragen from the AWS Marketplace pay-as-you-go DRAGEN AMI.
-channels: []
-dependencies: []

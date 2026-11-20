@@ -1,9 +1,10 @@
 name: dragen
-description: Run Illumina DRAGEN on one sample, reading every lane through a FASTQ list
+description: Run Illumina DRAGEN on one sample, or in tumour/normal mode on a normal and its tumour, reading every lane through a FASTQ list
 keywords:
   - dragen
   - alignment
   - variant calling
+  - somatic
 tools:
   - dragen:
       description: Illumina DRAGEN Bio-IT Platform, run from the AWS Marketplace pay-as-you-go DRAGEN AMI
@@ -12,11 +13,11 @@ tools:
 input:
   - sample:
       type: record
-      description: One sample
+      description: One sample; for a tumour/normal run, the normal plus the `tumour_*` fields
       fields:
         id:
           type: String
-          description: Sample name; also the output file prefix, RGSM and the start of each RGID
+          description: Sample name; RGSM and the start of each RGID, and the output file prefix unless a tumour is given
         lanes:
           type: List<String>
           description: Name of each lane, in lane order; RGID is `<id>.<lane>`
@@ -26,26 +27,36 @@ input:
         fastq_2:
           type: List<Path>
           description: Read 2 FASTQ of each lane, in lane order; empty for single-end
+        tumour_id:
+          type: String?
+          description: Tumour sample name; null for germline and RNA runs. The run is then named and prefixed `<tumour_id>_vs_<id>`
+        tumour_lanes:
+          type: List<String>?
+        tumour_fastq_1:
+          type: List<Path>?
+        tumour_fastq_2:
+          type: List<Path>?
+          description: Empty for single-end
   - index:
       type: Path
       description: DRAGEN hash table directory
   - target_bed:
       type: Path?
-      description: Target regions BED, passed as `--vc-target-bed`; null for whole-genome and RNA runs
+      description: Target regions BED, passed as `--vc-target-bed` (and `--sv-call-regions-bed` with `--sv-exome true` for tumour/normal runs); null for whole-genome and RNA runs
 output:
   - sample:
       type: record
-      description: DRAGEN outputs of the sample; every file is optional and depends on `ext.args`
+      description: DRAGEN outputs of the run; every file is optional and depends on `ext.args`
       fields:
         id:
           type: String
-          description: Sample name
+          description: Sample name, or `<tumour_id>_vs_<id>` for a tumour/normal run
         bam:
-          type: Path
-          pattern: "${prefix}.bam"
+          type: List<Path>
+          pattern: "${prefix}*.bam"
         bai:
-          type: Path
-          pattern: "${prefix}.bam.bai"
+          type: List<Path>
+          pattern: "${prefix}*.bam.bai"
         vcf:
           type: Path
           pattern: "${prefix}.vcf.gz"
@@ -58,6 +69,20 @@ output:
         tbi_filtered:
           type: Path
           pattern: "${prefix}.hard-filtered.vcf.gz.tbi"
+        sv_vcf:
+          type: Path
+          pattern: "${prefix}.sv.vcf.gz"
+          description: Tumour/normal runs only
+        sv_tbi:
+          type: Path
+          pattern: "${prefix}.sv.vcf.gz.tbi"
+        cnv_vcf:
+          type: Path
+          pattern: "${prefix}.cnv.vcf.gz"
+          description: Whole-genome tumour/normal runs only
+        cnv_tbi:
+          type: Path
+          pattern: "${prefix}.cnv.vcf.gz.tbi"
         metrics:
           type: List<Path>
           pattern: "${prefix}.*metrics.csv"
@@ -68,6 +93,7 @@ topics:
 notes: |
   The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row and one
   read group per lane: RGID `<id>.<lane>`, Lane the lane's 1-based position. It fails, naming the sample, when the
-  numbers of R1 and R2 files differ.
+  numbers of R1 and R2 files differ. With a tumour it writes `tumour_fastq_list.csv` and `normal_fastq_list.csv` instead
+  and passes them as `--tumor-fastq-list` and `--fastq-list`, each with its sample id.
 authors:
   - "@adamrtalbot"

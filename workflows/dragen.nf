@@ -6,9 +6,9 @@ IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 
 nextflow.enable.types = true
 
-include { DRAGEN                } from '../modules/local/dragen'
-include { DRAGEN_SOMATIC        } from '../modules/local/dragen_somatic'
-include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable'
+include { DRAGEN                   } from '../modules/local/dragen'
+include { DRAGEN as DRAGEN_SOMATIC } from '../modules/local/dragen'
+include { DRAGEN_BUILDHASHTABLE    } from '../modules/local/dragen_buildhashtable'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,7 +19,7 @@ RUN MAIN WORKFLOW
 workflow DRAGEN_WORKFLOW {
     take:
     ch_input: Channel<DragenSample>
-    ch_somatic: Channel<SomaticPair>
+    ch_somatic: Channel<DragenSample>
     index: Path?
     fasta: Path?
     target_bed: Path?
@@ -53,26 +53,18 @@ workflow DRAGEN_WORKFLOW {
     somatic     = ch_somatic_results
 }
 
-// One sample: every lane's FASTQs, in lane order (fastq_2 is empty for single-end)
+// One sample: every lane's FASTQs, in lane order (fastq_2 is empty for single-end).
+// A tumour/normal run is the normal plus its tumour's fields.
 record DragenSample {
     id: String
     seq_type: String
     lanes: List<String>
     fastq_1: List<Path>
     fastq_2: List<Path>
-}
-
-// One tumour with its patient's normal; each sample's lanes as in DragenSample
-record SomaticPair {
-    id: String
-    tumour_id: String
-    tumour_lanes: List<String>
-    tumour_fastq_1: List<Path>
-    tumour_fastq_2: List<Path>
-    normal_id: String
-    normal_lanes: List<String>
-    normal_fastq_1: List<Path>
-    normal_fastq_2: List<Path>
+    tumour_id: String?
+    tumour_lanes: List<String>?
+    tumour_fastq_1: List<Path>?
+    tumour_fastq_2: List<Path>?
 }
 
 /*
