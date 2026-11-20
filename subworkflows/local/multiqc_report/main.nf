@@ -10,7 +10,7 @@ workflow MULTIQC_REPORT {
     main:
     // MultiQC reads *_mqc_versions.yml files into its software versions section
     ch_versions_mqc = versions.collectFile(name: 'nf_dragen_software_mqc_versions.yml', sort: true, newLine: true)
-    ch_config = [file("${moduleDir}/../../../assets/multiqc_config.yml"), multiqc_config].findAll { config -> config }
+    ch_config = [file("${projectDir}/assets/multiqc_config.yml"), multiqc_config].findAll { config -> config }
 
     MULTIQC(
         metrics.mix(ch_versions_mqc).collect().map { files -> record(id: 'multiqc', files: files.toSet(), configs: ch_config.toSet(), logo: multiqc_logo) }
