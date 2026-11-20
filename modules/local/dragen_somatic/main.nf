@@ -44,7 +44,7 @@ process DRAGEN_SOMATIC {
     def tumour_list = fastqListRows(tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)
     def normal_list = fastqListRows(normal_id, normal_lanes, normal_fastq_1, normal_fastq_2)
     // Exome CNV needs a panel of normals and self-normalization is WGS-only, so CNV runs only without a target BED
-    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-call-regions-bed ${target_bed}" : '--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true'
+    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-exome true --sv-call-regions-bed ${target_bed}" : '--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true'
     """
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${tumour_list} > tumour_fastq_list.csv
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${normal_list} > normal_fastq_list.csv
@@ -72,7 +72,7 @@ process DRAGEN_SOMATIC {
     def tumour_list = fastqListRows(tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)
     def normal_list = fastqListRows(normal_id, normal_lanes, normal_fastq_1, normal_fastq_2)
     // Exome CNV needs a panel of normals and self-normalization is WGS-only, so CNV runs only without a target BED
-    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-call-regions-bed ${target_bed}" : '--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true'
+    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-exome true --sv-call-regions-bed ${target_bed}" : '--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true'
     """
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${tumour_list} > tumour_fastq_list.csv
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${normal_list} > normal_fastq_list.csv
