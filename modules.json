@@ -1,0 +1,17 @@
+{
+    "name": "seqeralabs/nf-dragen",
+    "homePage": "https://github.com/seqeralabs/nf-dragen",
+    "repos": {
+        "https://github.com/nf-core/modules.git": {
+            "modules": {
+                "nf-core": {
+                    "multiqc": {
+                        "branch": "master",
+                        "git_sha": "868791e991feaaeff234b79f7910b6b442627529",
+                        "installed_by": ["modules"]
+                    }
+                }
+            }
+        }
+    }
+}

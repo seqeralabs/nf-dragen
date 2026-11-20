@@ -1,0 +1,32 @@
+nextflow_workflow {
+
+    name "Test Workflow MULTIQC_REPORT"
+    script "../main.nf"
+    workflow "MULTIQC_REPORT"
+    tag "multiqc_report"
+
+    test("real DRAGEN mapping metrics and versions") {
+
+        when {
+            workflow {
+                """
+                // MultiQC's own DRAGEN test file, already named as the DRAGEN module names it
+                input[0] = channel.of([file("${projectDir}/tests/data/dragen_metrics/TEST.mapping_metrics.csv")])
+                input[1] = channel.of('"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN":\\n    dragen: 4.4.4\\n')
+                input[2] = null
+                input[3] = null
+                """
+            }
+        }
+
+        then {
+            def data = workflow.out.report.find { report_file -> report_file.toString().endsWith('multiqc_data') }
+            assertAll(
+                { assert workflow.success },
+                { assert path("${data}/dragen_map_metrics.txt").readLines()[1].startsWith("TEST\t10142922") },
+                { assert path("${data}/multiqc_software_versions.txt").readLines().contains("SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN\t4.4.4") },
+                { assert snapshot(workflow.out.versions).match() }
+            )
+        }
+    }
+}

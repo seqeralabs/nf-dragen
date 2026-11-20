@@ -3,6 +3,12 @@
         "content": [
             [
                 [
+                    "MULTIQC_REPORT:MULTIQC (multiqc)",
+                    [
+                        
+                    ]
+                ],
+                [
                     "SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN (P3_N)",
                     [
                         "--vc-target-bed target.bed"
@@ -107,10 +113,13 @@
                 "dragen/rna_fastq_to_bam/P4_RNA.vcf.gz.tbi",
                 "genome/index/dragen_index_dna/dragen.ht",
                 "genome/index/dragen_index_rna/dragen.ht",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T13:34:55.161285267",
+        "timestamp": "2026-11-20T13:43:51.432604665",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -134,18 +143,26 @@
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.vcf.gz",
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.vcf.gz.tbi",
                 "genome/index/dragen_index_dna/dragen.ht",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
                 "pipeline_info/software_versions.yml"
             ],
             [
+                "\"MULTIQC_REPORT:MULTIQC\":",
+                "    multiqc: 1.35",
                 "\"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN\":",
                 "    dragen: stub",
                 "",
                 "\"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN_BUILDHASHTABLE\":",
                 "    dragen: stub",
-                ""
+                "",
+                "Workflow:",
+                "    Nextflow: 26.10.6",
+                "    seqeralabs/nf-dragen: 1.0.0dev"
             ]
         ],
-        "timestamp": "2026-11-20T13:15:48.560230826",
+        "timestamp": "2026-11-20T13:43:39.625250034",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
