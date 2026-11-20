@@ -9,12 +9,44 @@
                     "fastq_2": [
                         "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f"
                     ],
-                    "id": "SAMPLE1_PE",
+                    "id": "P1_N",
                     "lanes": [
                         "1"
                     ],
-                    "patient": "SAMPLE1_PE",
+                    "patient": "P1",
                     "seq_type": "dna",
+                    "sex": null,
+                    "status": 0
+                },
+                {
+                    "fastq_1": [
+                        "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1"
+                    ],
+                    "fastq_2": [
+                        "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f"
+                    ],
+                    "id": "P1_T",
+                    "lanes": [
+                        "1"
+                    ],
+                    "patient": "P1",
+                    "seq_type": "dna",
+                    "sex": null,
+                    "status": 1
+                },
+                {
+                    "fastq_1": [
+                        "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1"
+                    ],
+                    "fastq_2": [
+                        "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f"
+                    ],
+                    "id": "P3_RNA",
+                    "lanes": [
+                        "1"
+                    ],
+                    "patient": "P3",
+                    "seq_type": "rna",
                     "sex": null,
                     "status": 0
                 },
@@ -26,19 +58,19 @@
                     "fastq_2": [
                         
                     ],
-                    "id": "SAMPLE2_SE",
+                    "id": "P2_SE",
                     "lanes": [
                         "1",
                         "2"
                     ],
-                    "patient": "SAMPLE2_SE",
+                    "patient": "P2",
                     "seq_type": "dna",
                     "sex": null,
                     "status": 0
                 }
             ]
         ],
-        "timestamp": "2026-11-20T13:23:49.838352074",
+        "timestamp": "2026-11-20T14:01:08.716965234",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
