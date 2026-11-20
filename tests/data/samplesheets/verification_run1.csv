@@ -1,6 +1,5 @@
-patient,sex,status,sample,lane,fastq_1,fastq_2,seq_type
-NA12878,XX,0,NA12878,1,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna
-HCC1395_WGS,XX,0,HCC1395N_WGS,SRR7890859,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna
-HCC1395_WGS,XX,1,HCC1395T_WGS,split_1,tests/data/fastq/tumour_L001_R1.fastq.gz,tests/data/fastq/tumour_L001_R2.fastq.gz,dna
-HCC1395_WGS,XX,1,HCC1395T_WGS,split_2,tests/data/fastq/tumour_L002_R1.fastq.gz,tests/data/fastq/tumour_L002_R2.fastq.gz,dna
-GM12878_REP1,XX,0,GM12878_REP1,1,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,rna
+patient,sex,status,sample,fastq_1,fastq_2,seq_type
+NA12878,XX,0,NA12878,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna
+HCC1395_WGS,XX,0,HCC1395N_WGS,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna
+HCC1395_WGS,XX,1,HCC1395T_WGS,tests/data/fastq/tumour_L001_R1.fastq.gz,tests/data/fastq/tumour_L001_R2.fastq.gz,dna
+GM12878_REP1,XX,0,GM12878_REP1,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,rna

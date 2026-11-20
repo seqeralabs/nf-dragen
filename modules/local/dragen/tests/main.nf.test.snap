@@ -1,68 +1,4 @@
 {
-    "paired-end two-lane DNA sample - stub": {
-        "content": [
-            [
-                [
-                    "test",
-                    [
-                        "test.bam",
-                        "test.bam.bai",
-                        "test.vcf.gz",
-                        "test.vcf.gz.tbi",
-                        "test.hard-filtered.vcf.gz",
-                        "test.hard-filtered.vcf.gz.tbi",
-                        "test.mapping_metrics.csv"
-                    ]
-                ]
-            ],
-            [
-                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "test.test_L1,test,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz",
-                "test.2,test,UnknownLibrary,2,sample2_L001_R1.fastq.gz,sample2_L002_R1.fastq.gz"
-            ]
-        ],
-        "timestamp": "2026-11-20T13:24:41.127356344",
-        "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.10.6"
-        }
-    },
-    "single-end two-lane tumour with paired-end normal, target BED - stub": {
-        "content": [
-            [
-                [
-                    "T_vs_N",
-                    [
-                        "T_vs_N.bam",
-                        "T_vs_N.bam.bai",
-                        "T_vs_N.hard-filtered.vcf.gz",
-                        "T_vs_N.hard-filtered.vcf.gz.tbi",
-                        "T_vs_N.mapping_metrics.csv",
-                        "T_vs_N.sv.vcf.gz",
-                        "T_vs_N.sv.vcf.gz.tbi",
-                        "T_vs_N.vcf.gz",
-                        "T_vs_N.vcf.gz.tbi",
-                        "T_vs_N_tumor.bam",
-                        "T_vs_N_tumor.bam.bai"
-                    ]
-                ]
-            ],
-            [
-                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T.L1,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,",
-                "T.L2,T,UnknownLibrary,2,sample2_L002_R1.fastq.gz,"
-            ],
-            [
-                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N.1,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
-            ]
-        ],
-        "timestamp": "2026-11-20T17:44:10.806868209",
-        "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.10.6"
-        }
-    },
     "whole-genome tumour/normal runs CNV - stub": {
         "content": [
             [
@@ -87,15 +23,76 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T.L1,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,",
-                "T.L2,T,UnknownLibrary,2,sample2_L002_R1.fastq.gz,"
+                "T,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N.1,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+                "N,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T17:44:14.863432942",
+        "timestamp": "2026-11-20T21:17:12.504917178",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "single-end tumour with paired-end normal, target BED - stub": {
+        "content": [
+            [
+                [
+                    "T_vs_N",
+                    [
+                        "T_vs_N.bam",
+                        "T_vs_N.bam.bai",
+                        "T_vs_N.hard-filtered.vcf.gz",
+                        "T_vs_N.hard-filtered.vcf.gz.tbi",
+                        "T_vs_N.mapping_metrics.csv",
+                        "T_vs_N.sv.vcf.gz",
+                        "T_vs_N.sv.vcf.gz.tbi",
+                        "T_vs_N.vcf.gz",
+                        "T_vs_N.vcf.gz.tbi",
+                        "T_vs_N_tumor.bam",
+                        "T_vs_N_tumor.bam.bai"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "T,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,"
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "N,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-20T21:18:49.633878576",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "paired-end DNA sample - stub": {
+        "content": [
+            [
+                [
+                    "test",
+                    [
+                        "test.bam",
+                        "test.bam.bai",
+                        "test.vcf.gz",
+                        "test.vcf.gz.tbi",
+                        "test.hard-filtered.vcf.gz",
+                        "test.hard-filtered.vcf.gz.tbi",
+                        "test.mapping_metrics.csv"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "test,test,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-20T21:18:45.439338492",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

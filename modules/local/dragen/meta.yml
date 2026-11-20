@@ -1,5 +1,5 @@
 name: dragen
-description: Run Illumina DRAGEN on one sample, or in tumour/normal mode on a normal and its tumour, reading every lane through a FASTQ list
+description: Run Illumina DRAGEN on one sample, or in tumour/normal mode on a normal and its tumour, reading its FASTQs through a FASTQ list
 keywords:
   - dragen
   - alignment
@@ -17,26 +17,21 @@ input:
       fields:
         id:
           type: String
-          description: Sample name; RGSM and the start of each RGID, and the output file prefix unless a tumour is given
-        lanes:
-          type: List<String>
-          description: Name of each lane, in lane order; RGID is `<id>.<lane>`
+          description: Sample name; RGID and RGSM, and the output file prefix unless a tumour is given
         fastq_1:
-          type: List<Path>
-          description: Read 1 FASTQ of each lane, in lane order
+          type: Path
+          description: Read 1 FASTQ
         fastq_2:
-          type: List<Path>
-          description: Read 2 FASTQ of each lane, in lane order; empty for single-end
+          type: Path?
+          description: Read 2 FASTQ; null for single-end
         tumour_id:
           type: String?
           description: Tumour sample name; null for germline and RNA runs. The run is then named and prefixed `<tumour_id>_vs_<id>`
-        tumour_lanes:
-          type: List<String>?
         tumour_fastq_1:
-          type: List<Path>?
+          type: Path?
         tumour_fastq_2:
-          type: List<Path>?
-          description: Empty for single-end
+          type: Path?
+          description: Null for single-end
   - index:
       type: Path
       description: DRAGEN hash table directory
@@ -91,9 +86,9 @@ topics:
       type: Path
       pattern: versions.yml
 notes: |
-  The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row and one
-  read group per lane: RGID `<id>.<lane>`, Lane the lane's 1-based position. It fails, naming the sample, when the
-  numbers of R1 and R2 files differ. With a tumour it writes `tumour_fastq_list.csv` and `normal_fastq_list.csv` instead
-  and passes them as `--tumor-fastq-list` and `--fastq-list`, each with its sample id.
+  The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row, so one
+  read group: RGID and RGSM the sample name, Lane 1, Read2File empty for single-end. With a tumour it writes
+  `tumour_fastq_list.csv` and `normal_fastq_list.csv` instead and passes them as `--tumor-fastq-list` and `--fastq-list`,
+  each with its sample id.
 authors:
   - "@adamrtalbot"

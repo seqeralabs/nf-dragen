@@ -6,7 +6,7 @@ nextflow_process {
     tag "dragen"
     config "./nextflow.config"
 
-    test("paired-end two-lane DNA sample - stub") {
+    test("paired-end DNA sample - stub") {
 
         options "-stub"
 
@@ -15,10 +15,8 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'test',
-                    lanes: ['test_L1', '2'],
-                    // shortcut: lane 2 reuses the single-end FASTQs as a pair; content does not matter to a stub
-                    fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz")],
-                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")]
+                    fastq_1: file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz"),
+                    fastq_2: file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")
                 ))
                 input[1] = file("${projectDir}/tests/data/fasta")
                 input[2] = null
@@ -38,7 +36,7 @@ nextflow_process {
         }
     }
 
-    test("single-end two-lane tumour with paired-end normal, target BED - stub") {
+    test("single-end tumour with paired-end normal, target BED - stub") {
 
         options "-stub"
 
@@ -47,13 +45,11 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'N',
-                    lanes: ['1'],
-                    fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")],
-                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")],
+                    fastq_1: file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz"),
+                    fastq_2: file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz"),
                     tumour_id: 'T',
-                    tumour_lanes: ['L1', 'L2'],
-                    tumour_fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")],
-                    tumour_fastq_2: []
+                    tumour_fastq_1: file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"),
+                    tumour_fastq_2: null
                 ))
                 input[1] = file("${projectDir}/tests/data/fasta")
                 input[2] = file("${projectDir}/tests/data/target.bed")
@@ -90,13 +86,11 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'N',
-                    lanes: ['1'],
-                    fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")],
-                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")],
+                    fastq_1: file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz"),
+                    fastq_2: file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz"),
                     tumour_id: 'T',
-                    tumour_lanes: ['L1', 'L2'],
-                    tumour_fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")],
-                    tumour_fastq_2: []
+                    tumour_fastq_1: file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"),
+                    tumour_fastq_2: null
                 ))
                 input[1] = file("${projectDir}/tests/data/fasta")
                 input[2] = null
@@ -121,33 +115,6 @@ nextflow_process {
                     task_dir.resolve('tumour_fastq_list.csv').readLines(),
                     task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }
-            )
-        }
-    }
-
-    test("R1 and R2 lane counts differ - stub") {
-
-        options "-stub"
-
-        when {
-            process {
-                """
-                input[0] = channel.of(record(
-                    id: 'bad',
-                    lanes: ['1', '2'],
-                    fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")],
-                    fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")]
-                ))
-                input[1] = file("${projectDir}/tests/data/fasta")
-                input[2] = null
-                """
-            }
-        }
-
-        then {
-            assertAll(
-                { assert process.failed },
-                { assert (process.stdout + process.stderr).join('\n').contains('Number of R1 and R2 FASTQ files do not match for sample bad') }
             )
         }
     }

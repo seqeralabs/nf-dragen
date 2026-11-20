@@ -30,6 +30,6 @@ The pipeline writes these files to the directory given with `--outdir`:
 ```
 
 - `genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.
-- `dragen/` holds the DRAGEN outputs of each sample, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/dna_fastq_to_vcf/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each lane of a sample is its own read group in the BAM, with ID `<sample>.<lane>`, where `<lane>` counts the sample's lanes from 1 in samplesheet order.
+- `dragen/` holds the DRAGEN outputs of each sample, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/dna_fastq_to_vcf/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each sample is one read group in the BAM, with the sample name as its ID.
 - `multiqc/` summarises every DRAGEN `*metrics.csv` and the software versions. With `--skip_dragen` it holds only the software versions. Set `--multiqc_title` to name the report (the HTML file name then starts with the title), `--multiqc_config` to add a MultiQC config and `--multiqc_logo` to add a logo.
 - `--publish_dir_mode` sets how files are written to `--outdir` (default `copy`).

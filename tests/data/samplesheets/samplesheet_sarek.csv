@@ -1,5 +1,4 @@
 patient,sex,status,sample,lane,fastq_1,fastq_2,seq_type,strandedness
 PATIENT1,XX,0,P1_NORMAL,test_L1,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,dna,auto
 PATIENT1,XX,1,P1_TUMOUR,test_L1,tests/data/fastq/sample2_L001_R1.fastq.gz,,dna,auto
-PATIENT1,XX,1,P1_TUMOUR,test_L2,tests/data/fastq/sample2_L002_R1.fastq.gz,,dna,auto
 PATIENT2,XY,0,P2_RNA,1,tests/data/fastq/sample1_R1.fastq.gz,tests/data/fastq/sample1_R2.fastq.gz,rna,reverse

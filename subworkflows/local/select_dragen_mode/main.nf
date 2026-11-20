@@ -40,11 +40,9 @@ def dnaRuns(samples) {
                 somatic << record(
                     id: normal.id,
                     seq_type: normal.seq_type,
-                    lanes: normal.lanes,
                     fastq_1: normal.fastq_1,
                     fastq_2: normal.fastq_2,
                     tumour_id: tumour.id,
-                    tumour_lanes: tumour.lanes,
                     tumour_fastq_1: tumour.fastq_1,
                     tumour_fastq_2: tumour.fastq_2,
                 )
