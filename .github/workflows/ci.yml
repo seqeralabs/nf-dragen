@@ -1,0 +1,35 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+env:
+  NXF_VER: "26.10.6"
+  NFT_VER: "0.9.5"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nf-core/setup-nextflow@v2
+        with:
+          version: ${{ env.NXF_VER }}
+      - run: nextflow lint .
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nf-core/setup-nextflow@v2
+        with:
+          version: ${{ env.NXF_VER }}
+      - uses: nf-core/setup-nf-test@v1
+        with:
+          version: ${{ env.NFT_VER }}
+      # DRAGEN cannot run here; tests are stubs, the secrets only need to exist.
+      - run: |
+          nextflow secrets set DRAGEN_USERNAME dummy
+          nextflow secrets set DRAGEN_PASSWORD dummy
+      - run: nf-test test --ci

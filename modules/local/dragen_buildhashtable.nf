@@ -1,29 +1,29 @@
 process DRAGEN_BUILDHASHTABLE {
-    tag "$fasta"
+    tag "${fasta}"
     label 'dragen'
 
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
 
     input:
-    path(fasta)
+    path fasta
 
     output:
-    path "$prefix"     , emit: index
+    path "${prefix}", emit: index
     path "versions.yml", emit: versions, topic: versions
 
     script:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
-    mkdir -p $prefix
+    mkdir -p ${prefix}
 
     /opt/edico/bin/dragen \\
         --build-hash-table true \\
-        --output-directory $prefix \\
-        --ht-reference $fasta \\
+        --output-directory ${prefix} \\
+        --ht-reference ${fasta} \\
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $args
+        ${args}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -35,14 +35,14 @@ process DRAGEN_BUILDHASHTABLE {
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
-    mkdir -p $prefix
+    mkdir -p ${prefix}
 
     echo /opt/edico/bin/dragen \\
         --build-hash-table true \\
-        --output-directory $prefix \\
-        --ht-reference $fasta \\
+        --output-directory ${prefix} \\
+        --ht-reference ${fasta} \\
         --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $args
+        ${args}
 
     touch ${prefix}/dragen.ht
     cat <<-END_VERSIONS > versions.yml

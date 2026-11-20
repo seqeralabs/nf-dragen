@@ -10,10 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": [
-                "input",
-                "outdir"
-            ],
+            "required": ["input", "outdir"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -37,10 +34,7 @@
                     "default": "dna",
                     "description": "Default type of sequencing (dna, rna etc). Can be overridden in the samplesheet using the column `seq_type`.",
                     "fa_icon": "fas fa-dna",
-                    "enum": [
-                        "dna",
-                        "rna"
-                    ]
+                    "enum": ["dna", "rna"]
                 }
             }
         },
@@ -97,14 +91,7 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "Sets the workflow output mode, i.e. how published files are written to the output directory. See [Nextflow docs](https://www.nextflow.io/docs/latest/workflow.html#workflow-outputs) for details.",
                     "fa_icon": "fas fa-copy",
-                    "enum": [
-                        "symlink",
-                        "rellink",
-                        "link",
-                        "copy",
-                        "copyNoFollow",
-                        "move"
-                    ],
+                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
                 "monochrome_logs": {

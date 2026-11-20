@@ -37,6 +37,6 @@ indent_style = unset
 [**/ro-crate-metadata.json]
 insert_final_newline = unset
 
-[LICENSE.txt]
+[LICENSE]
 indent_style = unset
 trim_trailing_whitespace = unset
