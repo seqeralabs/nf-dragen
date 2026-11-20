@@ -1,107 +1,84 @@
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A526.10.6-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 
-> THIS IS A PROOF-OF-CONCEPT REPOSITORY THAT IS UNDER ACTIVE DEVELOPMENT. SYNTAX, ORGANISATION AND LAYOUT MAY CHANGE WITHOUT NOTICE!
+> This is a proof-of-concept pipeline under active development. Syntax, layout and parameters may change without notice.
 
 ## Introduction
 
-**nf-dragen** is a simple, proof-of-concept pipeline to run the [Illumina DRAGEN](https://emea.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html) licensed suite of tools.
+**seqeralabs/nf-dragen** runs the [Illumina DRAGEN](https://emea.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html) licensed suite of tools on FASTQ samples. It produces germline calls for DNA samples, tumour/normal somatic calls, and RNA alignments, and summarises the DRAGEN metrics in a MultiQC report.
 
-The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. This pipeline has only been tested on AWS Batch.
+The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs on Illumina's licensed AMI on AWS F2 instances, so a real run needs a Seqera Platform compute environment that provides them (see [Requirements](#requirements)).
 
-## Integration with Seqera Platform
+## Pipeline steps
 
-We have streamlined the process of deploying Nextflow workflows that utilise Illumina DRAGEN on AWS Batch via Seqera.
+1. **Samplesheet parsing.** Reads the samplesheet, which uses the same columns as nf-core/sarek, and checks it before any task runs.
+2. **Run selection.** Groups DNA samples by patient: a normal without a tumour gets a germline run, and each tumour gets a somatic run paired with the patient's normal. RNA samples get an RNA run.
+3. **Hash tables.** Builds the DRAGEN DNA and RNA hash tables from `--fasta`, unless you supply them with `--dragen_index_dna` and `--dragen_index_rna`.
+4. **DRAGEN.** Runs germline and somatic DNA calling (somatic runs also call structural and copy number variants) and RNA alignment.
+5. **MultiQC.** Summarises the DRAGEN metrics and the software versions in one report. Skip it with `--skip_multiqc`.
 
-### Prerequisites
+```mermaid
+flowchart LR
+    SS[Samplesheet] --> PS[Parse and validate]
+    PS --> SEL[Select run per patient]
+    FA[fasta] -.->|built when no index is given| HT[Hash tables]
+    SEL -->|normal only| GER[DRAGEN germline]
+    SEL -->|tumour and normal| SOM[DRAGEN somatic]
+    SEL -->|RNA samples| RNA[DRAGEN RNA]
+    HT --> GER
+    HT --> SOM
+    HT --> RNA
+    GER --> MQ[MultiQC]
+    SOM --> MQ
+    RNA --> MQ
+```
 
-#### Credentials
+## Quickstart
 
-You will need to obtain the following information from the Illumina DRAGEN team:
+Run the test profile in stub mode from the repository root. Stub mode needs no DRAGEN licence, but the DRAGEN secrets must exist, so set dummy values first:
 
-1. Private AMI id in an AWS region with DRAGEN F2 instance availability
-2. Username to run DRAGEN on the CLI via Nextflow
-3. Password to run DRAGEN on the CLI via Nextflow
+```bash
+nextflow secrets set DRAGEN_USERNAME dummy
+nextflow secrets set DRAGEN_PASSWORD dummy
+nextflow run . -profile test -stub --outdir results
+```
 
-#### Pipeline implementation
+A real run needs the DRAGEN AMI and your licence credentials:
 
-Please see the [dragen.nf](modules/local/dragen.nf) module implemented in this pipeline for reference.
+```bash
+nextflow run . --input samplesheet.csv --fasta genome.fa --outdir results
+```
 
-Any Nextflow processes calling the `dragen` command must have:
+Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 
-1. `label dragen` ([see docs](https://www.nextflow.io/docs/latest/process.html?highlight=label#label)). This is how Seqera will determine which processes need to be specifically executed on DRAGEN F2 instances.
+## Requirements
 
-   ```nextflow
-   process DRAGEN {
-       label 'dragen'
+- Nextflow 26.10.6 or later.
+- DRAGEN licence credentials from Illumina, stored as the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.
+- A DRAGEN-capable compute environment: a private DRAGEN AMI on AWS F2 instances, in a region where F2 instances are available. The DRAGEN processes carry the `dragen` label, which sends them to those instances.
+- Docker on the machine that runs MultiQC. The DRAGEN processes run on the host and need no container.
 
-       <truncated>
-   }
-   ```
+### Seqera Platform setup
 
-2. `secret DRAGEN_USERNAME` and `secret DRAGEN_PASSWORD` ([see docs](https://www.nextflow.io/docs/latest/secrets.html?highlight=secrets#secrets)). These Secrets will be provided securely to the `--lic-server` option when running DRAGEN on the CLI to validate the license.
-
-   ```nextflow
-   process DRAGEN {
-       secret 'DRAGEN_USERNAME'
-       secret 'DRAGEN_PASSWORD'
-
-       <truncated>
-
-       script:
-       """
-       /opt/edico/bin/dragen \\
-               --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-               <other_options>
-       """
-   }
-   ```
-
-### Compute Environment
-
-You can use Seqera Batch Forge to automatically create a separate AWS Batch queue with dedicated F2 instances to run DRAGEN.
-
-In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment` and fill in the appropriate settings for your AWS Batch environment. Additionally, you will be able to paste your private DRAGEN AMI id as shown in the image below:
+You can use Seqera Batch Forge to create an AWS Batch compute environment with F2 instances. In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment`, fill in your AWS Batch settings and paste your private DRAGEN AMI id:
 
 ![Seqera enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
 
-Click on `Add` to create the Compute Environment.
-
-> Please ensure that the `Region` you select contains DRAGEN F2 instances.
-
-### Secrets
-
-As outlined in [this blog](https://seqera.io/blog/pipeline-secrets-secure-handling-of-sensitive-information-in-tower/) you can add Secrets to Seqera to safely encrypt the username and password information required to run DRAGEN via Nextflow.
-
-In the Seqera UI, go to `Secrets` -> `Add Pipeline Secret` and add both of the Secrets as shown in the images below:
-
-1. `DRAGEN_USERNAME`
+Add the secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` under `Secrets` -> `Add Pipeline Secret`:
 
 ![Seqera Secrets DRAGEN username](docs/images/tower_secrets_dragen_username.png)
 
-2. `DRAGEN_PASSWORD`
-
 ![Seqera Secrets DRAGEN password](docs/images/tower_secrets_dragen_password.png)
 
-### Pipeline
-
-In the Seqera UI, go to `Launchpad` -> `Add Pipeline`. Fill in the appropriate details to add your pipeline and ensure that the Compute Environment and Secrets you created previously are both defined for use by the pipeline:
+Then go to `Launchpad` -> `Add Pipeline`, and make sure the pipeline uses that compute environment and those secrets:
 
 ![Seqera Pipeline Secrets](docs/images/tower_pipeline_secrets.png)
 
-Click on `Add` to create the pipeline and launch it when you are ready!
+## Documentation
+
+- [Usage](docs/usage.md): samplesheet format, run modes, configuration and running the pipeline.
+- [Output](docs/output.md): the files the pipeline writes to `--outdir`.
+- [Parameters](docs/parameters.md): every pipeline parameter.
 
 ## Credits
 
-nf-dragen was originally written by [Harshil Patel](https://github.com/drpatelh) and [Graham Wright](https://github.com/gwright99) and [Paolo Di Tommasso](https://github.com/pditommaso), [Seqera Labs](https://seqera.io/).
-
-## Citations
-
-The nf-core pipeline template was used to create the skeleton of this pipeline but there are no plans to contribute it to nf-core at this point.
-
-You can cite the `nf-core` publication as follows:
-
-> **The nf-core framework for community-curated bioinformatics pipelines.**
->
-> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
->
-> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
+nf-dragen was originally written by [Harshil Patel](https://github.com/drpatelh), [Graham Wright](https://github.com/gwright99) and [Paolo Di Tommaso](https://github.com/pditommaso), [Seqera Labs](https://seqera.io/).
