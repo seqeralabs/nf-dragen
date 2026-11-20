@@ -17,6 +17,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 ### `Fixed`
 
+- DRAGEN now reads every FASTQ pair of a sample: all pairs go into a `--fastq-list` CSV. Before, a sample with several samplesheet rows only had its first pair analysed (DRAGEN does not pick up the other staged files by name)
 - Fixed error `Access to 'FASTQC.out' is undefined since the workflow 'FASTQC' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
 
 ### `Dependencies`
