@@ -13,8 +13,8 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = channel.of(
-                    record(id: 'pe', seq_type: 'dna', fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")], fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")]),
-                    record(id: 'se', seq_type: 'dna', fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")], fastq_2: [])
+                    record(id: 'pe', seq_type: 'dna', lanes: ['1'], fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")], fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")]),
+                    record(id: 'se', seq_type: 'dna', lanes: ['1', '2'], fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")], fastq_2: [])
                 )
                 input[1] = null
                 input[2] = file("${projectDir}/tests/data/fasta/ref.fa")

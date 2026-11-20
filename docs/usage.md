@@ -6,56 +6,51 @@
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with a header row, as shown in the examples below.
 
 ```bash
 --input '[path to samplesheet file]'
 ```
 
-### Multiple runs of the same sample
+Columns can be in any order. Samplesheets written for nf-core/sarek work unchanged, and columns the pipeline does not know (for example nf-core/rnaseq's `strandedness`) are ignored.
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will analyse the raw reads together in the Dragen software before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+| Column     | Required | Description                                                                                                                                                 |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sample`   | yes      | Sample name, without spaces. Rows with the same `sample` are lanes (or re-sequencing runs) of that sample and are analysed together.                        |
+| `fastq_1`  | yes      | Path to the read 1 FASTQ file. Must exist, be gzipped and end in `.fastq.gz` or `.fq.gz`.                                                                   |
+| `fastq_2`  | no       | Path to the read 2 FASTQ file, for paired-end data. Give it for every row of a sample or for none.                                                          |
+| `patient`  | no       | Patient ID, without spaces. Defaults to the sample name.                                                                                                    |
+| `status`   | no       | `0` for normal, `1` for tumour. Defaults to `0`.                                                                                                            |
+| `lane`     | no       | Lane name, for example `1` or `L001`. Each lane is its own read group, `<sample>.<lane>`. Defaults to the row's position within the sample (`1`, `2`, ...). |
+| `sex`      | no       | Sex of the patient, for example `XX` or `XY`.                                                                                                               |
+| `seq_type` | no       | `dna` or `rna`. Defaults to `--seq_type` (default `dna`). One samplesheet can hold both DNA and RNA samples.                                                |
+
+The pipeline stops before running anything, with a message naming the problem, when:
+
+- a required column is missing, or a FASTQ file does not exist;
+- the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`;
+- some rows of one sample have `fastq_2` and others do not.
+
+### Minimal samplesheet
 
 ```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+SAMPLE1,SAMPLE1_L001_R1.fastq.gz,SAMPLE1_L001_R2.fastq.gz
+SAMPLE1,SAMPLE1_L002_R1.fastq.gz,SAMPLE1_L002_R2.fastq.gz
+SAMPLE2,SAMPLE2_L001_R1.fastq.gz,
 ```
 
-### Sequencing type
-
-The pipeline can handle RNA or DNA samples, including a mixture of both. By default, every sample will be considered to be the type defined as `--seq_type`, which defaults to `dna`. You can override this on a per-sample basis using the `seq_type` column:
-
-```csv
-sample,seq_type,fastq_1,fastq_2
-dnaSample,dna,dna_R1_001.fastq.gz,dna_R2_001.fastq.gz
-rnaSample,rna,rna_R1_001.fastq.gz,rna_R2_001.fastq.gz
-```
+`SAMPLE1` is paired-end and sequenced on two lanes; `SAMPLE2` is single-end.
 
 ### Full samplesheet
 
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
-
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
-
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+patient,sex,status,sample,lane,fastq_1,fastq_2,seq_type
+PATIENT1,XX,0,PATIENT1_NORMAL,L001,P1N_L001_R1.fastq.gz,P1N_L001_R2.fastq.gz,dna
+PATIENT1,XX,1,PATIENT1_TUMOUR,L001,P1T_L001_R1.fastq.gz,P1T_L001_R2.fastq.gz,dna
+PATIENT1,XX,1,PATIENT1_TUMOUR,L002,P1T_L002_R1.fastq.gz,P1T_L002_R2.fastq.gz,dna
+PATIENT2,XY,0,PATIENT2_RNA,L001,P2R_L001_R1.fastq.gz,P2R_L001_R2.fastq.gz,rna
 ```
-
-| Column     | Description                                                                                                                                                                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `sample`   | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                   |
-| `seq_type` | Sequencing type, currently restricted to `dna` or `rna`. This decides the sequencing pathway to take when running the pipeline. The pipeline can handle a mixture of sequencing types. If this is left empty, it will use `params.seq_type` as the value, default `dna`. |
-| `fastq_1`  | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                                                                                                               |
-| `fastq_2`  | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                                                                                                               |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 

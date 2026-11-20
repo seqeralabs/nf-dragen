@@ -48,6 +48,7 @@ workflow DRAGEN_WORKFLOW {
 record DragenSample {
     id: String
     seq_type: String
+    lanes: List<String>
     fastq_1: List<Path>
     fastq_2: List<Path>
 }
