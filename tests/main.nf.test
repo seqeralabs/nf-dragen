@@ -98,12 +98,15 @@ nextflow_pipeline {
         }
     }
 
-    test("Platform verification run 1: built hash tables, germline, WGS tumour/normal and RNA -stub") {
+    test("Platform verification run 1: given DNA and RNA indexes, germline, WGS tumour/normal and RNA -stub") {
 
         when {
             params {
-                outdir = "$outputDir"
-                input  = "${baseDir}/tests/data/samplesheets/verification_run1.csv"
+                outdir           = "$outputDir"
+                input            = "${baseDir}/tests/data/samplesheets/verification_run1.csv"
+                fasta            = null
+                dragen_index_dna = "${baseDir}/tests/data/dragen_index_dna"
+                dragen_index_rna = "${baseDir}/tests/data/dragen_index_dna"
             }
         }
 
@@ -115,13 +118,13 @@ nextflow_pipeline {
                 def name = new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1')
                 [name, task_dir.listFiles().findAll { f -> f.name.endsWith('fastq_list.csv') }.collectEntries { f -> [f.name, f.readLines().drop(1).collect { row -> row.tokenize(',')[0] }] }]
             }
+            def dna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('NA12878') } }
+            def rna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('GM12878_REP1') } }
             def published = getAllFilesFromDir(params.outdir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
             assertAll(
                 { assert workflow.success },
                 { assert workflow.trace.tasks().collect { task -> task.name }.sort() == [
                     'MULTIQC_REPORT:MULTIQC (multiqc)',
-                    'SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_DNA (genome.fasta)',
-                    'SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_RNA (genome.fasta)',
                     'SEQERALABS_DRAGEN:DRAGEN_DNA (NA12878)',
                     'SEQERALABS_DRAGEN:DRAGEN_RNA (GM12878_REP1)',
                     'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (HCC1395T_WGS_vs_HCC1395N_WGS)',
@@ -132,8 +135,12 @@ nextflow_pipeline {
                 ] },
                 { assert rgids['SEQERALABS_DRAGEN:DRAGEN_DNA (NA12878)'] == ['fastq_list.csv': ['NA12878']] },
                 { assert rgids['SEQERALABS_DRAGEN:DRAGEN_RNA (GM12878_REP1)'] == ['fastq_list.csv': ['GM12878_REP1']] },
-                { assert published.any { f -> f.startsWith('genome/index/dragen_index_dna/') } },
-                { assert published.any { f -> f.startsWith('genome/index/dragen_index_rna/') } },
+                // The DNA and RNA tasks read the given index, and no hash table is built or published
+                { assert new File(dna_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
+                { assert new File(dna_dir, 'dragen_index_dna').canonicalPath == new File("${baseDir}/tests/data/dragen_index_dna").canonicalPath },
+                { assert new File(rna_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
+                { assert new File(rna_dir, 'dragen_index_dna').canonicalPath == new File("${baseDir}/tests/data/dragen_index_dna").canonicalPath },
+                { assert !published.any { f -> f.startsWith('genome/') } },
                 { assert published.contains('dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz') },
                 { assert published.contains('pipeline_info/software_versions.yml') },
                 { assert published.contains('multiqc/multiqc_report.html') },
