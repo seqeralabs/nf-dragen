@@ -113,18 +113,6 @@
                     "fa_icon": "fas fa-palette",
                     "hidden": true,
                     "default": false
-                },
-                "config_profile_name": {
-                    "type": "string",
-                    "description": "Name of the loaded configuration profile.",
-                    "fa_icon": "fas fa-users-cog",
-                    "hidden": true
-                },
-                "config_profile_description": {
-                    "type": "string",
-                    "description": "Description of the loaded configuration profile.",
-                    "fa_icon": "fas fa-users-cog",
-                    "hidden": true
                 }
             }
         }

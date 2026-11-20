@@ -29,8 +29,6 @@ params {
     outdir: String
     publish_dir_mode: String = 'copy'
     monochrome_logs: Boolean = false
-    config_profile_name: String?
-    config_profile_description: String?
 }
 
 //
