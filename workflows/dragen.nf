@@ -7,10 +7,6 @@
 include { DRAGEN                } from '../modules/local/dragen.nf'
 include { DRAGEN_BUILDHASHTABLE } from '../modules/local/dragen_buildhashtable.nf'
 
-include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -25,9 +21,9 @@ workflow DRAGEN_WORKFLOW {
         fasta
 
     main:
-        ch_versions = Channel.empty()
+        ch_versions = channel.empty()
         if (!index) {
-            ch_fasta = Channel.fromPath(fasta, checkIfExists: true, type: 'file')
+            ch_fasta = channel.fromPath(fasta, checkIfExists: true, type: 'file')
             // Use combine to not run the process if ch_input is empty
             DRAGEN_BUILDHASHTABLE (
                 ch_input.combine(ch_fasta).map { meta, fastq_1, fastq_2, _fasta -> _fasta }.first()
@@ -35,7 +31,7 @@ workflow DRAGEN_WORKFLOW {
             ch_index    = DRAGEN_BUILDHASHTABLE.out.index
             ch_versions = ch_versions.mix(DRAGEN_BUILDHASHTABLE.out.versions)
         } else {
-            ch_index = Channel.fromPath(index, checkIfExists: true, type: 'dir')
+            ch_index = channel.fromPath(index, checkIfExists: true, type: 'dir')
         }
 
         //
@@ -56,7 +52,7 @@ workflow DRAGEN_WORKFLOW {
         tbi          = DRAGEN.out.tbi
         vcf_filtered  = DRAGEN.out.vcf_filtered
         tbi_filtered  = DRAGEN.out.tbi_filtered
-        versions     = DRAGEN.out.versions
+        versions     = ch_versions
 }
 
 /*
