@@ -33,12 +33,6 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The `test` profile uses small synthetic data in `tests/data/` and only works with `-stub`.
 - DRAGEN reads every lane of a sample, each as its own read group (`<sample>.<lane>`). The BAM index and DRAGEN's `*metrics.csv` files are now published; FASTQ files are not.
 
-### `Fixed`
-
-- Fixed error `Access to 'FASTQC.out' is undefined since the workflow 'FASTQC' has not been invoked before accessing the output attribute` when `-skip_fastqc` enabled by adjusting channel generation
-
 ### `Dependencies`
 
 - nf-schema 3.1.0
-
-### `Deprecated`
