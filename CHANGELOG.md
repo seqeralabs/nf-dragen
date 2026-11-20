@@ -15,6 +15,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - `--target_bed`: exome or panel target regions for germline and somatic runs (not RNA runs).
 - MultiQC report on the DRAGEN metrics and the software versions, published to `multiqc/`, with the params `skip_multiqc`, `multiqc_config`, `multiqc_title` and `multiqc_logo`. MultiQC runs in a container, so the pipeline now enables Docker (`docker.enabled = true`); DRAGEN processes still run on the host. The software versions report also lists the Nextflow and pipeline versions.
 
+- `--dragen_license marketplace|byol` (default `marketplace`). `byol` is for Illumina's private DRAGEN AMI: every DRAGEN task then needs the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` and passes them to `--lic-server`. `byol` is untested on real DRAGEN.
 - A run with DNA or RNA samples but neither `--fasta` nor the matching `--dragen_index_dna`/`--dragen_index_rna` now stops before any DRAGEN task with an error naming a sample and both parameters.
 
 ### `Removed`
@@ -26,7 +27,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The timeline, report, trace and DAG files in `pipeline_info/`; Seqera Platform records these itself.
 - The `config_profile_name` and `config_profile_description` params. They had no effect since the nf-core utils were removed. Launch configs that still pass them now fail parameter validation.
 - The `lane` column: a samplesheet takes one row per sample, with one FASTQ pair or one single-end FASTQ. A sample name on more than one row is now an error, so merge the lanes of a sample (for example by concatenating its FASTQs) into one row first. A `lane` column is ignored like any unknown column.
-- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` Nextflow secrets and the `--lic-server` argument. DRAGEN runs from the AWS Marketplace pay-as-you-go AMI, which meters the licence through AWS, so the compute environment must use that AMI.
+- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` Nextflow secrets and the `--lic-server` argument are no longer used by default. DRAGEN runs from the AWS Marketplace pay-as-you-go AMI, which meters the licence through AWS. To keep using a private AMI with your own licence, set `--dragen_license byol` (see `Added`).
 
 ### `Changed`
 

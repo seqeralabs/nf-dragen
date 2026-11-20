@@ -31,6 +31,7 @@ params {
     // Tools
     skip_dragen: Boolean = false
     skip_multiqc: Boolean = false
+    dragen_license: String = 'marketplace'
 
     // MultiQC options
     multiqc_config: Path?

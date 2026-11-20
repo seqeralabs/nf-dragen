@@ -15,6 +15,7 @@ process DRAGEN_BUILDHASHTABLE {
 
     script:
     def args = task.ext.args ?: ''
+    def lic = task.ext.lic_server ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
     mkdir -p ${prefix}
@@ -23,6 +24,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
+        ${lic} \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -33,6 +35,8 @@ process DRAGEN_BUILDHASHTABLE {
 
     stub:
     def args = task.ext.args ?: ''
+    // quoted below, so the echo prints the secret names, not the credentials
+    def lic = task.ext.lic_server ?: ''
     prefix = task.ext.prefix ?: 'dragen'
     """
     mkdir -p ${prefix}
@@ -41,6 +45,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
+        '${lic}' \\
         ${args}
 
     touch ${prefix}/dragen.ht
