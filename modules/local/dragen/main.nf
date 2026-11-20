@@ -4,9 +4,6 @@ process DRAGEN {
     tag "${id}"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     record(
         id: String,
@@ -48,7 +45,6 @@ process DRAGEN {
         -r ${index} \\
         --output-directory ./ \\
         --output-file-prefix ${prefix} \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         --fastq-list fastq_list.csv \\
         ${targets} \\
         ${args}
@@ -74,7 +70,6 @@ process DRAGEN {
         -r ${index} \\
         --output-directory ./ \\
         --output-file-prefix ${prefix} \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         --fastq-list fastq_list.csv \\
         ${targets} \\
         ${args}

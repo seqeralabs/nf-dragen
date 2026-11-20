@@ -7,7 +7,7 @@ keywords:
   - variant calling
 tools:
   - dragen:
-      description: Illumina DRAGEN Bio-IT Platform, run from the licensed DRAGEN AMI
+      description: Illumina DRAGEN Bio-IT Platform, run from the AWS Marketplace pay-as-you-go DRAGEN AMI
       homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
       licence: ["Commercial"]
 input:
@@ -91,6 +91,6 @@ topics:
 notes: |
   Writes `tumour_fastq_list.csv` and `normal_fastq_list.csv` (one read group per lane, as in the dragen module) and
   passes them as `--tumor-fastq-list` and `--fastq-list`. It fails, naming the sample, when the numbers of R1 and R2
-  files of a sample differ. Needs the DRAGEN_USERNAME and DRAGEN_PASSWORD secrets.
+  files of a sample differ.
 authors:
   - "@adamrtalbot"

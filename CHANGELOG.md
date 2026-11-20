@@ -22,6 +22,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The container, conda and `debug` profiles, and the `test_full` profile. Docker is always on (see `Added`); no other container runtime is supported.
 - The timeline, report, trace and DAG files in `pipeline_info/`; Seqera Platform records these itself.
 - The `config_profile_name` and `config_profile_description` params. They had no effect since the nf-core utils were removed. Launch configs that still pass them now fail parameter validation.
+- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` Nextflow secrets and the `--lic-server` argument. DRAGEN runs from the AWS Marketplace pay-as-you-go AMI, which meters the licence through AWS, so the compute environment must use that AMI.
 
 ### `Changed`
 

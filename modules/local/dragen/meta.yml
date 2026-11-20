@@ -6,7 +6,7 @@ keywords:
   - variant calling
 tools:
   - dragen:
-      description: Illumina DRAGEN Bio-IT Platform, run from the licensed DRAGEN AMI
+      description: Illumina DRAGEN Bio-IT Platform, run from the AWS Marketplace pay-as-you-go DRAGEN AMI
       homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
       licence: ["Commercial"]
 input:
@@ -68,6 +68,6 @@ topics:
 notes: |
   The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row and one
   read group per lane: RGID `<id>.<lane>`, Lane the lane's 1-based position. It fails, naming the sample, when the
-  numbers of R1 and R2 files differ. Needs the DRAGEN_USERNAME and DRAGEN_PASSWORD secrets.
+  numbers of R1 and R2 files differ.
 authors:
   - "@adamrtalbot"
