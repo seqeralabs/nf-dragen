@@ -28,8 +28,4 @@ jobs:
       - uses: nf-core/setup-nf-test@v1
         with:
           version: ${{ env.NFT_VER }}
-      # DRAGEN cannot run here; tests are stubs, the secrets only need to exist.
-      - run: |
-          nextflow secrets set DRAGEN_USERNAME dummy
-          nextflow secrets set DRAGEN_PASSWORD dummy
       - run: nf-test test --ci

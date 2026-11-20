@@ -4,9 +4,6 @@ process DRAGEN_BUILDHASHTABLE {
     tag "${fasta.name}"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     fasta: Path
 
@@ -26,7 +23,6 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -45,7 +41,6 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         ${args}
 
     touch ${prefix}/dragen.ht

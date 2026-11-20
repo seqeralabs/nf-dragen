@@ -6,7 +6,7 @@ keywords:
   - hash table
 tools:
   - dragen:
-      description: Illumina DRAGEN Bio-IT Platform, run from the licensed DRAGEN AMI
+      description: Illumina DRAGEN Bio-IT Platform, run from the AWS Marketplace pay-as-you-go DRAGEN AMI
       homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
       licence: ["Commercial"]
 input:
@@ -22,6 +22,6 @@ topics:
   - versions:
       type: Path
       pattern: versions.yml
-notes: Add `--ht-build-rna-hashtable true` through `ext.args` for an RNA hash table. Needs the DRAGEN_USERNAME and DRAGEN_PASSWORD secrets.
+notes: Add `--ht-build-rna-hashtable true` through `ext.args` for an RNA hash table.
 authors:
   - "@adamrtalbot"

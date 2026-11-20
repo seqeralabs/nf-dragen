@@ -4,9 +4,6 @@ process DRAGEN_SOMATIC {
     tag "${id}"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     record(
         id: String,
@@ -55,7 +52,6 @@ process DRAGEN_SOMATIC {
         -r ${index} \\
         --output-directory ./ \\
         --output-file-prefix ${prefix} \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         --tumor-fastq-list tumour_fastq_list.csv \\
         --tumor-fastq-list-sample-id ${tumour_id} \\
         --fastq-list normal_fastq_list.csv \\
@@ -83,7 +79,6 @@ process DRAGEN_SOMATIC {
         -r ${index} \\
         --output-directory ./ \\
         --output-file-prefix ${prefix} \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
         --tumor-fastq-list tumour_fastq_list.csv \\
         --tumor-fastq-list-sample-id ${tumour_id} \\
         --fastq-list normal_fastq_list.csv \\

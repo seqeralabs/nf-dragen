@@ -6,7 +6,7 @@
 
 **seqeralabs/nf-dragen** runs the [Illumina DRAGEN](https://emea.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html) licensed suite of tools on FASTQ samples. It produces germline calls for DNA samples, tumour/normal somatic calls, and RNA alignments, and summarises the DRAGEN metrics in a MultiQC report.
 
-The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs on Illumina's licensed AMI on AWS F2 instances, so a real run needs a Seqera Platform compute environment that provides them (see [Requirements](#requirements)).
+The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs from the AWS Marketplace pay-as-you-go DRAGEN AMI on AWS F2 instances, so a real run needs a compute environment that uses that AMI (see [Requirements](#requirements)).
 
 ## Pipeline steps
 
@@ -34,15 +34,13 @@ flowchart LR
 
 ## Quickstart
 
-Run the test profile in stub mode from the repository root. Stub mode needs no DRAGEN licence, but the DRAGEN secrets must exist, so set dummy values first:
+Run the test profile in stub mode from the repository root. Stub mode does not run DRAGEN, so it needs neither the AMI nor a licence:
 
 ```bash
-nextflow secrets set DRAGEN_USERNAME dummy
-nextflow secrets set DRAGEN_PASSWORD dummy
 nextflow run . -profile test -stub --outdir results
 ```
 
-A real run needs the DRAGEN AMI and your licence credentials:
+A real run needs the DRAGEN AMI on F2 instances (see [Requirements](#requirements)):
 
 ```bash
 nextflow run . --input samplesheet.csv --fasta genome.fa --outdir results
@@ -53,25 +51,14 @@ Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 ## Requirements
 
 - Nextflow 26.10.6 or later.
-- DRAGEN licence credentials from Illumina, stored as the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.
-- A DRAGEN-capable compute environment: a private DRAGEN AMI on AWS F2 instances, in a region where F2 instances are available. The DRAGEN processes carry the `dragen` label, which sends them to those instances.
+- A DRAGEN-capable compute environment: the AWS Marketplace pay-as-you-go DRAGEN AMI on AWS F2 instances, in a region where F2 instances are available. AWS meters the DRAGEN licence, so no credentials are needed. The instances need outbound internet access for DRAGEN's licence check. The DRAGEN processes carry the `dragen` label, which sends them to those instances.
 - Docker on the machine that runs MultiQC. The DRAGEN processes run on the host and need no container.
 
 ### Seqera Platform setup
 
-You can use Seqera Batch Forge to create an AWS Batch compute environment with F2 instances. In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment`, fill in your AWS Batch settings and paste your private DRAGEN AMI id:
+You can use Seqera Batch Forge to create an AWS Batch compute environment with F2 instances. In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment`, fill in your AWS Batch settings and paste the AWS Marketplace pay-as-you-go DRAGEN AMI id:
 
 ![Seqera enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
-
-Add the secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` under `Secrets` -> `Add Pipeline Secret`:
-
-![Seqera Secrets DRAGEN username](docs/images/tower_secrets_dragen_username.png)
-
-![Seqera Secrets DRAGEN password](docs/images/tower_secrets_dragen_password.png)
-
-Then go to `Launchpad` -> `Add Pipeline`, and make sure the pipeline uses that compute environment and those secrets:
-
-![Seqera Pipeline Secrets](docs/images/tower_pipeline_secrets.png)
 
 ## Documentation
 
