@@ -36,4 +36,34 @@ nextflow_workflow {
             )
         }
     }
+
+    test("R1 and R2 lane counts differ - stub") {
+
+        options "-stub"
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of(
+                    record(id: 'ok', seq_type: 'dna', lanes: ['1'], fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz")], fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")]),
+                    record(id: 'bad', seq_type: 'dna', lanes: ['1', '2'], fastq_1: [file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")], fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz")])
+                )
+                input[1] = channel.empty()
+                input[2] = null
+                input[3] = file("${projectDir}/tests/data/fasta/ref.fa")
+                input[4] = null
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).join('\n').contains('Number of R1 and R2 FASTQ files do not match for sample bad') },
+                // The error is raised while the task script is evaluated, so the bad sample never starts; no other task fails
+                { assert workflow.trace.failed().isEmpty() },
+                { assert workflow.trace.succeeded().collect { task -> task.name }.sort() == ['DRAGEN_WORKFLOW:DRAGEN (ok)', 'DRAGEN_WORKFLOW:DRAGEN_BUILDHASHTABLE (ref.fa)'] }
+            )
+        }
+    }
 }
