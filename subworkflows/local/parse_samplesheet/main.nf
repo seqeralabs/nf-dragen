@@ -9,7 +9,7 @@ workflow PARSE_SAMPLESHEET {
 
     main:
     // Validated here (nf-schema also rejects a sample name on two rows), so a bad samplesheet fails before any task runs
-    def rows = samplesheetToList(samplesheet, "${moduleDir}/../../../assets/schema_input.json")
+    def rows = samplesheetToList(samplesheet, "${projectDir}/assets/schema_input.json")
     def sample_records = rows.collect { meta, fastq_1, fastq_2 ->
         record(
             id: meta.id,
