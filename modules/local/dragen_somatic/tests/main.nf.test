@@ -37,6 +37,7 @@ nextflow_process {
                 { assert command.contains('--tumor-fastq-list tumour_fastq_list.csv') },
                 { assert command.contains('--fastq-list normal_fastq_list.csv') },
                 { assert command.contains('--vc-target-bed target.bed') },
+                { assert command.contains('--sv-exome true --sv-call-regions-bed target.bed') },
                 { assert !command.contains('--enable-cnv') && !command.contains('--cnv-') },
                 { assert process.out[0][0].cnv_vcf == null && process.out[0][0].cnv_tbi == null },
                 { assert snapshot(
@@ -81,6 +82,7 @@ nextflow_process {
                 { assert command.contains('--fastq-list normal_fastq_list.csv') },
                 { assert command.contains('--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true') },
                 { assert !command.contains('target-bed') },
+                { assert !command.contains('--sv-exome') },
                 { assert path(process.out[0][0].cnv_vcf).fileName.toString() == 'T_vs_N.cnv.vcf.gz' },
                 { assert path(process.out[0][0].cnv_tbi).fileName.toString() == 'T_vs_N.cnv.vcf.gz.tbi' },
                 { assert snapshot(
