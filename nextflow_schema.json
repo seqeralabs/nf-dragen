@@ -46,7 +46,7 @@
             "properties": {
                 "skip_dragen": {
                     "type": "boolean",
-                    "description": "Skip running DRAGEN steps",
+                    "description": "Skip all DRAGEN steps, including building the hash tables. Only MultiQC runs.",
                     "default": false
                 },
                 "skip_multiqc": {
@@ -64,7 +64,7 @@
             "properties": {
                 "fasta": {
                     "type": "string",
-                    "description": "Path to FASTA file",
+                    "description": "Reference genome FASTA file. The DRAGEN hash tables are built from it when no index is given with --dragen_index_dna or --dragen_index_rna.",
                     "fa_icon": "fas fa-dna",
                     "format": "file-path",
                     "exists": true

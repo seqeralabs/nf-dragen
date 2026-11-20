@@ -1,6 +1,6 @@
 # seqeralabs/nf-dragen: Usage
 
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+> Every pipeline parameter is documented in [parameters.md](parameters.md).
 
 ## Introduction
 
