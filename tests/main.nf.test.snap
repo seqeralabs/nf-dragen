@@ -116,6 +116,72 @@
             "nextflow": "26.10.6"
         }
     },
+    "Platform verification run 1: built hash tables, germline, WGS tumour/normal and RNA -stub": {
+        "content": [
+            [
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.bam",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.bam.bai",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.sv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.sv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS_tumor.bam",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS_tumor.bam.bai",
+                "dragen/dna_fastq_to_vcf/NA12878.bam",
+                "dragen/dna_fastq_to_vcf/NA12878.bam.bai",
+                "dragen/dna_fastq_to_vcf/NA12878.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/NA12878.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/NA12878.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/NA12878.vcf.gz",
+                "dragen/dna_fastq_to_vcf/NA12878.vcf.gz.tbi",
+                "dragen/rna_fastq_to_bam/GM12878_REP1.bam",
+                "dragen/rna_fastq_to_bam/GM12878_REP1.bam.bai",
+                "dragen/rna_fastq_to_bam/GM12878_REP1.mapping_metrics.csv",
+                "genome/index/dragen_index_dna/dragen.ht",
+                "genome/index/dragen_index_rna/dragen.ht",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
+                "pipeline_info/software_versions.yml"
+            ]
+        ],
+        "timestamp": "2026-11-20T20:27:26.63817908",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "Platform verification run 2: given DNA index, no fasta, WES tumour/normal with target_bed -stub": {
+        "content": [
+            [
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.bam",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.bam.bai",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.hard-filtered.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.mapping_metrics.csv",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.sv.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.sv.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.vcf.gz",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N_tumor.bam",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N_tumor.bam.bai",
+                "multiqc/multiqc_data/.stub",
+                "multiqc/multiqc_plots/.stub",
+                "multiqc/multiqc_report.html",
+                "pipeline_info/software_versions.yml"
+            ]
+        ],
+        "timestamp": "2026-11-20T20:27:37.31041129",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
     "-profile test -stub": {
         "content": [
             [
