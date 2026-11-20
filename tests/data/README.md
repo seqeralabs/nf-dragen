@@ -24,7 +24,6 @@ def fq(name, mate, n, seed):
 fq('sample1',1,20,11); fq('sample1',2,20,11)
 fq('sample2_L001',1,20,12); fq('sample2_L002',1,20,13)
 fq('tumour_L001',1,20,14); fq('tumour_L001',2,20,14)
-fq('tumour_L002',1,20,15); fq('tumour_L002',2,20,15)
 PY
 ```
 
@@ -32,14 +31,14 @@ PY
 | --- | --- |
 | `fasta/ref.fa` | 400 bp random sequence (`chr_test`), 60 bp lines |
 | `fastq/sample1_R1.fastq.gz`, `fastq/sample1_R2.fastq.gz` | 20 read pairs of 50 bp sampled from `ref.fa` (R2 is the reverse complement) |
-| `fastq/sample2_L001_R1.fastq.gz`, `fastq/sample2_L002_R1.fastq.gz` | 20 single-end reads of 50 bp each, one file per lane |
-| `fastq/tumour_L001_R{1,2}.fastq.gz`, `fastq/tumour_L002_R{1,2}.fastq.gz` | 20 read pairs of 50 bp per lane, like `sample1`; distinct names so a tumour/normal task stages no two files with one name |
-| `samplesheets/verification_run1.csv`, `samplesheets/verification_run2.csv` | Written by hand: the sample structure of the two real verification runs (germline, WGS tumour/normal with two tumour lanes and RNA; WES tumour/normal), on the FASTQs above |
+| `fastq/sample2_L001_R1.fastq.gz`, `fastq/sample2_L002_R1.fastq.gz` | 20 single-end reads of 50 bp each; two files so samples can differ |
+| `fastq/tumour_L001_R{1,2}.fastq.gz` | 20 read pairs of 50 bp, like `sample1`; distinct names so a tumour/normal task stages no two files with one name |
+| `samplesheets/verification_run1.csv`, `samplesheets/verification_run2.csv` | Written by hand: the sample structure of the two real verification runs (germline, WGS tumour/normal and RNA; WES tumour/normal), one row per sample, on the FASTQs above |
 | `dragen_index_dna/README` | Placeholder so git keeps the dummy DNA hash table directory given as `--dragen_index_dna` in stub tests |
-| `samplesheets/samplesheet_test.csv` | Written by hand, reusing the FASTQs above: a tumour/normal pair (P1), a single-end sample on two lanes (P2) and an RNA sample (P3) |
-| `samplesheets/samplesheet_sarek.csv` | Written by hand: nf-core/sarek column order, lane names, an RNA sample and an extra `strandedness` column |
+| `samplesheets/samplesheet_test.csv` | Written by hand, reusing the FASTQs above: a tumour/normal pair (P1), a single-end sample (P2) and an RNA sample (P3) |
+| `samplesheets/samplesheet_sarek.csv` | Written by hand: nf-core/sarek column order, an RNA sample and extra `lane` and `strandedness` columns, which the pipeline ignores |
 | `samplesheets/samplesheet_modes.csv` | Written by hand: a tumour/normal pair, two tumours with one normal, a normal alone and an RNA sample with status 1 |
 | `target.bed` | Written by hand: one target over all of `chr_test` |
 | `logo.png` | A 1x1 PNG, the MultiQC logo in the module test |
-| `samplesheets/samplesheet_no_fastq_1.csv`, `samplesheet_missing_fastq.csv`, `samplesheet_patient_mismatch.csv` | Written by hand: invalid samplesheets for the samplesheet parsing tests |
+| `samplesheets/samplesheet_no_fastq_1.csv`, `samplesheet_missing_fastq.csv`, `samplesheet_duplicate_sample.csv` | Written by hand: invalid samplesheets for the samplesheet parsing tests |
 | `dragen_metrics/TEST.mapping_metrics.csv` | Real DRAGEN output, copied unchanged from MultiQC's test data: [MultiQC/test-data](https://github.com/MultiQC/test-data) `data/modules/dragen/alignment/TEST.mapping_metrics.csv` at commit `ae5e10025fa1b0fd6792f8f2b513e160d78474fe`. Its name matches the DRAGEN module's `<prefix>.mapping_metrics.csv` |

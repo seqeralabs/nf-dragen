@@ -23,6 +23,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The container, conda and `debug` profiles, and the `test_full` profile. Docker is always on (see `Added`); no other container runtime is supported.
 - The timeline, report, trace and DAG files in `pipeline_info/`; Seqera Platform records these itself.
 - The `config_profile_name` and `config_profile_description` params. They had no effect since the nf-core utils were removed. Launch configs that still pass them now fail parameter validation.
+- The `lane` column: a samplesheet takes one row per sample, with one FASTQ pair or one single-end FASTQ. A sample name on more than one row is now an error, so merge the lanes of a sample (for example by concatenating its FASTQs) into one row first. A `lane` column is ignored like any unknown column.
 - The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` Nextflow secrets and the `--lic-server` argument. DRAGEN runs from the AWS Marketplace pay-as-you-go AMI, which meters the licence through AWS, so the compute environment must use that AMI.
 
 ### `Changed`
@@ -31,13 +32,13 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - DRAGEN process names: custom configs that set `ext.args` or `ext.prefix` must now target `.*:DRAGEN_DNA` (germline), `.*:DRAGEN_SOMATIC` (tumour/normal), `.*:DRAGEN_RNA` (RNA), `.*:DRAGEN_BUILDHASHTABLE_DNA` and `.*:DRAGEN_BUILDHASHTABLE_RNA`, instead of `.*:DRAGEN_DNA:DRAGEN`, `.*:DRAGEN_DNA:DRAGEN_SOMATIC`, `.*:DRAGEN_RNA:DRAGEN` and `.*:DRAGEN_{DNA,RNA}:DRAGEN_BUILDHASHTABLE`.
 
 - Somatic exome runs (`--target_bed`) now pass `--sv-exome true`, as the DRAGEN v4.4 WES recipe does, so SV calling uses exome mode. See [DRAGEN options](docs/dragen_options.md).
-- `--input` accepts nf-core/sarek samplesheets unchanged, in any column order: the optional columns `patient`, `status`, `lane` and `sex` are new, and unknown columns are ignored. Existing `sample,fastq_1,fastq_2` samplesheets still work. When `lane` is given, each lane's read group is `<sample>.<lane>`.
-- A samplesheet is rejected before anything runs when the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`, or when some rows of a sample have `fastq_2` and others do not.
+- `--input` accepts nf-core/sarek samplesheets unchanged, in any column order: the optional columns `patient`, `status` and `sex` are new, and unknown columns are ignored. Existing `sample,fastq_1,fastq_2` samplesheets with one row per sample still work.
+- A samplesheet is rejected before anything runs when a sample name is on more than one row; the message names the sample.
 
 - The pipeline requires Nextflow 26.10.6 or later.
 - The software versions report is written to `pipeline_info/software_versions.yml` and lists the versions of every process, including the RNA steps.
 - The `test` profile uses small synthetic data in `tests/data/` and only works with `-stub`.
-- DRAGEN reads every lane of a sample, each as its own read group (`<sample>.<lane>`). The BAM index and DRAGEN's `*metrics.csv` files are now published; FASTQ files are not.
+- DRAGEN reads each sample as one read group named after the sample. The BAM index and DRAGEN's `*metrics.csv` files are now published; FASTQ files are not.
 
 ### `Dependencies`
 

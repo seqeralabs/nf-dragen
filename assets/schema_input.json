@@ -31,12 +31,6 @@
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
-            "lane": {
-                "type": ["string", "integer"],
-                "pattern": "^\\S+$",
-                "errorMessage": "Lane cannot contain spaces",
-                "meta": ["lane"]
-            },
             "seq_type": {
                 "type": "string",
                 "enum": ["dna", "rna"],
@@ -59,5 +53,6 @@
             }
         },
         "required": ["sample", "fastq_1"]
-    }
+    },
+    "uniqueEntries": ["sample"]
 }

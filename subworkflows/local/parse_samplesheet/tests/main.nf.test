@@ -31,7 +31,7 @@ nextflow_workflow {
         }
     }
 
-    test("sarek sheet with lanes, status, sex, seq_type and an extra column") {
+    test("sarek sheet with status, sex, seq_type and extra lane and strandedness columns") {
         when {
             linkTests(launchDir, baseDir)
             workflow {
@@ -81,40 +81,19 @@ nextflow_workflow {
         }
     }
 
-    test("rows of one sample with different patient fail") {
+    test("sample name on two rows fails") {
         when {
             linkTests(launchDir, baseDir)
             workflow {
                 """
-                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_patient_mismatch.csv")
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_duplicate_sample.csv")
                 input[1] = 'dna'
                 """
             }
         }
         then {
             assert workflow.failed
-            assert workflow.stdout.any { line -> line.contains("sample 'SAMPLE1' disagree on column 'patient'") }
-        }
-    }
-
-    test("sample mixing paired-end and single-end rows fails") {
-        when {
-            def fastq = "${baseDir}/tests/data/fastq"
-            def sheet = new File("${launchDir}/mixed_pe_se.csv")
-            sheet.text = """sample,fastq_1,fastq_2
-SAMPLE1,${fastq}/sample1_R1.fastq.gz,${fastq}/sample1_R2.fastq.gz
-SAMPLE1,${fastq}/sample2_L001_R1.fastq.gz,
-"""
-            workflow {
-                """
-                input[0] = file("${sheet}")
-                input[1] = 'dna'
-                """
-            }
-        }
-        then {
-            assert workflow.failed
-            assert workflow.stdout.any { line -> line.contains("sample 'SAMPLE1' mixes paired-end and single-end rows") }
+            assert workflow.stderr.any { line -> line.contains('Detected duplicate entries: [sample:SAMPLE1]') }
         }
     }
 }

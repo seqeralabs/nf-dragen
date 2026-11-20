@@ -7,13 +7,11 @@ process DRAGEN {
     input:
     record(
         id: String,
-        lanes: List<String>,
-        fastq_1: List<Path>,
-        fastq_2: List<Path>,
+        fastq_1: Path,
+        fastq_2: Path?,
         tumour_id: String?,
-        tumour_lanes: List<String>?,
-        tumour_fastq_1: List<Path>?,
-        tumour_fastq_2: List<Path>?
+        tumour_fastq_1: Path?,
+        tumour_fastq_2: Path?
     )
     index: Path
     target_bed: Path?
@@ -40,7 +38,7 @@ process DRAGEN {
     script:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: runId(id, tumour_id)
-    def fastq_lists = fastqLists(id, lanes, fastq_1, fastq_2, tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)
+    def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
     """
     ${fastq_lists.tumour}
@@ -63,7 +61,7 @@ process DRAGEN {
     stub:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: runId(id, tumour_id)
-    def fastq_lists = fastqLists(id, lanes, fastq_1, fastq_2, tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)
+    def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
     """
     ${fastq_lists.tumour}
@@ -96,24 +94,21 @@ def runId(id, tumour_id) {
 }
 
 // Commands that write the FASTQ list(s) and the DRAGEN arguments that read them
-def fastqLists(id, lanes, fastq_1, fastq_2, tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2) {
+def fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2) {
     def header = "printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File'"
     if (!tumour_id) {
-        return [tumour: '', normal: "${header} ${fastqListRows(id, lanes, fastq_1, fastq_2)} > fastq_list.csv", args: '--fastq-list fastq_list.csv']
+        return [tumour: '', normal: "${header} ${fastqListRow(id, fastq_1, fastq_2)} > fastq_list.csv", args: '--fastq-list fastq_list.csv']
     }
     return [
-        tumour: "${header} ${fastqListRows(tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)} > tumour_fastq_list.csv",
-        normal: "${header} ${fastqListRows(id, lanes, fastq_1, fastq_2)} > normal_fastq_list.csv",
+        tumour: "${header} ${fastqListRow(tumour_id, tumour_fastq_1, tumour_fastq_2)} > tumour_fastq_list.csv",
+        normal: "${header} ${fastqListRow(id, fastq_1, fastq_2)} > normal_fastq_list.csv",
         args: "--tumor-fastq-list tumour_fastq_list.csv --tumor-fastq-list-sample-id ${tumour_id} --fastq-list normal_fastq_list.csv --fastq-list-sample-id ${id}",
     ]
 }
 
-// fastq_list.csv rows of one sample: one row, and so one read group, per lane; DRAGEN needs a number in Lane, so the lane name goes into RGID
-def fastqListRows(id, lanes, fastq_1, fastq_2) {
-    if (fastq_2 && fastq_1.size() != fastq_2.size()) {
-        error("Number of R1 and R2 FASTQ files do not match for sample ${id}")
-    }
-    return fastq_1.withIndex().collect { r1, i -> "'${id}.${lanes[i]},${id},UnknownLibrary,${i + 1},${r1.name},${fastq_2 ? fastq_2[i].name : ''}'" }.join(' ')
+// The one fastq_list.csv row of a sample: one read group named after the sample
+def fastqListRow(id, fastq_1, fastq_2) {
+    return "'${id},${id},UnknownLibrary,1,${fastq_1.name},${fastq_2 ? fastq_2.name : ''}'"
 }
 
 def targetArgs(target_bed, tumour_id) {

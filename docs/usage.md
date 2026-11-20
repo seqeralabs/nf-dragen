@@ -12,44 +12,40 @@ You will need to create a samplesheet with information about the samples you wou
 --input '[path to samplesheet file]'
 ```
 
-Columns can be in any order. Samplesheets written for nf-core/sarek work unchanged, and columns the pipeline does not know (for example nf-core/rnaseq's `strandedness`) are ignored.
+Columns can be in any order, and columns the pipeline does not know (for example nf-core/sarek's `lane` or nf-core/rnaseq's `strandedness`) are ignored. Each sample is one row, with one FASTQ pair or one single-end FASTQ. A nf-core/sarek samplesheet with several lanes per sample must first be merged into one row per sample, for example by concatenating each sample's lane FASTQs.
 
-| Column     | Required | Description                                                                                                                                                 |
-| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`   | yes      | Sample name, without spaces. Rows with the same `sample` are lanes (or re-sequencing runs) of that sample and are analysed together.                        |
-| `fastq_1`  | yes      | Path to the read 1 FASTQ file. Must exist, be gzipped and end in `.fastq.gz` or `.fq.gz`.                                                                   |
-| `fastq_2`  | no       | Path to the read 2 FASTQ file, for paired-end data. Give it for every row of a sample or for none.                                                          |
-| `patient`  | no       | Patient ID, without spaces. Defaults to the sample name.                                                                                                    |
-| `status`   | no       | `0` for normal, `1` for tumour. Defaults to `0`.                                                                                                            |
-| `lane`     | no       | Lane name, for example `1` or `L001`. Each lane is its own read group, `<sample>.<lane>`. Defaults to the row's position within the sample (`1`, `2`, ...). |
-| `sex`      | no       | Sex of the patient, for example `XX` or `XY`.                                                                                                               |
-| `seq_type` | no       | `dna` or `rna`. Defaults to `--seq_type` (default `dna`). One samplesheet can hold both DNA and RNA samples.                                                |
+| Column     | Required | Description                                                                                                  |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `sample`   | yes      | Sample name, without spaces, unique within the samplesheet.                                                  |
+| `fastq_1`  | yes      | Path to the read 1 FASTQ file. Must exist, be gzipped and end in `.fastq.gz` or `.fq.gz`.                    |
+| `fastq_2`  | no       | Path to the read 2 FASTQ file, for paired-end data.                                                          |
+| `patient`  | no       | Patient ID, without spaces. Defaults to the sample name.                                                     |
+| `status`   | no       | `0` for normal, `1` for tumour. Defaults to `0`.                                                             |
+| `sex`      | no       | Sex of the patient, for example `XX` or `XY`.                                                                |
+| `seq_type` | no       | `dna` or `rna`. Defaults to `--seq_type` (default `dna`). One samplesheet can hold both DNA and RNA samples. |
 
 The pipeline stops before running anything, with a message naming the problem, when:
 
 - a required column is missing, or a FASTQ file does not exist;
-- the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`;
-- some rows of one sample have `fastq_2` and others do not.
+- a sample name is on more than one row.
 
 ### Minimal samplesheet
 
 ```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
-SAMPLE1,SAMPLE1_L001_R1.fastq.gz,SAMPLE1_L001_R2.fastq.gz
-SAMPLE1,SAMPLE1_L002_R1.fastq.gz,SAMPLE1_L002_R2.fastq.gz
-SAMPLE2,SAMPLE2_L001_R1.fastq.gz,
+SAMPLE1,SAMPLE1_R1.fastq.gz,SAMPLE1_R2.fastq.gz
+SAMPLE2,SAMPLE2_R1.fastq.gz,
 ```
 
-`SAMPLE1` is paired-end and sequenced on two lanes; `SAMPLE2` is single-end.
+`SAMPLE1` is paired-end; `SAMPLE2` is single-end.
 
 ### Full samplesheet
 
 ```csv title="samplesheet.csv"
-patient,sex,status,sample,lane,fastq_1,fastq_2,seq_type
-PATIENT1,XX,0,PATIENT1_NORMAL,L001,P1N_L001_R1.fastq.gz,P1N_L001_R2.fastq.gz,dna
-PATIENT1,XX,1,PATIENT1_TUMOUR,L001,P1T_L001_R1.fastq.gz,P1T_L001_R2.fastq.gz,dna
-PATIENT1,XX,1,PATIENT1_TUMOUR,L002,P1T_L002_R1.fastq.gz,P1T_L002_R2.fastq.gz,dna
-PATIENT2,XY,0,PATIENT2_RNA,L001,P2R_L001_R1.fastq.gz,P2R_L001_R2.fastq.gz,rna
+patient,sex,status,sample,fastq_1,fastq_2,seq_type
+PATIENT1,XX,0,PATIENT1_NORMAL,P1N_R1.fastq.gz,P1N_R2.fastq.gz,dna
+PATIENT1,XX,1,PATIENT1_TUMOUR,P1T_R1.fastq.gz,P1T_R2.fastq.gz,dna
+PATIENT2,XY,0,PATIENT2_RNA,P2R_R1.fastq.gz,P2R_R2.fastq.gz,rna
 ```
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
