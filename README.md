@@ -64,6 +64,31 @@ You can use Seqera Batch Forge to create an AWS Batch compute environment with F
 
 ![Seqera enable DRAGEN](docs/images/tower_ce_enable_dragen.png)
 
+Also set these in the compute environment:
+
+- Enable Fusion v2, Wave and fast instance storage (NVMe).
+- Use on-demand instances, not Spot: a reclaimed instance pays the DRAGEN fee again.
+- Leave the compute environment's own Nextflow config empty. Platform appends its own `aws.batch.volumes` after it, so the volumes below must go in the launch config.
+
+Paste this into the **Nextflow config** field of the Launchpad entry or launch form. It applies to both `--dragen_license` modes, and was tested on DRAGEN 4.4.4 on `f2.6xlarge`:
+
+```groovy
+aws.batch.volumes = '/scratch/fusion:/tmp,/opt/edico,/var/lib/edico,/lib64/libdragen.so.4.4.4,/ephemeral'
+
+process {
+    withLabel: 'dragen' {
+        // Without /ephemeral, DRAGEN fails with an async_io I/O error (exit 134).
+        scratch = '/ephemeral'
+        containerOptions = '-e FUSION_CACHE_LOCATION=/ephemeral -e FUSION_COMPACT_SYMLINKS=true -e FUSION_STOP_SHUTDOWN_TIMEOUT=2h'
+        // Integer.MAX_VALUE adds a retry for the ECS agent restart shortly after an F2 host boots.
+        errorStrategy = { task.exitStatus in ((130..145) + 104 + Integer.MAX_VALUE) ? 'retry' : 'finish' }
+        maxRetries = 3
+    }
+}
+```
+
+The `libdragen.so` version in `aws.batch.volumes` must match the DRAGEN version of your AMI.
+
 ## Documentation
 
 - [Usage](docs/usage.md): samplesheet format, run modes, configuration and running the pipeline.

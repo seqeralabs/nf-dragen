@@ -18,6 +18,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - `--dragen_license marketplace|byol` (default `marketplace`). `byol` is for Illumina's private DRAGEN AMI: every DRAGEN task then needs the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` and passes them to `--lic-server`. `byol` is untested on real DRAGEN.
 - A run with DNA or RNA samples but neither `--fasta` nor the matching `--dragen_index_dna`/`--dragen_index_rna` now stops before any DRAGEN task with an error naming a sample and both parameters.
 
+- README: the Seqera Platform section now has the Batch Forge settings and the Nextflow config to paste into the launch form for AWS F2 DRAGEN runs (volumes, `/ephemeral` scratch, Fusion settings, extra retry). Add it to your launch config.
+
 ### `Removed`
 
 - The FastQC step, and the params `skip_fastqc`, `max_multiqc_email_size` and `multiqc_methods_description`. `samplesheet.csv` is no longer published.
