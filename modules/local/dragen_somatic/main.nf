@@ -43,7 +43,8 @@ process DRAGEN_SOMATIC {
     prefix = task.ext.prefix ?: id
     def tumour_list = fastqListRows(tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)
     def normal_list = fastqListRows(normal_id, normal_lanes, normal_fastq_1, normal_fastq_2)
-    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-call-regions-bed ${target_bed} --cnv-target-bed ${target_bed}" : ''
+    // Exome CNV needs a panel of normals and self-normalization is WGS-only, so CNV runs only without a target BED
+    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-call-regions-bed ${target_bed}" : '--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true'
     """
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${tumour_list} > tumour_fastq_list.csv
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${normal_list} > normal_fastq_list.csv
@@ -70,7 +71,8 @@ process DRAGEN_SOMATIC {
     prefix = task.ext.prefix ?: id
     def tumour_list = fastqListRows(tumour_id, tumour_lanes, tumour_fastq_1, tumour_fastq_2)
     def normal_list = fastqListRows(normal_id, normal_lanes, normal_fastq_1, normal_fastq_2)
-    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-call-regions-bed ${target_bed} --cnv-target-bed ${target_bed}" : ''
+    // Exome CNV needs a panel of normals and self-normalization is WGS-only, so CNV runs only without a target BED
+    def targets = target_bed ? "--vc-target-bed ${target_bed} --sv-call-regions-bed ${target_bed}" : '--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true'
     """
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${tumour_list} > tumour_fastq_list.csv
     printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File' ${normal_list} > normal_fastq_list.csv
@@ -90,7 +92,7 @@ process DRAGEN_SOMATIC {
     touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi
     touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi
     touch ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi
-    touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi
+    ${target_bed ? '' : "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi"}
     touch ${prefix}.mapping_metrics.csv
 
     cat <<-END_VERSIONS > versions.yml

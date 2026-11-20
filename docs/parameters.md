@@ -81,7 +81,7 @@ Path to RNA index created by Dragen.
 
 BED file of exome or panel target regions.
 
-> Passed to DRAGEN for germline and somatic DNA runs (`--vc-target-bed`; somatic runs also `--sv-call-regions-bed` and `--cnv-target-bed`), never to RNA runs. Leave unset for whole-genome data.
+> Passed to DRAGEN for germline and somatic DNA runs (`--vc-target-bed`; somatic runs also `--sv-call-regions-bed`), never to RNA runs. Leave unset for whole-genome data. Somatic exome runs skip CNV calling.
 
 **Pattern:** `^\S+\.bed$`
 
