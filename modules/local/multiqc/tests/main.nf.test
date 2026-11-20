@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test Process MULTIQC"
+    script "../main.nf"
+    process "MULTIQC"
+    tag "multiqc"
+
+    test("real DRAGEN mapping metrics, config, title and logo") {
+
+        config "./nextflow.config"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'multiqc',
+                    files: [file("${projectDir}/tests/data/dragen_metrics/TEST.mapping_metrics.csv")],
+                    configs: [file("${projectDir}/assets/multiqc_config.yml")],
+                    logo: file("${projectDir}/tests/data/logo.png")
+                ))
+                """
+            }
+        }
+
+        then {
+            def run = process.out[0][0]
+            def report = path(run.report).text
+            assertAll(
+                { assert process.success },
+                { assert report.contains('Test title') },
+                { assert report.contains("data:image/png;base64") },
+                { assert path("${run.data}/dragen_map_metrics.txt").readLines()[1].startsWith("TEST\t10142922") },
+                { assert snapshot(run.version).match() }
+            )
+        }
+    }
+}
