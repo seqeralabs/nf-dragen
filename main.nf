@@ -7,12 +7,15 @@ Github : https://github.com/seqeralabs/nf-dragen
 ----------------------------------------------------------------------------------------
  */
 
-include { validateParameters            } from 'plugin/nf-schema'
-include { PARSE_SAMPLESHEET             } from './subworkflows/local/parse_samplesheet'
-include { SELECT_DRAGEN_MODE            } from './subworkflows/local/select_dragen_mode'
-include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
-include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
-include { MULTIQC_REPORT                } from './subworkflows/local/multiqc_report'
+include { validateParameters                                 } from 'plugin/nf-schema'
+include { PARSE_SAMPLESHEET                                  } from './subworkflows/local/parse_samplesheet'
+include { SELECT_DRAGEN_MODE                                 } from './subworkflows/local/select_dragen_mode'
+include { DRAGEN as DRAGEN_DNA                               } from './modules/local/dragen'
+include { DRAGEN as DRAGEN_SOMATIC                           } from './modules/local/dragen'
+include { DRAGEN as DRAGEN_RNA                               } from './modules/local/dragen'
+include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_DNA } from './modules/local/dragen_buildhashtable'
+include { DRAGEN_BUILDHASHTABLE as DRAGEN_BUILDHASHTABLE_RNA } from './modules/local/dragen_buildhashtable'
+include { MULTIQC_REPORT                                     } from './subworkflows/local/multiqc_report'
 
 params {
     // Input options
@@ -129,27 +132,38 @@ workflow SEQERALABS_DRAGEN {
 
     SELECT_DRAGEN_MODE(ch_input)
 
-    // Germline and somatic runs share one DNA hash table
-    DRAGEN_DNA(
-        SELECT_DRAGEN_MODE.out.germline,
-        SELECT_DRAGEN_MODE.out.somatic,
-        dna_index,
-        fasta,
-        target_bed,
-    )
+    // Hash tables are built only when no index is given, from the samples so that no samples means no build.
+    // reduce makes the one table a value that every sample reads (null when no samples, so nothing reads it).
+    ch_dna_index_built = channel.empty()
+    if (!dna_index) {
+        // Germline and somatic runs share one DNA hash table
+        ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(
+            SELECT_DRAGEN_MODE.out.germline.mix(SELECT_DRAGEN_MODE.out.somatic).map { _sample -> fasta }.unique()
+        )
+        ch_dna_index = ch_dna_index_built.reduce(null) { _acc, index_dir -> index_dir }
+    }
+    else {
+        ch_dna_index = channel.value(dna_index)
+    }
 
-    DRAGEN_RNA(
-        SELECT_DRAGEN_MODE.out.rna,
-        channel.of(), // not channel.empty(): a typed workflow cannot read that twice (Nextflow 26.10.6)
-        rna_index,
-        fasta,
-        null,
-    )
+    ch_rna_index_built = channel.empty()
+    if (!rna_index) {
+        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(SELECT_DRAGEN_MODE.out.rna.map { _sample -> fasta }.unique())
+        ch_rna_index = ch_rna_index_built.reduce(null) { _acc, index_dir -> index_dir }
+    }
+    else {
+        ch_rna_index = channel.value(rna_index)
+    }
+
+    ch_dna = DRAGEN_DNA(SELECT_DRAGEN_MODE.out.germline, ch_dna_index, target_bed)
+    ch_somatic = DRAGEN_SOMATIC(SELECT_DRAGEN_MODE.out.somatic, ch_dna_index, target_bed)
+    // RNA runs get no target_bed
+    ch_rna = DRAGEN_RNA(SELECT_DRAGEN_MODE.out.rna, ch_rna_index, null)
 
     emit:
-    dna_index = DRAGEN_DNA.out.index_built
-    rna_index = DRAGEN_RNA.out.index_built
-    dna       = DRAGEN_DNA.out.results
-    somatic   = DRAGEN_DNA.out.somatic
-    rna       = DRAGEN_RNA.out.results
+    dna_index = ch_dna_index_built // only hash tables built here, not ones the user supplied
+    rna_index = ch_rna_index_built
+    dna       = ch_dna
+    somatic   = ch_somatic
+    rna       = ch_rna
 }

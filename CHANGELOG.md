@@ -26,6 +26,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 ### `Changed`
 
+- DRAGEN process names: custom configs that set `ext.args` or `ext.prefix` must now target `.*:DRAGEN_DNA` (germline), `.*:DRAGEN_SOMATIC` (tumour/normal), `.*:DRAGEN_RNA` (RNA), `.*:DRAGEN_BUILDHASHTABLE_DNA` and `.*:DRAGEN_BUILDHASHTABLE_RNA`, instead of `.*:DRAGEN_DNA:DRAGEN`, `.*:DRAGEN_DNA:DRAGEN_SOMATIC`, `.*:DRAGEN_RNA:DRAGEN` and `.*:DRAGEN_{DNA,RNA}:DRAGEN_BUILDHASHTABLE`.
+
 - Somatic exome runs (`--target_bed`) now pass `--sv-exome true`, as the DRAGEN v4.4 WES recipe does, so SV calling uses exome mode. See [DRAGEN options](docs/dragen_options.md).
 - `--input` accepts nf-core/sarek samplesheets unchanged, in any column order: the optional columns `patient`, `status`, `lane` and `sex` are new, and unknown columns are ignored. Existing `sample,fastq_1,fastq_2` samplesheets still work. When `lane` is given, each lane's read group is `<sample>.<lane>`.
 - A samplesheet is rejected before anything runs when the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`, or when some rows of a sample have `fastq_2` and others do not.
