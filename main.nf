@@ -20,6 +20,7 @@ include { paramsSummaryMultiqc          } from './subworkflows/nf-core/utils_nfc
 
 include { PIPELINE_INITIALISATION       } from './subworkflows/local/utils_nfcore_dragen_pipeline'
 include { FASTQC                        } from './modules/nf-core/fastqc/main'
+include { DRAGEN_PREFLIGHT              } from './modules/local/dragen_preflight'
 include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
 include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
 include { MULTIQC                       } from './modules/nf-core/multiqc/main'
@@ -66,10 +67,23 @@ workflow SEQERALABS_DRAGEN {
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map { it[1] })
 
         //
+        // MODULE: DRAGEN pre-flight. Runs once on the DRAGEN queue and gates every
+        // DRAGEN task, so a broken host mount fails in seconds rather than after staging.
+        //
+        ch_dragen_input = input.filter { meta, fastq_1, fastq_2 -> !params.skip_dragen }
+        if ( !params.skip_dragen && !params.skip_dragen_preflight ) {
+            DRAGEN_PREFLIGHT ()
+            ch_versions     = ch_versions.mix(DRAGEN_PREFLIGHT.out.versions)
+            ch_dragen_input = ch_dragen_input
+                .combine(DRAGEN_PREFLIGHT.out.report)
+                .map { meta, fastq_1, fastq_2, _report -> [ meta, fastq_1, fastq_2 ] }
+        }
+
+        //
         // WORKFLOW: Run DNA pipeline
         //
         DRAGEN_DNA (
-            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'dna' && !params.skip_dragen },
+            ch_dragen_input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'dna' },
             dna_index,
             fasta
         )
@@ -79,7 +93,7 @@ workflow SEQERALABS_DRAGEN {
         // WORKFLOW: Run RNA pipeline
         //
         DRAGEN_RNA (
-            input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'rna' && !params.skip_dragen },
+            ch_dragen_input.filter { meta, fastq_1, fastq_2 -> meta.seq_type == 'rna' },
             rna_index,
             fasta
         )

@@ -2,9 +2,6 @@ process DRAGEN_BUILDHASHTABLE {
     tag "$fasta"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     path(fasta)
 
@@ -14,6 +11,9 @@ process DRAGEN_BUILDHASHTABLE {
 
     script:
     def args = task.ext.args ?: ''
+    // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
+    // Marketplace AMIs are metered by AWS and take no license arguments.
+    def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
     prefix = task.ext.prefix ?: 'dragen'
     """
     mkdir -p $prefix
@@ -22,7 +22,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory $prefix \\
         --ht-reference $fasta \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $lic \\
         $args
 
     cat <<-END_VERSIONS > versions.yml
@@ -33,6 +33,9 @@ process DRAGEN_BUILDHASHTABLE {
 
     stub:
     def args = task.ext.args ?: ''
+    // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
+    // Marketplace AMIs are metered by AWS and take no license arguments.
+    def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
     prefix = task.ext.prefix ?: 'dragen'
     """
     mkdir -p $prefix
@@ -41,7 +44,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory $prefix \\
         --ht-reference $fasta \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
+        $lic \\
         $args
 
     touch ${prefix}/dragen.ht

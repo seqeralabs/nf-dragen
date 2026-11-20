@@ -2,9 +2,6 @@ process DRAGEN {
     tag "$meta.id"
     label 'dragen'
 
-    secret 'DRAGEN_USERNAME'
-    secret 'DRAGEN_PASSWORD'
-
     input:
     tuple val(meta), path(fastq_1, stageAs: "input_S1_L001_R1_???.fastq.gz"), path(fastq_2, stageAs: "input_S1_L001_R2_???.fastq.gz")
     path index
@@ -20,6 +17,9 @@ process DRAGEN {
 
     script:
     def args = task.ext.args ?: ''
+    // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
+    // Marketplace AMIs are metered by AWS and take no license arguments.
+    def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
     prefix = task.ext.prefix ?: "${meta.id}"
 
     def ref = index ? "-r $index" : ''
@@ -33,21 +33,29 @@ process DRAGEN {
         error "Number of R1 and R2 FASTQ files do not match"
     }
 
-    // Generate appropriate parameter for input files
-    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : ""
-    r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
-    def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
-    def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
+    // DRAGEN only reads the FASTQ files named on its command line, so every staged pair goes into a
+    // fastq-list CSV (one row per pair). With more than one pair each row gets its own read group ID.
+    def rgid = meta.rgid ?: meta.id
+    def rgsm = meta.rgsm ?: meta.id
+    def rglb = meta.rglb ?: 'UnknownLibrary'
+    def row_rgid = num_r1 > 1 ? "${rgid}.\${lane}" : "${rgid}"
+    def inputs = "--fastq-list fastq_list.csv --fastq-list-sample-id ${rgsm}"
     """
+    echo "RGID,RGSM,RGLB,Lane,Read1File,Read2File" > fastq_list.csv
+    lane=0
+    for r1 in input_S1_L001_R1_*.fastq.gz; do
+        lane=\$((lane + 1))
+        r2=\${r1/_R1_/_R2_}
+        [ -e "\$r2" ] && r2="\$PWD/\$r2" || r2=""
+        echo "${row_rgid},${rgsm},${rglb},\${lane},\$PWD/\${r1},\${r2}" >> fastq_list.csv
+    done
+    cat fastq_list.csv
     /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\
         --output-file-prefix $prefix \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $r1_in \\
-        $r2_in \\
-        $rgid \\
-        $rgsm \\
+        $lic \\
+        $inputs \\
         $args
 
     cat <<-END_VERSIONS > versions.yml
@@ -58,6 +66,9 @@ process DRAGEN {
 
     stub:
     def args = task.ext.args ?: ''
+    // BYOL needs the license server credentials (supplied as pipeline secrets, see conf/byol.config).
+    // Marketplace AMIs are metered by AWS and take no license arguments.
+    def lic = params.dragen_license == 'byol' ? "--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com" : ''
     prefix = task.ext.prefix ?: "${meta.id}"
 
     def ref = index ? "-r $index" : ''
@@ -71,21 +82,29 @@ process DRAGEN {
         error "Number of R1 and R2 FASTQ files do not match for sample ${prefix}"
     }
 
-    // Generate appropriate parameter for input files
-    r1_in = fastq_1 ? "-1 input_S1_L001_R1_001.fastq.gz" : ""
-    r2_in = fastq_2 ? "-2 input_S1_L001_R2_001.fastq.gz" : ""
-    def rgid  = meta.rgid ? "--RGID ${meta.rgid}" : "--RGID ${meta.id}"
-    def rgsm  = meta.rgsm ? "--RGSM ${meta.rgsm}" : "--RGSM ${meta.id}"
+    // DRAGEN only reads the FASTQ files named on its command line, so every staged pair goes into a
+    // fastq-list CSV (one row per pair). With more than one pair each row gets its own read group ID.
+    def rgid = meta.rgid ?: meta.id
+    def rgsm = meta.rgsm ?: meta.id
+    def rglb = meta.rglb ?: 'UnknownLibrary'
+    def row_rgid = num_r1 > 1 ? "${rgid}.\${lane}" : "${rgid}"
+    def inputs = "--fastq-list fastq_list.csv --fastq-list-sample-id ${rgsm}"
     """
+    echo "RGID,RGSM,RGLB,Lane,Read1File,Read2File" > fastq_list.csv
+    lane=0
+    for r1 in input_S1_L001_R1_*.fastq.gz; do
+        lane=\$((lane + 1))
+        r2=\${r1/_R1_/_R2_}
+        [ -e "\$r2" ] && r2="\$PWD/\$r2" || r2=""
+        echo "${row_rgid},${rgsm},${rglb},\${lane},\$PWD/\${r1},\${r2}" >> fastq_list.csv
+    done
+    cat fastq_list.csv
     echo /opt/edico/bin/dragen \\
         $ref \\
         --output-directory ./ \\
         --output-file-prefix $prefix \\
-        --lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com \\
-        $r1_in \\
-        $r2_in \\
-        $rgid \\
-        $rgsm \\
+        $lic \\
+        $inputs \\
         $args
 
     cat <<-END_VERSIONS > versions.yml

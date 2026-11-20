@@ -26,7 +26,13 @@ workflow DRAGEN_WORKFLOW {
 
     main:
         ch_versions = Channel.empty()
-        if (!index) {
+        if (!index && !fasta) {
+            // No reference for this seq_type. Only an error if a sample of this type
+            // is actually present, so DNA-only runs need no RNA reference (and vice versa).
+            ch_index = ch_input.map { meta, _fastq_1, _fastq_2 ->
+                error("No DRAGEN reference for ${meta.seq_type} sample '${meta.id}': set --dragen_index_${meta.seq_type} or --fasta")
+            }
+        } else if (!index) {
             ch_fasta = Channel.fromPath(fasta, checkIfExists: true, type: 'file')
             // Use combine to not run the process if ch_input is empty
             DRAGEN_BUILDHASHTABLE (
