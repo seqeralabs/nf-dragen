@@ -20,13 +20,12 @@ nextflow_pipeline {
 
         then {
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: false)
-            def versions    = path("$outputDir/pipeline_info/software_versions.yml").text
             assertAll(
                 { assert workflow.success },
-                // shortcut: versions content is host-dependent until the stubs write a fixed version; snapshot it then
-                { assert versions.contains('DRAGEN"') },
-                { assert versions.contains('DRAGEN_BUILDHASHTABLE"') },
-                { assert snapshot(stable_name.sort()).match() }
+                { assert snapshot(
+                    stable_name.sort(),
+                    path("$outputDir/pipeline_info/software_versions.yml").readLines()
+                ).match() }
             )
         }
     }

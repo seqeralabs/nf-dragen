@@ -1,16 +1,20 @@
+nextflow.enable.types = true
+
 process DRAGEN_BUILDHASHTABLE {
-    tag "${fasta}"
+    tag "${fasta.name}"
     label 'dragen'
 
     secret 'DRAGEN_USERNAME'
     secret 'DRAGEN_PASSWORD'
 
     input:
-    path fasta
+    fasta: Path
 
     output:
-    path "${prefix}", emit: index
-    path "versions.yml", emit: versions, topic: versions
+    file(prefix)
+
+    topic:
+    file('versions.yml') >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -45,9 +49,10 @@ process DRAGEN_BUILDHASHTABLE {
         ${args}
 
     touch ${prefix}/dragen.ht
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
+        dragen: stub
     END_VERSIONS
     """
 }

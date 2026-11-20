@@ -3,20 +3,32 @@
         "content": [
             [
                 "dragen/dna_fastq_to_vcf/SAMPLE1_PE.bam",
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.bam.bai",
                 "dragen/dna_fastq_to_vcf/SAMPLE1_PE.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/SAMPLE1_PE.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/SAMPLE1_PE.mapping_metrics.csv",
                 "dragen/dna_fastq_to_vcf/SAMPLE1_PE.vcf.gz",
                 "dragen/dna_fastq_to_vcf/SAMPLE1_PE.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.bam",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.bam.bai",
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.hard-filtered.vcf.gz.tbi",
+                "dragen/dna_fastq_to_vcf/SAMPLE2_SE.mapping_metrics.csv",
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.vcf.gz",
                 "dragen/dna_fastq_to_vcf/SAMPLE2_SE.vcf.gz.tbi",
                 "genome/index/dragen_index_dna/dragen.ht",
                 "pipeline_info/software_versions.yml"
+            ],
+            [
+                "\"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN\":",
+                "    dragen: stub",
+                "",
+                "\"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN_BUILDHASHTABLE\":",
+                "    dragen: stub",
+                ""
             ]
         ],
-        "timestamp": "2026-11-20T12:57:43.171121427",
+        "timestamp": "2026-11-20T13:15:48.560230826",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

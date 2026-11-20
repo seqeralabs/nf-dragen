@@ -1,0 +1,67 @@
+name: dragen
+description: Run Illumina DRAGEN on one sample, reading every lane through a FASTQ list
+keywords:
+  - dragen
+  - alignment
+  - variant calling
+tools:
+  - dragen:
+      description: Illumina DRAGEN Bio-IT Platform, run from the licensed DRAGEN AMI
+      homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
+      licence: ["Commercial"]
+input:
+  - sample:
+      type: record
+      description: One sample
+      fields:
+        id:
+          type: String
+          description: Sample name; also the output file prefix, RGSM and the start of each RGID
+        fastq_1:
+          type: List<Path>
+          description: Read 1 FASTQ of each lane, in lane order
+        fastq_2:
+          type: List<Path>
+          description: Read 2 FASTQ of each lane, in lane order; empty for single-end
+  - index:
+      type: Path
+      description: DRAGEN hash table directory
+output:
+  - sample:
+      type: record
+      description: DRAGEN outputs of the sample; every file is optional and depends on `ext.args`
+      fields:
+        id:
+          type: String
+          description: Sample name
+        bam:
+          type: Path
+          pattern: "${prefix}.bam"
+        bai:
+          type: Path
+          pattern: "${prefix}.bam.bai"
+        vcf:
+          type: Path
+          pattern: "${prefix}.vcf.gz"
+        tbi:
+          type: Path
+          pattern: "${prefix}.vcf.gz.tbi"
+        vcf_filtered:
+          type: Path
+          pattern: "${prefix}.hard-filtered.vcf.gz"
+        tbi_filtered:
+          type: Path
+          pattern: "${prefix}.hard-filtered.vcf.gz.tbi"
+        metrics:
+          type: List<Path>
+          pattern: "${prefix}.*metrics.csv"
+topics:
+  - versions:
+      type: Path
+      pattern: versions.yml
+notes: |
+  The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row and one
+  read group per lane: RGID `<id>.<lane>`, Lane the lane's 1-based position. It fails, naming the sample, when the
+  numbers of R1 and R2 files differ. Needs the DRAGEN_USERNAME and DRAGEN_PASSWORD secrets.
+authors:
+  - "@adamrtalbot"

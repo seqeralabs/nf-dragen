@@ -1,0 +1,3 @@
+# DRAGEN is not packaged for conda: the process runs /opt/edico/bin/dragen from Illumina's licensed DRAGEN AMI.
+channels: []
+dependencies: []
