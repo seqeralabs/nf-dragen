@@ -23,14 +23,14 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,"
+                "T,T,UnknownLibrary,1,test2_1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+                "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T21:17:12.504917178",
+        "timestamp": "2026-11-20T22:20:19.947878556",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -58,14 +58,14 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T,T,UnknownLibrary,1,sample2_L001_R1.fastq.gz,"
+                "T,T,UnknownLibrary,1,test2_1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N,N,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+                "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T21:18:49.633878576",
+        "timestamp": "2026-11-20T22:20:14.889464394",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -89,10 +89,10 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "test,test,UnknownLibrary,1,sample1_R1.fastq.gz,sample1_R2.fastq.gz"
+                "test,test,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T21:18:45.439338492",
+        "timestamp": "2026-11-20T22:20:09.806350584",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

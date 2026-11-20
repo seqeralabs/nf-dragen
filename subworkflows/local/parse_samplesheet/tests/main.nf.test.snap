@@ -3,17 +3,8 @@
         "content": [
             [
                 {
-                    "fastq_1": "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1",
-                    "fastq_2": "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f",
-                    "id": "P1_N",
-                    "patient": "P1",
-                    "seq_type": "dna",
-                    "sex": null,
-                    "status": 0
-                },
-                {
-                    "fastq_1": "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1",
-                    "fastq_2": "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f",
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz",
+                    "fastq_2": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_2.fastq.gz",
                     "id": "P1_T",
                     "patient": "P1",
                     "seq_type": "dna",
@@ -21,26 +12,35 @@
                     "status": 1
                 },
                 {
-                    "fastq_1": "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1",
-                    "fastq_2": "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f",
-                    "id": "P3_RNA",
-                    "patient": "P3",
-                    "seq_type": "rna",
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz",
+                    "fastq_2": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz",
+                    "id": "P1_N",
+                    "patient": "P1",
+                    "seq_type": "dna",
                     "sex": null,
                     "status": 0
                 },
                 {
-                    "fastq_1": "sample2_L001_R1.fastq.gz:md5,46a41367a920ffaa773dd0ad5d0f9685",
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz",
                     "fastq_2": null,
                     "id": "P2_SE",
                     "patient": "P2",
                     "seq_type": "dna",
                     "sex": null,
                     "status": 0
+                },
+                {
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_1.fastq.gz",
+                    "fastq_2": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_2.fastq.gz",
+                    "id": "P3_RNA",
+                    "patient": "P3",
+                    "seq_type": "rna",
+                    "sex": null,
+                    "status": 0
                 }
             ]
         ],
-        "timestamp": "2026-11-20T21:17:16.652238122",
+        "timestamp": "2026-11-20T22:21:01.968652031",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -50,8 +50,17 @@
         "content": [
             [
                 {
-                    "fastq_1": "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1",
-                    "fastq_2": "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f",
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz",
+                    "fastq_2": null,
+                    "id": "P1_TUMOUR",
+                    "patient": "PATIENT1",
+                    "seq_type": "dna",
+                    "sex": "XX",
+                    "status": 1
+                },
+                {
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz",
+                    "fastq_2": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz",
                     "id": "P1_NORMAL",
                     "patient": "PATIENT1",
                     "seq_type": "dna",
@@ -59,26 +68,17 @@
                     "status": 0
                 },
                 {
-                    "fastq_1": "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1",
-                    "fastq_2": "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f",
+                    "fastq_1": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_1.fastq.gz",
+                    "fastq_2": "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_2.fastq.gz",
                     "id": "P2_RNA",
                     "patient": "PATIENT2",
                     "seq_type": "rna",
                     "sex": "XY",
                     "status": 0
-                },
-                {
-                    "fastq_1": "sample2_L001_R1.fastq.gz:md5,46a41367a920ffaa773dd0ad5d0f9685",
-                    "fastq_2": null,
-                    "id": "P1_TUMOUR",
-                    "patient": "PATIENT1",
-                    "seq_type": "dna",
-                    "sex": "XX",
-                    "status": 1
                 }
             ]
         ],
-        "timestamp": "2026-11-20T21:19:01.070312005",
+        "timestamp": "2026-11-20T22:21:06.6882777",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
