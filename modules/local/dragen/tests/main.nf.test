@@ -4,6 +4,7 @@ nextflow_process {
     script "../main.nf"
     process "DRAGEN"
     tag "dragen"
+    config "./nextflow.config"
 
     test("paired-end two-lane DNA sample - stub") {
 

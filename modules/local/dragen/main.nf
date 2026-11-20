@@ -78,8 +78,7 @@ process DRAGEN {
         ${args}
 
     touch ${prefix}.bam ${prefix}.bam.bai
-    touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi
-    touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi
+    ${args.contains('--enable-variant-caller') ? "touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi" : ''}
     ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : ''}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi" : ''}
     touch ${prefix}.mapping_metrics.csv

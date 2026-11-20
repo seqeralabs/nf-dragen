@@ -23,7 +23,8 @@
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_DNA (P3_N)",
                     [
-                        "--vc-target-bed target.bed"
+                        "--vc-target-bed target.bed",
+                        "--enable-variant-caller true"
                     ]
                 ],
                 [
@@ -36,21 +37,24 @@
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)",
                     [
                         "--vc-target-bed target.bed",
-                        "--enable-sv true"
+                        "--enable-sv true",
+                        "--enable-variant-caller true"
                     ]
                 ],
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T1_vs_P2_N)",
                     [
                         "--vc-target-bed target.bed",
-                        "--enable-sv true"
+                        "--enable-sv true",
+                        "--enable-variant-caller true"
                     ]
                 ],
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T2_vs_P2_N)",
                     [
                         "--vc-target-bed target.bed",
-                        "--enable-sv true"
+                        "--enable-sv true",
+                        "--enable-variant-caller true"
                     ]
                 ]
             ],
@@ -97,11 +101,7 @@
                 "dragen/dna_fastq_to_vcf/P3_N.vcf.gz.tbi",
                 "dragen/rna_fastq_to_bam/P4_RNA.bam",
                 "dragen/rna_fastq_to_bam/P4_RNA.bam.bai",
-                "dragen/rna_fastq_to_bam/P4_RNA.hard-filtered.vcf.gz",
-                "dragen/rna_fastq_to_bam/P4_RNA.hard-filtered.vcf.gz.tbi",
                 "dragen/rna_fastq_to_bam/P4_RNA.mapping_metrics.csv",
-                "dragen/rna_fastq_to_bam/P4_RNA.vcf.gz",
-                "dragen/rna_fastq_to_bam/P4_RNA.vcf.gz.tbi",
                 "genome/index/dragen_index_dna/dragen.ht",
                 "genome/index/dragen_index_rna/dragen.ht",
                 "multiqc/multiqc_data/.stub",
@@ -110,7 +110,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T20:16:23.114903683",
+        "timestamp": "2026-11-20T20:19:44.939903903",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -141,11 +141,7 @@
                 "dragen/dna_fastq_to_vcf/P2_SE.vcf.gz.tbi",
                 "dragen/rna_fastq_to_bam/P3_RNA.bam",
                 "dragen/rna_fastq_to_bam/P3_RNA.bam.bai",
-                "dragen/rna_fastq_to_bam/P3_RNA.hard-filtered.vcf.gz",
-                "dragen/rna_fastq_to_bam/P3_RNA.hard-filtered.vcf.gz.tbi",
                 "dragen/rna_fastq_to_bam/P3_RNA.mapping_metrics.csv",
-                "dragen/rna_fastq_to_bam/P3_RNA.vcf.gz",
-                "dragen/rna_fastq_to_bam/P3_RNA.vcf.gz.tbi",
                 "genome/index/dragen_index_dna/dragen.ht",
                 "genome/index/dragen_index_rna/dragen.ht",
                 "multiqc/multiqc_data/.stub",
@@ -176,7 +172,7 @@
                 "    seqeralabs/nf-dragen: 1.0.0dev"
             ]
         ],
-        "timestamp": "2026-11-20T18:10:03.451706256",
+        "timestamp": "2026-11-20T20:19:33.057259628",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
