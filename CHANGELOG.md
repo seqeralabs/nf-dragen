@@ -36,7 +36,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - RNA runs no longer call variants; `dragen/rna_fastq_to_bam/` holds no VCFs.
 - DRAGEN process names: custom configs that set `ext.args` or `ext.prefix` must now target `.*:DRAGEN_DNA` (germline), `.*:DRAGEN_SOMATIC` (tumour/normal), `.*:DRAGEN_RNA` (RNA), `.*:DRAGEN_BUILDHASHTABLE_DNA` and `.*:DRAGEN_BUILDHASHTABLE_RNA`, instead of `.*:DRAGEN_DNA:DRAGEN`, `.*:DRAGEN_DNA:DRAGEN_SOMATIC`, `.*:DRAGEN_RNA:DRAGEN` and `.*:DRAGEN_{DNA,RNA}:DRAGEN_BUILDHASHTABLE`.
 
-- Somatic exome runs (`--target_bed`) now pass `--sv-exome true`, as the DRAGEN v4.4 WES recipe does, so SV calling uses exome mode. See [DRAGEN options](docs/dragen_options.md).
+- Somatic exome runs (`--target_bed`) now pass `--sv-exome true`, as the DRAGEN v4.4 WES recipe does, so SV calling uses exome mode.
 - `--input` accepts nf-core/sarek samplesheets unchanged, in any column order: the optional columns `patient`, `status` and `sex` are new, and unknown columns are ignored. Existing `sample,fastq_1,fastq_2` samplesheets with one row per sample still work.
 - A samplesheet is rejected before anything runs when a sample name is on more than one row; the message names the sample.
 

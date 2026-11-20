@@ -190,8 +190,6 @@ A pipeline might not always support every possible argument or option of a parti
 
 To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/usage/configuration#customising-tool-arguments) section of the nf-core website.
 
-[DRAGEN options](dragen_options.md) lists every DRAGEN option the pipeline passes, checked against the Illumina DRAGEN v4.4 docs, and the recommended options it leaves out.
-
 ## Running in the background
 
 Nextflow handles job submissions and supervises the running jobs. The Nextflow process must run until the pipeline is finished.
