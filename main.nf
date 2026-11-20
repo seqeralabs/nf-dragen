@@ -138,7 +138,7 @@ workflow SEQERALABS_DRAGEN {
     if (!dna_index) {
         // Germline and somatic runs share one DNA hash table
         ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(
-            SELECT_DRAGEN_MODE.out.germline.mix(SELECT_DRAGEN_MODE.out.somatic).map { _sample -> fasta }.unique()
+            SELECT_DRAGEN_MODE.out.germline.mix(SELECT_DRAGEN_MODE.out.somatic).map { sample -> referenceFasta(sample, fasta, 'dna') }.unique()
         )
         ch_dna_index = ch_dna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
@@ -148,7 +148,7 @@ workflow SEQERALABS_DRAGEN {
 
     ch_rna_index_built = channel.empty()
     if (!rna_index) {
-        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(SELECT_DRAGEN_MODE.out.rna.map { _sample -> fasta }.unique())
+        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(SELECT_DRAGEN_MODE.out.rna.map { sample -> referenceFasta(sample, fasta, 'rna') }.unique())
         ch_rna_index = ch_rna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
     else {
@@ -166,4 +166,12 @@ workflow SEQERALABS_DRAGEN {
     dna       = ch_dna
     somatic   = ch_somatic
     rna       = ch_rna
+}
+
+// A sample whose sequencing type has neither --fasta nor a DRAGEN index cannot get a hash table; stop before any task
+def referenceFasta(sample, fasta, seq_type) {
+    if (!fasta) {
+        error("Sample '${sample.id}' (seq_type '${seq_type}') needs a reference: give --fasta to build the DRAGEN hash table, or --dragen_index_${seq_type} to use an existing one")
+    }
+    return fasta
 }
