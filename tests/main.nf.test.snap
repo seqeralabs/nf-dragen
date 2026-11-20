@@ -11,7 +11,7 @@
                 [
                     "SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_DNA (ref.fa)",
                     [
-                        
+                        "--ht-build-cnv-hashtable true"
                     ]
                 ],
                 [
@@ -110,7 +110,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T18:10:15.105530423",
+        "timestamp": "2026-11-20T20:16:23.114903683",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

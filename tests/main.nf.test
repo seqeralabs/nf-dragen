@@ -51,7 +51,7 @@ nextflow_pipeline {
                 .collect { task_dir ->
                     def name = new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1')
                     def command = new File(task_dir, '.command.sh').text
-                    [name, ['--vc-target-bed target.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true'].findAll { flag -> command.contains(flag) }]
+                    [name, ['--vc-target-bed target.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true', '--ht-build-cnv-hashtable true'].findAll { flag -> command.contains(flag) }]
                 }
                 .sort { entry -> entry[0] }
             assertAll(
