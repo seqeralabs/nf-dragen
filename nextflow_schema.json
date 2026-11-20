@@ -53,6 +53,12 @@
                     "type": "boolean",
                     "description": "Skip the MultiQC report",
                     "default": false
+                },
+                "dragen_license": {
+                    "type": "string",
+                    "description": "How DRAGEN is licensed: `marketplace` (AWS Marketplace pay-as-you-go AMI, metered by AWS, no credentials) or `byol` (Illumina's private AMI; needs the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`, passed to `--lic-server`). `byol` is untested on real DRAGEN.",
+                    "default": "marketplace",
+                    "enum": ["marketplace", "byol"]
                 }
             }
         },

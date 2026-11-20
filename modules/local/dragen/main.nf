@@ -37,6 +37,7 @@ process DRAGEN {
 
     script:
     def args = task.ext.args ?: ''
+    def lic = task.ext.lic_server ?: ''
     prefix = task.ext.prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
@@ -50,6 +51,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         ${fastq_lists.args} \\
         ${targets} \\
+        ${lic} \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -60,6 +62,8 @@ process DRAGEN {
 
     stub:
     def args = task.ext.args ?: ''
+    // quoted below, so the echo prints the secret names, not the credentials
+    def lic = task.ext.lic_server ?: ''
     prefix = task.ext.prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
@@ -73,6 +77,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         ${fastq_lists.args} \\
         ${targets} \\
+        '${lic}' \\
         ${args}
 
     touch ${prefix}.bam ${prefix}.bam.bai

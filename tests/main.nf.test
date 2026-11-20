@@ -86,6 +86,35 @@ nextflow_pipeline {
         }
     }
 
+    // Needs the secrets DRAGEN_USERNAME and DRAGEN_PASSWORD; CI sets dummy ones through NXF_SECRETS_FILE
+    test("--dragen_license byol -stub") {
+
+        when {
+            def link = java.nio.file.Paths.get(launchDir.toString(), 'tests')
+            if (!java.nio.file.Files.exists(link)) {
+                java.nio.file.Files.createSymbolicLink(link, java.nio.file.Paths.get(baseDir.toString(), 'tests'))
+            }
+            params {
+                outdir         = "$outputDir"
+                dragen_license = 'byol'
+            }
+        }
+
+        then {
+            // Tasks whose script passes the licence server with the secrets' names, not their values
+            def lic_tasks = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').exists() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').text.contains('--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com') }
+                .collect { task_dir -> new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1') }
+                .sort()
+            assertAll(
+                { assert workflow.success },
+                { assert lic_tasks == workflow.trace.tasks().collect { task -> task.name }.findAll { name -> name.contains('DRAGEN') }.sort() },
+                { assert lic_tasks.size() == 5 }
+            )
+        }
+    }
+
     test("Platform verification run 1: built hash tables, germline, WGS tumour/normal and RNA -stub") {
 
         when {

@@ -54,6 +54,10 @@ Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 - A DRAGEN-capable compute environment: the AWS Marketplace pay-as-you-go DRAGEN AMI on AWS F2 instances, in a region where F2 instances are available. AWS meters the DRAGEN licence, so no credentials are needed. The instances need outbound internet access for DRAGEN's licence check. The DRAGEN processes carry the `dragen` label, which sends them to those instances.
 - Docker on the machine that runs MultiQC. The DRAGEN processes run on the host and need no container.
 
+### Bring your own licence
+
+By default (`--dragen_license marketplace`) DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence instead, set `--dragen_license byol` and add the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` (in Seqera Platform, as pipeline secrets selected at launch). Every DRAGEN task then passes them to `--lic-server`. Without the secrets the DRAGEN tasks fail with `Required secrets are missing`. BYOL has only been tested in stub mode, not on real DRAGEN.
+
 ### Seqera Platform setup
 
 You can use Seqera Batch Forge to create an AWS Batch compute environment with F2 instances. In the Seqera UI, go to `Compute Environments` -> `Add Compute Environment`, fill in your AWS Batch settings and paste the AWS Marketplace pay-as-you-go DRAGEN AMI id:
