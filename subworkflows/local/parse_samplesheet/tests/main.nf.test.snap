@@ -1,0 +1,108 @@
+{
+    "three-column sheet": {
+        "content": [
+            [
+                {
+                    "fastq_1": [
+                        "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1"
+                    ],
+                    "fastq_2": [
+                        "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f"
+                    ],
+                    "id": "SAMPLE1_PE",
+                    "lanes": [
+                        "1"
+                    ],
+                    "patient": "SAMPLE1_PE",
+                    "seq_type": "dna",
+                    "sex": null,
+                    "status": 0
+                },
+                {
+                    "fastq_1": [
+                        "sample2_L001_R1.fastq.gz:md5,46a41367a920ffaa773dd0ad5d0f9685",
+                        "sample2_L002_R1.fastq.gz:md5,4e765f5bf4ecb23d4cbe3ba570f110a0"
+                    ],
+                    "fastq_2": [
+                        
+                    ],
+                    "id": "SAMPLE2_SE",
+                    "lanes": [
+                        "1",
+                        "2"
+                    ],
+                    "patient": "SAMPLE2_SE",
+                    "seq_type": "dna",
+                    "sex": null,
+                    "status": 0
+                }
+            ]
+        ],
+        "timestamp": "2026-11-20T13:23:49.838352074",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "sarek sheet with lanes, status, sex, seq_type and an extra column": {
+        "content": [
+            [
+                {
+                    "fastq_1": [
+                        "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1"
+                    ],
+                    "fastq_2": [
+                        "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f"
+                    ],
+                    "id": "P1_NORMAL",
+                    "lanes": [
+                        "test_L1"
+                    ],
+                    "patient": "PATIENT1",
+                    "seq_type": "dna",
+                    "sex": "XX",
+                    "status": 0
+                },
+                {
+                    "fastq_1": [
+                        "sample1_R1.fastq.gz:md5,e9a373f6d3a146ed542d62d64a0b55e1"
+                    ],
+                    "fastq_2": [
+                        "sample1_R2.fastq.gz:md5,f07364a4f7d4f3916985605266fc5c2f"
+                    ],
+                    "id": "P2_RNA",
+                    "lanes": [
+                        "1"
+                    ],
+                    "patient": "PATIENT2",
+                    "seq_type": "rna",
+                    "sex": "XY",
+                    "status": 0
+                },
+                {
+                    "fastq_1": [
+                        "sample2_L001_R1.fastq.gz:md5,46a41367a920ffaa773dd0ad5d0f9685",
+                        "sample2_L002_R1.fastq.gz:md5,4e765f5bf4ecb23d4cbe3ba570f110a0"
+                    ],
+                    "fastq_2": [
+                        
+                    ],
+                    "id": "P1_TUMOUR",
+                    "lanes": [
+                        "test_L1",
+                        "test_L2"
+                    ],
+                    "patient": "PATIENT1",
+                    "seq_type": "dna",
+                    "sex": "XX",
+                    "status": 1
+                }
+            ]
+        ],
+        "timestamp": "2026-11-20T13:23:53.810406406",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

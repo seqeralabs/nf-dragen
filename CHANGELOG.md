@@ -22,6 +22,9 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 ### `Changed`
 
+- `--input` accepts nf-core/sarek samplesheets unchanged, in any column order: the optional columns `patient`, `status`, `lane` and `sex` are new, and unknown columns are ignored. Existing `sample,fastq_1,fastq_2` samplesheets still work. When `lane` is given, each lane's read group is `<sample>.<lane>`.
+- A samplesheet is rejected before anything runs when the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`, or when some rows of a sample have `fastq_2` and others do not.
+
 - The pipeline requires Nextflow 26.10.6 or later.
 - The software versions report is written to `pipeline_info/software_versions.yml` and lists the versions of every process, including the RNA steps.
 - The `test` profile uses small synthetic data in `tests/data/` and only works with `-stub`.

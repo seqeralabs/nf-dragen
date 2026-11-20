@@ -32,3 +32,5 @@ PY
 | `fastq/sample1_R1.fastq.gz`, `fastq/sample1_R2.fastq.gz` | 20 read pairs of 50 bp sampled from `ref.fa` (R2 is the reverse complement) |
 | `fastq/sample2_L001_R1.fastq.gz`, `fastq/sample2_L002_R1.fastq.gz` | 20 single-end reads of 50 bp each, one file per lane |
 | `samplesheets/samplesheet_test.csv` | Written by hand: one paired-end sample and one single-end sample on two lanes |
+| `samplesheets/samplesheet_sarek.csv` | Written by hand: nf-core/sarek column order, lane names, an RNA sample and an extra `strandedness` column |
+| `samplesheets/samplesheet_no_fastq_1.csv`, `samplesheet_missing_fastq.csv`, `samplesheet_patient_mismatch.csv` | Written by hand: invalid samplesheets for the samplesheet parsing tests |

@@ -7,8 +7,8 @@ Github : https://github.com/seqeralabs/nf-dragen
 ----------------------------------------------------------------------------------------
  */
 
-include { samplesheetToList             } from 'plugin/nf-schema'
 include { validateParameters            } from 'plugin/nf-schema'
+include { PARSE_SAMPLESHEET             } from './subworkflows/local/parse_samplesheet'
 include { DRAGEN_WORKFLOW as DRAGEN_DNA } from './workflows/dragen'
 include { DRAGEN_WORKFLOW as DRAGEN_RNA } from './workflows/dragen'
 
@@ -36,18 +36,13 @@ workflow {
     main:
     validateParameters()
 
-    ch_samplesheet = channel.fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
-        .groupTuple()
-        .map { meta, fastq_1, fastq_2 ->
-            return [meta, fastq_1.flatten(), fastq_2.flatten()]
-        }
+    PARSE_SAMPLESHEET(params.input, params.seq_type)
 
     SEQERALABS_DRAGEN(
-        ch_samplesheet,
+        PARSE_SAMPLESHEET.out.samples,
         params.fasta,
         params.dragen_index_dna,
         params.dragen_index_rna,
-        params.seq_type,
         params.skip_dragen,
     )
 
@@ -88,18 +83,15 @@ output {
 //
 workflow SEQERALABS_DRAGEN {
     take:
-    input       // tuple: [ meta, [fastq_1, ...], [fastq_2, ...] ]
+    input       // channel: Sample records from PARSE_SAMPLESHEET
     fasta       // path: fasta file
     dna_index   // path: dragen index directory for dna
     rna_index   // path: dragen index directory for rna
-    seq_type    // str: seq_type for samplesheet rows without one
     skip_dragen // bool: skip all DRAGEN steps
 
     main:
 
-    ch_input = input
-        .filter { _meta, _fastq_1, _fastq_2 -> !skip_dragen }
-        .map { meta, fastq_1, fastq_2 -> record(id: meta.id, seq_type: meta.seq_type ?: seq_type, fastq_1: fastq_1, fastq_2: fastq_2) }
+    ch_input = input.filter { _sample -> !skip_dragen }
 
     DRAGEN_DNA(
         ch_input.filter { sample -> sample.seq_type == 'dna' },

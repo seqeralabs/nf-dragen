@@ -14,6 +14,7 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'test',
+                    lanes: ['test_L1', '2'],
                     // shortcut: lane 2 reuses the single-end FASTQs as a pair; content does not matter to a stub
                     fastq_1: [file("${projectDir}/tests/data/fastq/sample1_R1.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L001_R1.fastq.gz")],
                     fastq_2: [file("${projectDir}/tests/data/fastq/sample1_R2.fastq.gz"), file("${projectDir}/tests/data/fastq/sample2_L002_R1.fastq.gz")]

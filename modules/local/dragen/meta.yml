@@ -17,6 +17,9 @@ input:
         id:
           type: String
           description: Sample name; also the output file prefix, RGSM and the start of each RGID
+        lanes:
+          type: List<String>
+          description: Name of each lane, in lane order; RGID is `<id>.<lane>`
         fastq_1:
           type: List<Path>
           description: Read 1 FASTQ of each lane, in lane order
