@@ -18,6 +18,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The `help`, `help_full`, `show_hidden`, `version`, `validate_params`, `pipelines_testdata_base_path` and `trace_report_suffix` params. Parameters are always validated.
 - The container, conda and `debug` profiles, and the `test_full` profile. No process uses a container.
 - The timeline, report, trace and DAG files in `pipeline_info/`; Seqera Platform records these itself.
+- The `config_profile_name` and `config_profile_description` params. They had no effect since the nf-core utils were removed. Launch configs that still pass them now fail parameter validation.
 
 ### `Changed`
 
