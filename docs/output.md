@@ -37,6 +37,7 @@ The pipeline writes these files to the output directory given with `-output-dir`
   - germline runs: `<prefix>.vc_hethom_ratio_metrics.csv`, `<prefix>.ploidy_estimation_metrics.csv`, `<prefix>.roh_metrics.csv` and `<prefix>.allele_transition_noise_metrics.csv`;
   - somatic runs write the coverage metrics once per sample, ending in `_tumor` and `_normal` (e.g. `<prefix>.wgs_coverage_metrics_tumor.csv`);
   - whole-genome somatic runs: `<prefix>.cnv_metrics.csv`.
+  - when DRAGEN writes them, the coverage histograms and mean coverage: `<prefix>.<region>_overall_mean_cov.csv`, `<prefix>.<region>_contig_mean_cov.csv`, `<prefix>.<region>_fine_hist.csv`, `<prefix>.<region>_hist.csv` and `<prefix>.fragment_length_hist.csv`.
 - On Seqera Platform, the MultiQC report and these DRAGEN QC files appear in the run's Reports tab (listed in `tower.yml`).
 - `multiqc/` summarises every DRAGEN `*metrics*.csv` and the software versions. With `--skip_dragen` it holds only the software versions. Set `--multiqc_title` to name the report (the HTML file name then starts with the title), `--multiqc_config` to add a MultiQC config and `--multiqc_logo` to add a logo.
 - Files are copied to the output directory. To change that, set `workflow.output.mode` in your own config (for example `workflow.output.mode = 'symlink'`).
