@@ -31,6 +31,7 @@ process DRAGEN {
         cnv_vcf: file("${prefix}.cnv.vcf.gz", optional: true),
         cnv_tbi: file("${prefix}.cnv.vcf.gz.tbi", optional: true),
         metrics: files("${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv", optional: true),
+        dragen_files: file("${prefix}.dragen_files.txt"),
     )
 
     topic:
@@ -54,6 +55,8 @@ process DRAGEN {
         ${targets} \\
         ${lic} \\
         ${args}
+
+    ls -lR > ${prefix}.dragen_files.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -91,6 +94,8 @@ process DRAGEN {
     ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : "touch ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv ${prefix}.wgs_overall_mean_cov.csv ${prefix}.wgs_contig_mean_cov.csv ${prefix}.wgs_fine_hist.csv ${prefix}.wgs_hist.csv ${prefix}.fragment_length_hist.csv"}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv" : ''}
     ${!tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.ploidy_estimation_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.allele_transition_noise_metrics.csv" : ''}
+
+    ls -lR > ${prefix}.dragen_files.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

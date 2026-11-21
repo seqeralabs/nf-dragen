@@ -30,7 +30,7 @@ nextflow_process {
                 { assert process.success },
                 { assert process.out[0][0].vcf == null && process.out[0][0].tbi == null },
                 { assert snapshot(
-                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics].collect { f -> path(f).fileName.toString() }.sort()] },
+                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics, sample.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
                     fastq_list
                 ).match() }
             )
@@ -70,7 +70,7 @@ nextflow_process {
                 { assert !command.contains('--enable-cnv') && !command.contains('--cnv-') },
                 { assert process.out[0][0].cnv_vcf == null && process.out[0][0].cnv_tbi == null },
                 { assert snapshot(
-                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, *pair.metrics].collect { f -> path(f).fileName.toString() }.sort()] },
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, *pair.metrics, pair.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
                     task_dir.resolve('tumour_fastq_list.csv').readLines(),
                     task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }
@@ -112,7 +112,7 @@ nextflow_process {
                 { assert path(process.out[0][0].cnv_vcf).fileName.toString() == 'T_vs_N.cnv.vcf.gz' },
                 { assert path(process.out[0][0].cnv_tbi).fileName.toString() == 'T_vs_N.cnv.vcf.gz.tbi' },
                 { assert snapshot(
-                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, pair.cnv_vcf, pair.cnv_tbi, *pair.metrics].collect { f -> path(f).fileName.toString() }.sort()] },
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, pair.cnv_vcf, pair.cnv_tbi, *pair.metrics, pair.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
                     task_dir.resolve('tumour_fastq_list.csv').readLines(),
                     task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }

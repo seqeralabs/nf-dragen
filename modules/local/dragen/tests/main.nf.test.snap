@@ -10,6 +10,7 @@
                         "T_vs_N.cnv.vcf.gz",
                         "T_vs_N.cnv.vcf.gz.tbi",
                         "T_vs_N.cnv_metrics.csv",
+                        "T_vs_N.dragen_files.txt",
                         "T_vs_N.hard-filtered.vcf.gz",
                         "T_vs_N.hard-filtered.vcf.gz.tbi",
                         "T_vs_N.mapping_metrics.csv",
@@ -35,7 +36,7 @@
                 "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T14:07:06.253263918",
+        "timestamp": "2026-11-21T16:48:41.791462016",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -49,6 +50,7 @@
                     [
                         "T_vs_N.bam",
                         "T_vs_N.bam.bai",
+                        "T_vs_N.dragen_files.txt",
                         "T_vs_N.hard-filtered.vcf.gz",
                         "T_vs_N.hard-filtered.vcf.gz.tbi",
                         "T_vs_N.mapping_metrics.csv",
@@ -76,7 +78,7 @@
                 "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T14:07:01.23123156",
+        "timestamp": "2026-11-21T16:48:36.628765023",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -91,6 +93,7 @@
                         "test.allele_transition_noise_metrics.csv",
                         "test.bam",
                         "test.bam.bai",
+                        "test.dragen_files.txt",
                         "test.fastqc_metrics.csv",
                         "test.fragment_length_hist.csv",
                         "test.hard-filtered.vcf.gz",
@@ -115,7 +118,7 @@
                 "test,test,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T16:32:39.653012022",
+        "timestamp": "2026-11-21T16:48:31.444356608",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
