@@ -83,7 +83,7 @@ process {
         scratch = '/ephemeral'
         containerOptions = '-e FUSION_CACHE_LOCATION=/ephemeral -e FUSION_COMPACT_SYMLINKS=true -e FUSION_STOP_SHUTDOWN_TIMEOUT=2h'
         // Integer.MAX_VALUE adds a retry for the ECS agent restart shortly after an F2 host boots.
-        errorStrategy = { task.exitStatus in ((130..145) + 104 + Integer.MAX_VALUE) ? 'retry' : 'finish' }
+        errorStrategy = { task.exitStatus in ((130..145) - 134) + 104 + Integer.MAX_VALUE ? 'retry' : 'finish' }
         maxRetries = 3
     }
 }
