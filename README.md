@@ -89,7 +89,7 @@ process {
 
 The `libdragen.so` version in `aws.batch.volumes` must match the DRAGEN version of your AMI.
 
-Each launch must also set these, because the pipeline's parameters are declared in `main.nf`, which the default v1 parser does not read, and Platform's Nextflow list may not include 26.10.6:
+Each launch must also set these:
 
 - Syntax parser v2: in the launch form, or with `tw launch --syntax-parser v2`.
 - Nextflow 26.10.6: add `export NXF_VER=26.10.6` to the pre-run script.
