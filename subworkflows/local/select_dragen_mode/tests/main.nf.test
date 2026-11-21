@@ -22,7 +22,7 @@ nextflow_workflow {
         then {
             assertAll(
                 { assert workflow.failed },
-                { assert workflow.stdout.any { line -> line.contains("Patient 'P1' has tumour sample(s) P1_T but no normal") } }
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("Patient 'P1' has tumour sample(s) P1_T but no normal") } }
             )
         }
     }
@@ -43,7 +43,7 @@ nextflow_workflow {
         then {
             assertAll(
                 { assert workflow.failed },
-                { assert workflow.stdout.any { line -> line.contains("Patient 'P1' has 2 normal DNA samples") } }
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("Patient 'P1' has 2 normal DNA samples") } }
             )
         }
     }
