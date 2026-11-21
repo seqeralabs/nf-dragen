@@ -55,9 +55,8 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The pipeline picks the DRAGEN run for each DNA sample from `patient` and `status`:
 
 - A patient with a normal and a tumour gets one **somatic** (tumour/normal) run. The normal gets no germline run.
-- A patient with several tumours and one normal gets one somatic run per tumour, each with that normal.
 - A normal without a tumour gets a **germline** run.
-- A tumour without a normal, or a patient with two or more normals, stops the pipeline before any DNA task runs, with a message naming the patient. Tumour-only calling is not supported.
+- A tumour without a normal, a patient with two or more normals, or a patient with two or more tumours stops the pipeline before any DNA task runs, with a message naming the patient. Tumour-only calling is not supported.
 
 RNA samples ignore `patient` and `status` and each get an **RNA** run.
 

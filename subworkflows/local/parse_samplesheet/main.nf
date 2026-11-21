@@ -22,6 +22,16 @@ workflow PARSE_SAMPLESHEET {
         )
     }
 
+    // One tumour per DNA patient, checked here so it fails before any task (SELECT_DRAGEN_MODE runs in an operator)
+    sample_records
+        .findAll { sample -> sample.seq_type == 'dna' && sample.status == 1 }
+        .groupBy { sample -> sample.patient }
+        .each { patient, tumours ->
+            if (tumours.size() > 1) {
+                error("Patient '${patient}' has ${tumours.size()} tumour DNA samples (${tumours*.id.join(', ')}); give one tumour per patient")
+            }
+        }
+
     emit:
     samples: Channel<Sample> = channel.fromList(sample_records)
 }
