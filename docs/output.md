@@ -45,7 +45,6 @@ The pipeline writes these files to the output directory given with `-output-dir`
 - Whole-genome somatic runs also write `<prefix>.wgs_somatic_callable_regions.bed`, the regions with enough coverage in both samples to call somatic variants.
 - RNA runs also write the splice junctions: `<prefix>.SJ.out.tab` (filtered), `<prefix>.unfiltered.SJ.out.tab` and `<prefix>.Chimeric.out.junction` (chimeric alignments).
 - Each of these files is published when DRAGEN writes it. DRAGEN's logs, replay and usage files, MD5 sums, `<prefix>.metrics.json` and `<prefix>.insert-stats.tab` (the same metrics as the CSVs), and the CNV intermediates (`.tn.tsv.gz`, `tumor.*`, `.cnv.gff3`, `.cnv.igv_session.xml`) are not published.
-- `<prefix>.dragen_files.txt` (in both `dragen/` folders): a recursive `ls -lR` listing of the DRAGEN task directory after DRAGEN finished, so it also shows the files the pipeline does not publish.
 - On Seqera Platform, the MultiQC report and these DRAGEN QC files appear in the run's Reports tab (listed in `tower.yml`).
 - `multiqc/` summarises every DRAGEN `*metrics*.csv` and the software versions. With `--skip_dragen` it holds only the software versions. Set `--multiqc_title` to name the report (the HTML file name then starts with the title), `--multiqc_config` to add a MultiQC config and `--multiqc_logo` to add a logo.
 - Files are copied to the output directory. To change that, set `workflow.output.mode` in your own config (for example `workflow.output.mode = 'symlink'`).

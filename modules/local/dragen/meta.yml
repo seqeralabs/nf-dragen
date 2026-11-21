@@ -110,10 +110,6 @@ output:
           type: Set<Path>
           pattern: "${prefix}.{SJ.out.tab,unfiltered.SJ.out.tab,Chimeric.out.junction}"
           description: Splice junctions (filtered and unfiltered) and chimeric junctions, RNA runs only
-        dragen_files:
-          type: Path
-          pattern: "${prefix}.dragen_files.txt"
-          description: Recursive listing of the DRAGEN output directory
 topics:
   - versions:
       type: Path

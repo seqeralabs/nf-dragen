@@ -38,7 +38,6 @@ process DRAGEN {
         targeted_json: file("${prefix}.targeted.json", optional: true),
         callable_bed: file("${prefix}.wgs_somatic_callable_regions.bed", optional: true),
         junctions: files("${prefix}.{SJ.out.tab,unfiltered.SJ.out.tab,Chimeric.out.junction}", optional: true),
-        dragen_files: file("${prefix}.dragen_files.txt"),
     )
 
     topic:
@@ -62,8 +61,6 @@ process DRAGEN {
         ${targets} \\
         ${lic} \\
         ${args}
-
-    ls -lR > ${prefix}.dragen_files.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -102,8 +99,6 @@ process DRAGEN {
     ${vc && !tumour_id ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.roh.bed ${prefix}.targeted.vcf.gz ${prefix}.targeted.vcf.gz.tbi ${prefix}.targeted.json" : ''}
     ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi ${prefix}.sv_metrics.csv" : ''}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv ${prefix}.wgs_somatic_callable_regions.bed" : ''}
-
-    ls -lR > ${prefix}.dragen_files.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
