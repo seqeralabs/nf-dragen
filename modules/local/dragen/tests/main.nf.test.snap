@@ -45,20 +45,20 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T,T,UnknownLibrary,1,test2_1.fastq.gz,"
+                "T,T,UnknownLibrary,1,tumour/1/test2_1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
+                "N,N,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T18:48:30.980390378",
+        "timestamp": "2026-11-21T19:27:24.085491638",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
         }
     },
-    "single-end tumour with paired-end normal, target BED - stub": {
+    "two single-end tumour rows with paired-end normal, target BED - stub": {
         "content": [
             [
                 [
@@ -110,14 +110,15 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T,T,UnknownLibrary,1,test2_1.fastq.gz,"
+                "T.1,T,UnknownLibrary,1,tumour/1/test_1.fastq.gz,",
+                "T.2,T,UnknownLibrary,2,tumour/2/test2_1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
+                "N,N,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T18:48:25.761139577",
+        "timestamp": "2026-11-21T19:27:18.780485684",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -161,10 +162,10 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "test,test,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
+                "test,test,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T18:48:20.442554217",
+        "timestamp": "2026-11-21T19:27:06.901076801",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

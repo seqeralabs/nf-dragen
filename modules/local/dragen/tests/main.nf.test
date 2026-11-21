@@ -15,8 +15,8 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'test',
-                    fastq_1: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"),
-                    fastq_2: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")]
                 ))
                 input[1] = file("${projectDir}/tests/data/dragen_index_dna")
                 input[2] = null
@@ -36,7 +36,40 @@ nextflow_process {
         }
     }
 
-    test("single-end tumour with paired-end normal, target BED - stub") {
+    test("two FASTQ pairs with the same file names - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'test',
+                    // same file names in different folders, as lanes often are
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_2.fastq.gz")]
+                ))
+                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
+                input[2] = null
+                """
+            }
+        }
+
+        then {
+            def task_dir = path(process.out[0][0].vcf_filtered).parent
+            assertAll(
+                { assert process.success },
+                { assert task_dir.resolve('1/test_1.fastq.gz').toFile().exists() && task_dir.resolve('2/test_1.fastq.gz').toFile().exists() },
+                { assert task_dir.resolve('fastq_list.csv').readLines() == [
+                    'RGID,RGSM,RGLB,Lane,Read1File,Read2File',
+                    'test.1,test,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz',
+                    'test.2,test,UnknownLibrary,2,2/test_1.fastq.gz,2/test_2.fastq.gz',
+                ] }
+            )
+        }
+    }
+
+    test("two single-end tumour rows with paired-end normal, target BED - stub") {
 
         options "-stub"
 
@@ -45,11 +78,11 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'N',
-                    fastq_1: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"),
-                    fastq_2: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"),
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
                     tumour_id: 'T',
-                    tumour_fastq_1: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz"),
-                    tumour_fastq_2: null
+                    tumour_fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")],
+                    tumour_fastq_2: []
                 ))
                 input[1] = file("${projectDir}/tests/data/dragen_index_dna")
                 input[2] = file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed")
@@ -86,11 +119,11 @@ nextflow_process {
                 """
                 input[0] = channel.of(record(
                     id: 'N',
-                    fastq_1: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"),
-                    fastq_2: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"),
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
                     tumour_id: 'T',
-                    tumour_fastq_1: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz"),
-                    tumour_fastq_2: null
+                    tumour_fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")],
+                    tumour_fastq_2: []
                 ))
                 input[1] = file("${projectDir}/tests/data/dragen_index_dna")
                 input[2] = null
