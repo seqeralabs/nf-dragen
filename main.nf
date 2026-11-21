@@ -31,7 +31,6 @@ params {
     // Tools
     skip_dragen: Boolean = false
     skip_multiqc: Boolean = false
-    dragen_license: String = 'marketplace'
 
     // MultiQC options
     multiqc_config: Path?
@@ -40,8 +39,6 @@ params {
 
     // Boilerplate options
     outdir: String
-    publish_dir_mode: String = 'copy'
-    monochrome_logs: Boolean = false
 }
 
 workflow {
