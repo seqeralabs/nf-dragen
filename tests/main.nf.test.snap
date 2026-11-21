@@ -53,6 +53,7 @@
             [
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.bam",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.hard-filtered.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.mapping_metrics.csv",
@@ -70,6 +71,7 @@
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N_tumor.bam.bai",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.bam",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.hard-filtered.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.mapping_metrics.csv",
@@ -88,6 +90,7 @@
                 "dragen/dna_fastq_to_vcf/P3_N.allele_transition_noise_metrics.csv",
                 "dragen/dna_fastq_to_vcf/P3_N.bam",
                 "dragen/dna_fastq_to_vcf/P3_N.bam.bai",
+                "dragen/dna_fastq_to_vcf/P3_N.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/P3_N.fastqc_metrics.csv",
                 "dragen/dna_fastq_to_vcf/P3_N.fragment_length_hist.csv",
                 "dragen/dna_fastq_to_vcf/P3_N.hard-filtered.vcf.gz",
@@ -107,6 +110,7 @@
                 "dragen/dna_fastq_to_vcf/P3_N.wgs_overall_mean_cov.csv",
                 "dragen/rna_fastq_to_bam/P4_RNA.bam",
                 "dragen/rna_fastq_to_bam/P4_RNA.bam.bai",
+                "dragen/rna_fastq_to_bam/P4_RNA.dragen_files.txt",
                 "dragen/rna_fastq_to_bam/P4_RNA.fastqc_metrics.csv",
                 "dragen/rna_fastq_to_bam/P4_RNA.fragment_length_hist.csv",
                 "dragen/rna_fastq_to_bam/P4_RNA.mapping_metrics.csv",
@@ -125,7 +129,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-21T16:33:21.884524542",
+        "timestamp": "2026-11-21T16:45:39.644492188",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -139,6 +143,7 @@
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz",
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv_metrics.csv",
+                "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.hard-filtered.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.mapping_metrics.csv",
@@ -155,6 +160,7 @@
                 "dragen/dna_fastq_to_vcf/NA12878.allele_transition_noise_metrics.csv",
                 "dragen/dna_fastq_to_vcf/NA12878.bam",
                 "dragen/dna_fastq_to_vcf/NA12878.bam.bai",
+                "dragen/dna_fastq_to_vcf/NA12878.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/NA12878.fastqc_metrics.csv",
                 "dragen/dna_fastq_to_vcf/NA12878.fragment_length_hist.csv",
                 "dragen/dna_fastq_to_vcf/NA12878.hard-filtered.vcf.gz",
@@ -173,6 +179,7 @@
                 "dragen/dna_fastq_to_vcf/NA12878.wgs_overall_mean_cov.csv",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.bam",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.bam.bai",
+                "dragen/rna_fastq_to_bam/GM12878_REP1.dragen_files.txt",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.fastqc_metrics.csv",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.fragment_length_hist.csv",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.mapping_metrics.csv",
@@ -189,7 +196,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-21T16:34:05.946628516",
+        "timestamp": "2026-11-21T16:46:22.610755219",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -200,6 +207,7 @@
             [
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.bam",
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.bam.bai",
+                "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.hard-filtered.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.mapping_metrics.csv",
@@ -221,7 +229,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-21T14:08:32.390285697",
+        "timestamp": "2026-11-21T16:46:35.991760513",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -235,6 +243,7 @@
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.cnv.vcf.gz",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.cnv.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.cnv_metrics.csv",
+                "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.hard-filtered.vcf.gz",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.hard-filtered.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/P1_T_vs_P1_N.mapping_metrics.csv",
@@ -251,6 +260,7 @@
                 "dragen/dna_fastq_to_vcf/P2_SE.allele_transition_noise_metrics.csv",
                 "dragen/dna_fastq_to_vcf/P2_SE.bam",
                 "dragen/dna_fastq_to_vcf/P2_SE.bam.bai",
+                "dragen/dna_fastq_to_vcf/P2_SE.dragen_files.txt",
                 "dragen/dna_fastq_to_vcf/P2_SE.fastqc_metrics.csv",
                 "dragen/dna_fastq_to_vcf/P2_SE.fragment_length_hist.csv",
                 "dragen/dna_fastq_to_vcf/P2_SE.hard-filtered.vcf.gz",
@@ -269,6 +279,7 @@
                 "dragen/dna_fastq_to_vcf/P2_SE.wgs_overall_mean_cov.csv",
                 "dragen/rna_fastq_to_bam/P3_RNA.bam",
                 "dragen/rna_fastq_to_bam/P3_RNA.bam.bai",
+                "dragen/rna_fastq_to_bam/P3_RNA.dragen_files.txt",
                 "dragen/rna_fastq_to_bam/P3_RNA.fastqc_metrics.csv",
                 "dragen/rna_fastq_to_bam/P3_RNA.fragment_length_hist.csv",
                 "dragen/rna_fastq_to_bam/P3_RNA.mapping_metrics.csv",
@@ -309,7 +320,7 @@
                 "    seqeralabs/nf-dragen: 1.0.0dev"
             ]
         ],
-        "timestamp": "2026-11-21T16:33:05.606927085",
+        "timestamp": "2026-11-21T16:45:23.055697852",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
