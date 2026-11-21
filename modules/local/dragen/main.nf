@@ -31,6 +31,12 @@ process DRAGEN {
         cnv_vcf: file("${prefix}.cnv.vcf.gz", optional: true),
         cnv_tbi: file("${prefix}.cnv.vcf.gz.tbi", optional: true),
         metrics: files("${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv", optional: true),
+        // Germline: named in the DRAGEN 4.4.4 run log. BAF: the log names `.baf`, the v4.4 docs `.baf.bw` (somatic too, unverified)
+        ploidy_vcf: file("${prefix}.ploidy.vcf.gz", optional: true),
+        roh_bed: file("${prefix}.roh.bed", optional: true),
+        baf: files("${prefix}{,.hard-filtered}.baf{,.bw}", optional: true),
+        // RNA splice junctions (v4.4 docs, unverified names): filtered and unfiltered SJ.out.tab, chimeric junctions
+        junctions: files("${prefix}.{SJ.out.tab*,Chimeric.out.junction}", optional: true),
         dragen_files: file("${prefix}.dragen_files.txt"),
     )
 
@@ -93,7 +99,9 @@ process DRAGEN {
     ${args.contains('--enable-variant-caller') ? "touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv" : ''}
     ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : "touch ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv ${prefix}.wgs_overall_mean_cov.csv ${prefix}.wgs_contig_mean_cov.csv ${prefix}.wgs_fine_hist.csv ${prefix}.wgs_hist.csv ${prefix}.fragment_length_hist.csv"}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv" : ''}
-    ${!tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.ploidy_estimation_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.allele_transition_noise_metrics.csv" : ''}
+    ${!tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.ploidy_estimation_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.allele_transition_noise_metrics.csv ${prefix}.ploidy.vcf.gz ${prefix}.roh.bed ${prefix}.baf ${prefix}.hard-filtered.baf" : ''}
+    ${tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.baf.bw ${prefix}.hard-filtered.baf.bw" : ''}
+    ${args.contains('--enable-rna') ? "touch ${prefix}.SJ.out.tab ${prefix}.Chimeric.out.junction" : ''}
 
     ls -lR > ${prefix}.dragen_files.txt
 
