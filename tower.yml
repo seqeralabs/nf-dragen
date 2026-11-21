@@ -13,3 +13,15 @@ reports:
     display: "DRAGEN CNV metrics"
   "**/*.time_metrics.csv":
     display: "DRAGEN run time metrics"
+  "**/*.fastqc_metrics.csv":
+    display: "DRAGEN FastQC metrics"
+  "**/*.trimmer_metrics.csv":
+    display: "DRAGEN read trimmer metrics"
+  "**/*.ploidy_estimation_metrics.csv":
+    display: "DRAGEN ploidy estimation metrics"
+  "**/*.vc_hethom_ratio_metrics.csv":
+    display: "DRAGEN variant het/hom ratio metrics"
+  "**/*.roh_metrics.csv":
+    display: "DRAGEN runs of homozygosity metrics"
+  "**/*.allele_transition_noise_metrics.csv":
+    display: "DRAGEN allele transition noise metrics"

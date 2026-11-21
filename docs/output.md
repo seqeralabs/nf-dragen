@@ -13,11 +13,10 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │   │   ├── <sample>.bam
 │   │   ├── <sample>.bam.bai
 │   │   ├── <sample>.*metrics*.csv     # DRAGEN QC metrics, see below
-│   │   ├── <sample>.vcf.gz
-│   │   ├── <sample>.vcf.gz.tbi
 │   │   ├── <sample>.hard-filtered.vcf.gz
 │   │   ├── <sample>.hard-filtered.vcf.gz.tbi
 │   │   ├── <tumour>_vs_<normal>.*        # somatic runs: the same files as above, plus
+│   │   ├── <tumour>_vs_<normal>.vcf.gz(.tbi)      # unfiltered variants
 │   │   ├── <tumour>_vs_<normal>.sv.vcf.gz(.tbi)   # structural variants
 │   │   └── <tumour>_vs_<normal>.cnv.vcf.gz(.tbi)  # copy number variants, whole-genome somatic runs only
 │   └── rna_fastq_to_bam/              # RNA samples: <sample>.bam, .bam.bai and *metrics*.csv, no VCFs
@@ -32,8 +31,10 @@ The pipeline writes these files to the output directory given with `-output-dir`
 - `genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.
 - `dragen/` holds the DRAGEN outputs of each sample, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/dna_fastq_to_vcf/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each sample is one read group in the BAM, with the sample name as its ID.
 - DRAGEN QC metrics (`<prefix>` is the sample name, or `<tumour>_vs_<normal>` for a somatic run):
-  - every run: `<prefix>.mapping_metrics.csv` (for RNA runs it includes the RNA-specific mapping metrics) and `<prefix>.time_metrics.csv`;
-  - germline and somatic runs: `<prefix>.vc_metrics.csv` and `<prefix>.wgs_coverage_metrics.csv`, plus `<prefix>.target_bed_coverage_metrics.csv` with `--target_bed`;
+  - every run: `<prefix>.mapping_metrics.csv` (for RNA runs it includes the RNA-specific mapping metrics), `<prefix>.time_metrics.csv` and `<prefix>.wgs_coverage_metrics.csv`;
+  - germline and RNA runs: `<prefix>.fastqc_metrics.csv` and `<prefix>.trimmer_metrics.csv`;
+  - germline and somatic runs: `<prefix>.vc_metrics.csv`, plus `<prefix>.target_bed_coverage_metrics.csv` with `--target_bed`;
+  - germline runs: `<prefix>.vc_hethom_ratio_metrics.csv`, `<prefix>.ploidy_estimation_metrics.csv`, `<prefix>.roh_metrics.csv` and `<prefix>.allele_transition_noise_metrics.csv`;
   - somatic runs write the coverage metrics once per sample, ending in `_tumor` and `_normal` (e.g. `<prefix>.wgs_coverage_metrics_tumor.csv`);
   - whole-genome somatic runs: `<prefix>.cnv_metrics.csv`.
 - On Seqera Platform, the MultiQC report and these DRAGEN QC files appear in the run's Reports tab (listed in `tower.yml`).
