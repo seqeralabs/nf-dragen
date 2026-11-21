@@ -36,9 +36,6 @@ params {
     multiqc_config: Path?
     multiqc_title: String?
     multiqc_logo: Path?
-
-    // Boilerplate options
-    outdir: String
 }
 
 workflow {

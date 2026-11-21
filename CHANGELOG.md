@@ -28,7 +28,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The container, conda and `debug` profiles, and the `test_full` profile. Docker is always on (see `Added`); no other container runtime is supported.
 - The timeline, report, trace and DAG files in `pipeline_info/`; Seqera Platform records these itself.
 - The `config_profile_name` and `config_profile_description` params. They had no effect since the nf-core utils were removed. Launch configs that still pass them now fail parameter validation.
-- The `publish_dir_mode` param: results are always copied to `--outdir`. To change that, set `workflow.output.mode` in your own config.
+- The `publish_dir_mode` param: results are always copied to the output directory. To change that, set `workflow.output.mode` in your own config.
+- The `outdir` param: `--outdir` now fails the launch. Pass `-output-dir <dir>` (one dash) on every run instead, or set `outputDir` in a config file or a Seqera Platform launch (the **Output directory** field, or `tw launch --output-dir`).
 - The `monochrome_logs` param: set `validation.monochromeLogs = true` in your own config instead.
 - The `dragen_license` param: use `-profile byol` instead of `--dragen_license byol`, and drop `--dragen_license marketplace` (the default).
 - The `lane` column: a samplesheet takes one row per sample, with one FASTQ pair or one single-end FASTQ. A sample name on more than one row is now an error, so merge the lanes of a sample (for example by concatenating its FASTQs) into one row first. A `lane` column is ignored like any unknown column.

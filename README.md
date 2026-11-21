@@ -37,14 +37,16 @@ flowchart LR
 Run the test profile in stub mode from the repository root. Stub mode does not run DRAGEN, so it needs neither the AMI nor a licence. The test profile and the nf-test tests read their input data from nf-core/test-datasets, so they need network access to raw.githubusercontent.com:
 
 ```bash
-nextflow run . -profile test -stub --outdir results
+nextflow run . -profile test -stub -output-dir results
 ```
 
 A real run needs the DRAGEN AMI on F2 instances (see [Requirements](#requirements)):
 
 ```bash
-nextflow run . --input samplesheet.csv --fasta genome.fa --outdir results
+nextflow run . --input samplesheet.csv --fasta genome.fa -output-dir results
 ```
+
+`-output-dir` (one dash) is required on every run. It is a Nextflow option, not a pipeline parameter; you can set `outputDir` in a config file instead. Without either, Nextflow writes to `results/` in the launch directory.
 
 Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 
@@ -91,13 +93,14 @@ The `libdragen.so` version in `aws.batch.volumes` must match the DRAGEN version 
 
 Each launch must also set these:
 
+- Output directory: the **Output directory** field under General config in the launch form, or `tw launch --output-dir s3://bucket/results/run1`. Platform passes it to Nextflow as `-output-dir`. You can also put `outputDir = 's3://bucket/results/run1'` in the launch config. The field is not carried over when you relaunch a run, so set it again.
 - Syntax parser v2: in the launch form, or with `tw launch --syntax-parser v2`.
 - Nextflow 26.10.6: add `export NXF_VER=26.10.6` to the pre-run script.
 
 ## Documentation
 
 - [Usage](docs/usage.md): samplesheet format, run modes, configuration and running the pipeline.
-- [Output](docs/output.md): the files the pipeline writes to `--outdir`.
+- [Output](docs/output.md): the files the pipeline writes to the output directory.
 - [Parameters](docs/parameters.md): every pipeline parameter.
 
 ## Credits

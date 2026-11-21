@@ -74,21 +74,23 @@ MultiQC runs after DRAGEN on the DRAGEN metrics and the software versions (see [
 We can configure the reference in two ways:
 
 1. Supply a `--fasta`, from which Dragen will build a genome index for alignment. The FASTA must not contain ALT contigs, for example use the GRCh38 no-ALT analysis set: DRAGEN refuses to build from ALT contigs without a liftover file, and the pipeline does not pass one. The DNA hash table is built with CNV k-mers, so CNV calling can use it; a DNA index built by an earlier version of the pipeline lacks them and must be rebuilt for CNV.
-2. If you have already performed a pipeline run using `1.`, the reference index will be written to a results directory at `${params.outdir}/genome/index/dragen_index_dna` or `${params.outdir}/genome/index/dragen_index_rna`. You can reuse these indexes by supplying the parameter `--dragen_index_dna` and/or `--dragen_index_rna` which will skip 1 for DNA and RNA respectively.
+2. If you have already performed a pipeline run using `1.`, the reference index will be written to a results directory at `<output-dir>/genome/index/dragen_index_dna` or `<output-dir>/genome/index/dragen_index_rna`. You can reuse these indexes by supplying the parameter `--dragen_index_dna` and/or `--dragen_index_rna` which will skip 1 for DNA and RNA respectively.
 
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run seqeralabs/nf-dragen --input samplesheet.csv --fasta genome.fa --outdir results
+nextflow run seqeralabs/nf-dragen --input samplesheet.csv --fasta genome.fa -output-dir results
 ```
+
+`-output-dir` (one dash) is required on every run. It is a Nextflow option, not a pipeline parameter. You can set `outputDir = 'results'` in a config file instead, and in Seqera Platform use the **Output directory** field of the launch form or `tw launch --output-dir`.
 
 Note that the pipeline will create the following files in your working directory:
 
 ```bash
 work                # Directory containing the nextflow working files
-<OUTDIR>            # Finished results in specified location (defined with --outdir)
+<OUTDIR>            # Finished results in specified location (defined with -output-dir)
 .nextflow_log       # Log file from Nextflow
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
@@ -104,14 +106,13 @@ Do not use `-c <file>` to specify parameters as this will result in errors. Cust
 The above pipeline run specified with a params file in yaml format:
 
 ```bash
-nextflow run seqeralabs/nf-dragen -params-file params.yaml
+nextflow run seqeralabs/nf-dragen -params-file params.yaml -output-dir results
 ```
 
 with `params.yaml` containing:
 
 ```yaml
 input: './samplesheet.csv'
-outdir: './results/'
 fasta: './genome.fa'
 <...>
 ```
@@ -154,7 +155,7 @@ Note that multiple profiles can be loaded; the order of arguments is important, 
 
 - `test`
   - A profile with a complete configuration for automated testing
-  - Uses small public test data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), so needs no other parameters except `--outdir`. Only works with `-stub`, because DRAGEN is not available outside its licensed environment.
+  - Uses small public test data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), so needs no other parameters, only `-output-dir`. Only works with `-stub`, because DRAGEN is not available outside its licensed environment.
 
 ### `-resume`
 
