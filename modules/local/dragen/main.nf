@@ -30,7 +30,7 @@ process DRAGEN {
         sv_tbi: file("${prefix}.sv.vcf.gz.tbi", optional: true),
         cnv_vcf: file("${prefix}.cnv.vcf.gz", optional: true),
         cnv_tbi: file("${prefix}.cnv.vcf.gz.tbi", optional: true),
-        metrics: files("${prefix}.*metrics*.csv", optional: true),
+        metrics: files("${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv", optional: true),
     )
 
     topic:
@@ -70,6 +70,7 @@ process DRAGEN {
     def targets = targetArgs(target_bed, tumour_id)
     // Germline and RNA names are those DRAGEN 4.4.4 wrote in a real run; somatic names come from the DRAGEN docs (unverified).
     // Coverage reports (RNA too): whole genome, plus target_bed with --vc-target-bed; tumour/normal runs write one per sample
+    // The coverage histogram and mean-coverage names touched below are unverified until a real run
     def suffixes = tumour_id ? ['_tumor', '_normal'] : ['']
     def coverage = (target_bed ? ['wgs', 'target_bed'] : ['wgs']).collectMany { region -> suffixes.collect { suffix -> "${prefix}.${region}_coverage_metrics${suffix}.csv" } }.join(' ')
     """
@@ -87,7 +88,7 @@ process DRAGEN {
 
     touch ${prefix}.bam ${prefix}.bam.bai ${coverage} ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv
     ${args.contains('--enable-variant-caller') ? "touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv" : ''}
-    ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : "touch ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv"}
+    ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : "touch ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv ${prefix}.wgs_overall_mean_cov.csv ${prefix}.wgs_contig_mean_cov.csv ${prefix}.wgs_fine_hist.csv ${prefix}.wgs_hist.csv ${prefix}.fragment_length_hist.csv"}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv" : ''}
     ${!tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.ploidy_estimation_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.allele_transition_noise_metrics.csv" : ''}
 

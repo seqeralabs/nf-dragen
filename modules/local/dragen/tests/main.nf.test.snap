@@ -92,6 +92,7 @@
                         "test.bam",
                         "test.bam.bai",
                         "test.fastqc_metrics.csv",
+                        "test.fragment_length_hist.csv",
                         "test.hard-filtered.vcf.gz",
                         "test.hard-filtered.vcf.gz.tbi",
                         "test.mapping_metrics.csv",
@@ -101,7 +102,11 @@
                         "test.trimmer_metrics.csv",
                         "test.vc_hethom_ratio_metrics.csv",
                         "test.vc_metrics.csv",
-                        "test.wgs_coverage_metrics.csv"
+                        "test.wgs_contig_mean_cov.csv",
+                        "test.wgs_coverage_metrics.csv",
+                        "test.wgs_fine_hist.csv",
+                        "test.wgs_hist.csv",
+                        "test.wgs_overall_mean_cov.csv"
                     ]
                 ]
             ],
@@ -110,7 +115,7 @@
                 "test,test,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T15:47:55.850206376",
+        "timestamp": "2026-11-21T16:32:39.653012022",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
