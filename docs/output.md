@@ -15,11 +15,13 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │   │   ├── <sample>.*metrics*.csv     # DRAGEN QC metrics, see below
 │   │   ├── <sample>.hard-filtered.vcf.gz
 │   │   ├── <sample>.hard-filtered.vcf.gz.tbi
+│   │   ├── <sample>.ploidy.vcf.gz, .roh.bed, .baf, .hard-filtered.baf  # germline runs, see below
 │   │   ├── <tumour>_vs_<normal>.*        # somatic runs: the same files as above, plus
 │   │   ├── <tumour>_vs_<normal>.vcf.gz(.tbi)      # unfiltered variants
 │   │   ├── <tumour>_vs_<normal>.sv.vcf.gz(.tbi)   # structural variants
+│   │   ├── <tumour>_vs_<normal>.baf.bw, .hard-filtered.baf.bw  # B-allele frequencies
 │   │   └── <tumour>_vs_<normal>.cnv.vcf.gz(.tbi)  # copy number variants, whole-genome somatic runs only
-│   └── rna_fastq_to_bam/              # RNA samples: <sample>.bam, .bam.bai and *metrics*.csv, no VCFs
+│   └── rna_fastq_to_bam/              # RNA samples: <sample>.bam, .bam.bai, *metrics*.csv and splice junctions, no VCFs
 ├── multiqc/                           # unless --skip_multiqc
 │   ├── multiqc_report.html            # MultiQC report: DRAGEN metrics and software versions
 │   ├── multiqc_data/                  # the report's data, as text files
@@ -38,6 +40,8 @@ The pipeline writes these files to the output directory given with `-output-dir`
   - somatic runs write the coverage metrics once per sample, ending in `_tumor` and `_normal` (e.g. `<prefix>.wgs_coverage_metrics_tumor.csv`);
   - whole-genome somatic runs: `<prefix>.cnv_metrics.csv`.
   - when DRAGEN writes them, the coverage histograms and mean coverage: `<prefix>.<region>_overall_mean_cov.csv`, `<prefix>.<region>_contig_mean_cov.csv`, `<prefix>.<region>_fine_hist.csv`, `<prefix>.<region>_hist.csv` and `<prefix>.fragment_length_hist.csv`.
+- Germline runs also write `<prefix>.ploidy.vcf.gz` (ploidy estimator calls), `<prefix>.roh.bed` (runs of homozygosity) and the B-allele frequencies of the small variant calls, `<prefix>.baf` and `<prefix>.hard-filtered.baf` (PASS calls only). Somatic runs write the B-allele frequencies as `<prefix>.baf.bw` and `<prefix>.hard-filtered.baf.bw` (BigWig). Each is published when DRAGEN writes it.
+- RNA runs also write the splice junctions, `<prefix>.SJ.out.tab*` (filtered and unfiltered), and `<prefix>.Chimeric.out.junction` when there are chimeric alignments, when DRAGEN writes them.
 - `<prefix>.dragen_files.txt` (in both `dragen/` folders): a recursive `ls -lR` listing of the DRAGEN task directory after DRAGEN finished, so it also shows the files the pipeline does not publish.
 - On Seqera Platform, the MultiQC report and these DRAGEN QC files appear in the run's Reports tab (listed in `tower.yml`).
 - `multiqc/` summarises every DRAGEN `*metrics*.csv` and the software versions. With `--skip_dragen` it holds only the software versions. Set `--multiqc_title` to name the report (the HTML file name then starts with the title), `--multiqc_config` to add a MultiQC config and `--multiqc_logo` to add a logo.

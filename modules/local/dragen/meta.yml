@@ -82,6 +82,22 @@ output:
           type: List<Path>
           pattern: "${prefix}.*metrics*.csv"
           description: DRAGEN QC metrics, e.g. `mapping_metrics`, `time_metrics`, `vc_metrics`, `wgs_coverage_metrics`, `target_bed_coverage_metrics` and `cnv_metrics`; tumour/normal coverage files end in `_tumor`/`_normal`
+        ploidy_vcf:
+          type: Path
+          pattern: "${prefix}.ploidy.vcf.gz"
+          description: Germline runs only
+        roh_bed:
+          type: Path
+          pattern: "${prefix}.roh.bed"
+          description: Runs of homozygosity, germline runs only
+        baf:
+          type: Set<Path>
+          pattern: "${prefix}{,.hard-filtered}.baf{,.bw}"
+          description: B-allele frequencies of the small variant calls, all and PASS only
+        junctions:
+          type: Set<Path>
+          pattern: "${prefix}.{SJ.out.tab*,Chimeric.out.junction}"
+          description: Splice and chimeric junctions, RNA runs only
 topics:
   - versions:
       type: Path
