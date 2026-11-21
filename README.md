@@ -56,7 +56,7 @@ Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 
 ### Bring your own licence
 
-By default (`--dragen_license marketplace`) DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence instead, set `--dragen_license byol` and add the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` (in Seqera Platform, as pipeline secrets selected at launch). Every DRAGEN task then passes them to `--lic-server`. Without the secrets the DRAGEN tasks fail with `Required secrets are missing`. BYOL has only been tested in stub mode, not on real DRAGEN.
+By default DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence instead, run with `-profile byol` and add the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` (in Seqera Platform, as pipeline secrets selected at launch). Every DRAGEN task then passes them to `--lic-server`. Without the secrets the DRAGEN tasks fail with `Required secrets are missing`. BYOL has only been tested in stub mode, not on real DRAGEN.
 
 ### Seqera Platform setup
 
@@ -70,7 +70,7 @@ Also set these in the compute environment:
 - Use on-demand instances, not Spot: a reclaimed instance pays the DRAGEN fee again.
 - Leave the compute environment's own Nextflow config empty. Platform appends its own `aws.batch.volumes` after it, so the volumes below must go in the launch config.
 
-Paste this into the **Nextflow config** field of the Launchpad entry or launch form. It applies to both `--dragen_license` modes, and was tested on DRAGEN 4.4.4 on `f2.6xlarge`:
+Paste this into the **Nextflow config** field of the Launchpad entry or launch form. It applies with or without `-profile byol`, and was tested on DRAGEN 4.4.4 on `f2.6xlarge`:
 
 ```groovy
 aws.batch.volumes = '/scratch/fusion:/tmp,/opt/edico,/var/lib/edico,/lib64/libdragen.so.4.4.4,/ephemeral'

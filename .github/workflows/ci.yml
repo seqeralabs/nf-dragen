@@ -28,7 +28,7 @@ jobs:
       - uses: nf-core/setup-nf-test@v1
         with:
           version: ${{ env.NFT_VER }}
-      # Dummy DRAGEN licence secrets for the '--dragen_license byol' stub test
+      # Dummy DRAGEN licence secrets for the '-profile byol' stub test
       - run: |
           nextflow secrets set DRAGEN_USERNAME dummy-user
           nextflow secrets set DRAGEN_PASSWORD dummy-password
