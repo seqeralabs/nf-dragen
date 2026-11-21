@@ -12,11 +12,11 @@ You will need to create a samplesheet with information about the samples you wou
 --input '[path to samplesheet file]'
 ```
 
-Columns can be in any order, and columns the pipeline does not know (for example nf-core/sarek's `lane` or nf-core/rnaseq's `strandedness`) are ignored. Each sample is one row, with one FASTQ pair or one single-end FASTQ. A nf-core/sarek samplesheet with several lanes per sample must first be merged into one row per sample, for example by concatenating each sample's lane FASTQs.
+Columns can be in any order, and columns the pipeline does not know (for example nf-core/sarek's `lane` or nf-core/rnaseq's `strandedness`) are ignored. Each row is one FASTQ pair or one single-end FASTQ. Several rows with the same `sample` are that sample's FASTQ pairs (for example its lanes), so a nf-core/sarek samplesheet with several lanes per sample works as it is. DRAGEN reads each row as one read group: a sample with one row has the read group ID `<sample>`; a sample with several rows has `<sample>.1`, `<sample>.2`, ... in samplesheet order, all with the sample name `<sample>`. The `lane` column itself is not used.
 
 | Column     | Required | Description                                                                                                  |
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `sample`   | yes      | Sample name, without spaces, unique within the samplesheet.                                                  |
+| `sample`   | yes      | Sample name, without spaces. Repeat it on one row per FASTQ pair of the sample.                              |
 | `fastq_1`  | yes      | Path to the read 1 FASTQ file. Must exist, be gzipped and end in `.fastq.gz` or `.fq.gz`.                    |
 | `fastq_2`  | no       | Path to the read 2 FASTQ file, for paired-end data.                                                          |
 | `patient`  | no       | Patient ID, without spaces. Defaults to the sample name.                                                     |
@@ -27,7 +27,8 @@ Columns can be in any order, and columns the pipeline does not know (for example
 The pipeline stops before running anything, with a message naming the problem, when:
 
 - a required column is missing, or a FASTQ file does not exist;
-- a sample name is on more than one row.
+- the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`;
+- the rows of one sample mix paired-end and single-end FASTQs.
 
 ### Minimal samplesheet
 

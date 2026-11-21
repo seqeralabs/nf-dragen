@@ -17,21 +17,22 @@ input:
       fields:
         id:
           type: String
-          description: Sample name; RGID and RGSM, and the output file prefix unless a tumour is given
+          description: Sample name; RGSM, and the output file prefix unless a tumour is given. RGID is `<id>` for one FASTQ pair, `<id>.<n>` for pair n of several
         fastq_1:
-          type: Path
-          description: Read 1 FASTQ
+          type: List<Path>
+          description: Read 1 FASTQs, one per read group, in samplesheet order; pair n is staged in `<n>/`
         fastq_2:
-          type: Path?
-          description: Read 2 FASTQ; null for single-end
+          type: List<Path>
+          description: Read 2 FASTQs, matching `fastq_1`; empty for single-end
         tumour_id:
           type: String?
           description: Tumour sample name; null for germline and RNA runs. The run is then named and prefixed `<tumour_id>_vs_<id>`
         tumour_fastq_1:
-          type: Path?
+          type: List<Path>?
+          description: Tumour read 1 FASTQs; pair n is staged in `tumour/<n>/`
         tumour_fastq_2:
-          type: Path?
-          description: Null for single-end
+          type: List<Path>?
+          description: Tumour read 2 FASTQs; empty for single-end
   - index:
       type: Path
       description: DRAGEN hash table directory

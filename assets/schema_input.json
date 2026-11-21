@@ -53,6 +53,5 @@
             }
         },
         "required": ["sample", "fastq_1"]
-    },
-    "uniqueEntries": ["sample"]
+    }
 }
