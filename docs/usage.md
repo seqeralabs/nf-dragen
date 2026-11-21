@@ -172,7 +172,7 @@ Specify the path to a specific config file (this is a core Nextflow command). Se
 
 Each process has default CPUs, memory and time requests in `conf/base.config`. Processes labelled `dragen` have fixed resources (8 CPUs, 96 GB of memory and 24 hours) that do not change between attempts. Most other labels multiply their memory or time by the attempt number, so a retry asks for twice the resources of the first attempt.
 
-A task that exits with code 130 to 145 or 104, which usually means it was killed, for example for running out of memory, is retried once. Any other exit code is not retried. The pipeline then uses `finish`: tasks that are already running complete, no new tasks start, and the run exits with an error naming the sample.
+A task that exits with code 130 to 145 (except 134) or 104, which usually means it was killed, for example for running out of memory, is retried once. Any other exit code, including 134 (DRAGEN abort, SIGABRT), is not retried. The pipeline then uses `finish`: tasks that are already running complete, no new tasks start, and the run exits with an error naming the sample.
 
 To change the resources of a process, pass a config file with `-c`. Select processes by label with `withLabel`, or by name with `withName`:
 
