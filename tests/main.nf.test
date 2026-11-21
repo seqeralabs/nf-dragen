@@ -114,14 +114,14 @@ nextflow_pipeline {
                 def name = new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1')
                 [name, task_dir.listFiles().findAll { f -> f.name.endsWith('fastq_list.csv') }.collectEntries { f -> [f.name, f.readLines().drop(1).collect { row -> row.tokenize(',')[0] }] }]
             }
-            def dna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('NA12878') } }
+            def dna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('HG002') } }
             def rna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('GM12878_REP1') } }
             def published = getAllFilesFromDir(outputDir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
             assertAll(
                 { assert workflow.success },
                 { assert workflow.trace.tasks().collect { task -> task.name }.sort() == [
                     'MULTIQC_REPORT:MULTIQC (multiqc)',
-                    'SEQERALABS_DRAGEN:DRAGEN_DNA (NA12878)',
+                    'SEQERALABS_DRAGEN:DRAGEN_DNA (HG002)',
                     'SEQERALABS_DRAGEN:DRAGEN_RNA (GM12878_REP1)',
                     'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (HCC1395T_WGS_vs_HCC1395N_WGS)',
                 ] },
@@ -129,7 +129,7 @@ nextflow_pipeline {
                     'normal_fastq_list.csv': ['HCC1395N_WGS'],
                     'tumour_fastq_list.csv': ['HCC1395T_WGS'],
                 ] },
-                { assert rgids['SEQERALABS_DRAGEN:DRAGEN_DNA (NA12878)'] == ['fastq_list.csv': ['NA12878']] },
+                { assert rgids['SEQERALABS_DRAGEN:DRAGEN_DNA (HG002)'] == ['fastq_list.csv': ['HG002.1', 'HG002.2']] },
                 { assert rgids['SEQERALABS_DRAGEN:DRAGEN_RNA (GM12878_REP1)'] == ['fastq_list.csv': ['GM12878_REP1']] },
                 // The DNA and RNA tasks read the given index, and no hash table is built or published
                 { assert new File(dna_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
