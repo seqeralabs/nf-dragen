@@ -28,9 +28,8 @@ nextflow_process {
             def fastq_list = path(process.out[0][0].vcf_filtered).parent.resolve('fastq_list.csv').readLines()
             assertAll(
                 { assert process.success },
-                { assert process.out[0][0].vcf == null && process.out[0][0].tbi == null },
                 { assert snapshot(
-                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics, sample.ploidy_vcf, sample.roh_bed, *sample.baf, sample.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
+                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics, sample.ploidy_vcf, sample.ploidy_tbi, sample.roh_bed, *sample.baf, sample.targeted_vcf, sample.targeted_tbi, sample.targeted_json, sample.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
                     fastq_list
                 ).match() }
             )
@@ -59,7 +58,7 @@ nextflow_process {
         }
 
         then {
-            def task_dir = path(process.out[0][0].vcf).parent
+            def task_dir = path(process.out[0][0].vcf_filtered).parent
             def command = task_dir.resolve('.command.sh').text
             assertAll(
                 { assert process.success },
@@ -70,7 +69,7 @@ nextflow_process {
                 { assert !command.contains('--enable-cnv') && !command.contains('--cnv-') },
                 { assert process.out[0][0].cnv_vcf == null && process.out[0][0].cnv_tbi == null },
                 { assert snapshot(
-                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, *pair.metrics, *pair.baf, pair.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, *pair.metrics, pair.ploidy_vcf, pair.ploidy_tbi, *pair.baf, pair.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
                     task_dir.resolve('tumour_fastq_list.csv').readLines(),
                     task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }
@@ -100,7 +99,7 @@ nextflow_process {
         }
 
         then {
-            def task_dir = path(process.out[0][0].vcf).parent
+            def task_dir = path(process.out[0][0].vcf_filtered).parent
             def command = task_dir.resolve('.command.sh').text
             assertAll(
                 { assert process.success },
@@ -112,7 +111,7 @@ nextflow_process {
                 { assert path(process.out[0][0].cnv_vcf).fileName.toString() == 'T_vs_N.cnv.vcf.gz' },
                 { assert path(process.out[0][0].cnv_tbi).fileName.toString() == 'T_vs_N.cnv.vcf.gz.tbi' },
                 { assert snapshot(
-                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf, pair.tbi, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, pair.cnv_vcf, pair.cnv_tbi, *pair.metrics, *pair.baf, pair.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, pair.cnv_vcf, pair.cnv_tbi, *pair.metrics, pair.ploidy_vcf, pair.ploidy_tbi, *pair.baf, pair.callable_bed, pair.dragen_files].collect { f -> path(f).fileName.toString() }.sort()] },
                     task_dir.resolve('tumour_fastq_list.csv').readLines(),
                     task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }

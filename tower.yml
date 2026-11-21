@@ -11,6 +11,8 @@ reports:
     display: "DRAGEN target region coverage metrics"
   "**/*.cnv_metrics.csv":
     display: "DRAGEN CNV metrics"
+  "**/*.sv_metrics.csv":
+    display: "DRAGEN SV metrics"
   "**/*.time_metrics.csv":
     display: "DRAGEN run time metrics"
   "**/*.fastqc_metrics.csv":
