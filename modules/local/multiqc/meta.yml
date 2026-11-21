@@ -1,0 +1,50 @@
+name: multiqc
+description: Aggregate DRAGEN metrics and the software versions report into one MultiQC report
+keywords:
+  - QC
+  - report
+tools:
+  - multiqc:
+      description: MultiQC searches a given directory for analysis logs and compiles an HTML report
+      homepage: https://multiqc.info/
+      documentation: https://multiqc.info/docs/
+      licence: ["GPL-3.0-or-later"]
+input:
+  - run:
+      type: record
+      description: One MultiQC run
+      fields:
+        id:
+          type: String
+          description: Run name, used as the task tag
+        files:
+          type: Set<Path>
+          description: Files MultiQC searches; staged in numbered subdirectories so equal names cannot collide
+        configs:
+          type: Set<Path>
+          description: MultiQC config files, passed as one `--config` each
+        logo:
+          type: Path?
+          description: Report logo, or null
+output:
+  - report:
+      type: record
+      description: The MultiQC outputs
+      fields:
+        id:
+          type: String
+          description: Run name
+        report:
+          type: Path
+          description: HTML report
+        data:
+          type: Path
+          description: "`multiqc_data/` directory"
+        plots:
+          type: Path?
+          description: "`multiqc_plots/` directory"
+        version:
+          type: String
+          description: MultiQC version. Not a `versions` topic output, because the input waits on that topic and the run would deadlock
+authors:
+  - "@seqeralabs"

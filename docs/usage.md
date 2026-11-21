@@ -1,87 +1,96 @@
 # seqeralabs/nf-dragen: Usage
 
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+> Every pipeline parameter is documented in [parameters.md](parameters.md).
 
 ## Introduction
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with a header row, as shown in the examples below.
 
 ```bash
 --input '[path to samplesheet file]'
 ```
 
-### Multiple runs of the same sample
+Columns can be in any order, and columns the pipeline does not know (for example nf-core/sarek's `lane` or nf-core/rnaseq's `strandedness`) are ignored. Each row is one FASTQ pair or one single-end FASTQ. Several rows with the same `sample` are that sample's FASTQ pairs (for example its lanes), so a nf-core/sarek samplesheet with several lanes per sample works as it is. DRAGEN reads each row as one read group: a sample with one row has the read group ID `<sample>`; a sample with several rows has `<sample>.1`, `<sample>.2`, ... in samplesheet order, all with the sample name `<sample>`. The `lane` column itself is not used.
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will analyse the raw reads together in the Dragen software before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+| Column     | Required | Description                                                                                                  |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `sample`   | yes      | Sample name, without spaces. Repeat it on one row per FASTQ pair of the sample.                              |
+| `fastq_1`  | yes      | Path to the read 1 FASTQ file. Must exist, be gzipped and end in `.fastq.gz` or `.fq.gz`.                    |
+| `fastq_2`  | no       | Path to the read 2 FASTQ file, for paired-end data.                                                          |
+| `patient`  | no       | Patient ID, without spaces. Defaults to the sample name.                                                     |
+| `status`   | no       | `0` for normal, `1` for tumour. Defaults to `0`.                                                             |
+| `sex`      | no       | Sex of the patient, for example `XX` or `XY`.                                                                |
+| `seq_type` | no       | `dna` or `rna`. Defaults to `--seq_type` (default `dna`). One samplesheet can hold both DNA and RNA samples. |
+
+The pipeline stops before running anything, with a message naming the problem, when:
+
+- a required column is missing, or a FASTQ file does not exist;
+- the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`;
+- the rows of one sample mix paired-end and single-end FASTQs.
+
+### Minimal samplesheet
 
 ```csv title="samplesheet.csv"
 sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+SAMPLE1,SAMPLE1_R1.fastq.gz,SAMPLE1_R2.fastq.gz
+SAMPLE2,SAMPLE2_R1.fastq.gz,
 ```
 
-### Sequencing type
-
-The pipeline can handle RNA or DNA samples, including a mixture of both. By default, every sample will be considered to be the type defined as `--seq_type`, which defaults to `dna`. You can override this on a per-sample basis using the `seq_type` column:
-
-```csv
-sample,seq_type,fastq_1,fastq_2
-dnaSample,dna,dna_R1_001.fastq.gz,dna_R2_001.fastq.gz
-rnaSample,rna,rna_R1_001.fastq.gz,rna_R2_001.fastq.gz
-```
+`SAMPLE1` is paired-end; `SAMPLE2` is single-end.
 
 ### Full samplesheet
 
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
-
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
-
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+patient,sex,status,sample,fastq_1,fastq_2,seq_type
+PATIENT1,XX,0,PATIENT1_NORMAL,P1N_R1.fastq.gz,P1N_R2.fastq.gz,dna
+PATIENT1,XX,1,PATIENT1_TUMOUR,P1T_R1.fastq.gz,P1T_R2.fastq.gz,dna
+PATIENT2,XY,0,PATIENT2_RNA,P2R_R1.fastq.gz,P2R_R2.fastq.gz,rna
 ```
-
-| Column     | Description                                                                                                                                                                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `sample`   | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`).                                                                                   |
-| `seq_type` | Sequencing type, currently restricted to `dna` or `rna`. This decides the sequencing pathway to take when running the pipeline. The pipeline can handle a mixture of sequencing types. If this is left empty, it will use `params.seq_type` as the value, default `dna`. |
-| `fastq_1`  | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                                                                                                               |
-| `fastq_2`  | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                                                                                                               |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
-## Configuring the genome
+### Germline, somatic and RNA runs
 
-We can configure a genome in multiple ways:
+The pipeline picks the DRAGEN run for each DNA sample from `patient` and `status`:
 
-1. Supply a `--genome`, which retrieves uses the genome build FASTA automatically and proceeds from step 2.
-2. Supply a `--fasta` and which Dragen will build a genome index for alignment
-3. If you have already performed a pipeline run using `1.` or `.2.`, the reference index will be written to a results directory at `${params.outdir}/genome/index/dragen_index_dna` or `${params.outdir}/genome/index/dragen_index_rna`. You can reuse these indexes by supplying the parameter `--dragen_index_dna` and/or `--dragen_index_rna` which will skip 1 and 2 for DNA and RNA respectively.
+- A patient with a normal and a tumour gets one **somatic** (tumour/normal) run. The normal gets no germline run.
+- A normal without a tumour gets a **germline** run.
+- A tumour without a normal, a patient with two or more normals, or a patient with two or more tumours stops the pipeline before any DNA task runs, with a message naming the patient. Tumour-only calling is not supported.
+
+RNA samples ignore `patient` and `status` and each get an **RNA** run.
+
+Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. HRD, TMB, HLA and MSI are off; switch them on by adding the DRAGEN options (for example `--enable-hrd true`, `--enable-tmb true`, `--enable-hla true`, `--msi-command tumor-normal`) to `ext.args` of `.*:DRAGEN_SOMATIC` in a custom config (see [Custom Tool Arguments](#custom-tool-arguments)).
+
+For exome or panel data, give the target regions with `--target_bed targets.bed`. Germline runs get it as `--vc-target-bed`; somatic runs also as `--sv-call-regions-bed`. Somatic exome runs skip CNV calling, because DRAGEN needs a panel of normals for exome CNV, which the pipeline does not support. RNA runs never get it.
+
+## MultiQC report
+
+MultiQC runs after DRAGEN on the DRAGEN metrics and the software versions (see [Output](output.md)). It runs in a Docker container, so the pipeline needs Docker on the machine that runs MultiQC; the DRAGEN processes have no container and run on the host. Skip it with `--skip_multiqc`.
+
+## Configuring the reference
+
+We can configure the reference in two ways:
+
+1. Supply a `--fasta`, from which Dragen will build a genome index for alignment. The FASTA must not contain ALT contigs, for example use the GRCh38 no-ALT analysis set: DRAGEN refuses to build from ALT contigs without a liftover file, and the pipeline does not pass one. The DNA hash table is built with CNV k-mers, so CNV calling can use it; a DNA index built by an earlier version of the pipeline lacks them and must be rebuilt for CNV.
+2. If you have already performed a pipeline run using `1.`, the reference index will be written to a results directory at `<output-dir>/genome/index/dragen_index_dna` or `<output-dir>/genome/index/dragen_index_rna`. You can reuse these indexes by supplying the parameter `--dragen_index_dna` and/or `--dragen_index_rna` which will skip 1 for DNA and RNA respectively.
 
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run seqeralabs/nf-dragen --input samplesheet.csv --genome GRCh37 -profile docker
+nextflow run seqeralabs/nf-dragen --input samplesheet.csv --fasta genome.fa -output-dir results
 ```
 
-This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
+`-output-dir` (one dash) is required on every run. It is a Nextflow option, not a pipeline parameter. You can set `outputDir = 'results'` in a config file instead, and in Seqera Platform use the **Output directory** field of the launch form or `tw launch --output-dir`.
 
 Note that the pipeline will create the following files in your working directory:
 
 ```bash
 work                # Directory containing the nextflow working files
-<OUTDIR>            # Finished results in specified location (defined with --outdir)
+<OUTDIR>            # Finished results in specified location (defined with -output-dir)
 .nextflow_log       # Log file from Nextflow
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
@@ -97,15 +106,14 @@ Do not use `-c <file>` to specify parameters as this will result in errors. Cust
 The above pipeline run specified with a params file in yaml format:
 
 ```bash
-nextflow run seqeralabs/nf-dragen -profile docker -params-file params.yaml
+nextflow run seqeralabs/nf-dragen -params-file params.yaml -output-dir results
 ```
 
 with `params.yaml` containing:
 
 ```yaml
 input: './samplesheet.csv'
-outdir: './results/'
-genome: 'GRCh37'
+fasta: './genome.fa'
 <...>
 ```
 
@@ -125,7 +133,7 @@ It is a good idea to specify a pipeline version when running the pipeline on you
 
 First, go to the [seqeralabs/nf-dragen releases page](https://github.com/seqeralabs/nf-dragen/releases) and find the latest pipeline version - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`. Of course, you can switch to another version by changing the number after the `-r` flag.
 
-This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future. For example, at the bottom of the MultiQC reports.
+This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
 To further assist in reproducbility, you can use share and re-use [parameter files](#running-the-pipeline) to repeat pipeline runs with the same settings without having to write out a command with every single parameter.
 
@@ -143,38 +151,11 @@ These options are part of Nextflow and use a _single_ hyphen (pipeline parameter
 
 Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
-Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Apptainer, Conda) - see below.
-
-:::info
-We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
-:::
-
-The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
-
-Note that multiple profiles can be loaded, for example: `-profile test,docker` - the order of arguments is important!
-They are loaded in sequence, so later profiles can overwrite earlier profiles.
-
-If `-profile` is not specified, the pipeline will run locally and expect all software to be installed and available on the `PATH`. This is _not_ recommended, since it can lead to different results on different machines dependent on the computer enviroment.
+Note that multiple profiles can be loaded; the order of arguments is important, as they are loaded in sequence.
 
 - `test`
   - A profile with a complete configuration for automated testing
-  - Includes links to test data so needs no other parameters
-- `docker`
-  - A generic configuration profile to be used with [Docker](https://docker.com/)
-- `singularity`
-  - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
-- `podman`
-  - A generic configuration profile to be used with [Podman](https://podman.io/)
-- `shifter`
-  - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
-- `charliecloud`
-  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
-- `apptainer`
-  - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
-- `wave`
-  - A generic configuration profile to enable [Wave](https://seqera.io/wave/) containers. Use together with one of the above (requires Nextflow ` 24.03.0-edge` or later).
-- `conda`
-  - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
+  - Uses small public test data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), so needs no other parameters, only `-output-dir`. Only works with `-stub`, because DRAGEN is not available outside its licensed environment.
 
 ### `-resume`
 
@@ -190,37 +171,25 @@ Specify the path to a specific config file (this is a core Nextflow command). Se
 
 ### Resource requests
 
-Whilst the default requirements set within the pipeline will hopefully work for most people and with most input data, you may find that you want to customise the compute resources that the pipeline requests. Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the steps in the pipeline, if the job exits with any of the error codes specified [here](https://github.com/nf-core/rnaseq/blob/4c27ef5610c87db00c3c5a3eed10b1d161abf575/conf/base.config#L18) it will automatically be resubmitted with higher requests (2 x original, then 3 x original). If it still fails after the third attempt then the pipeline execution is stopped.
+Each process has default CPUs, memory and time requests in `conf/base.config`. Processes labelled `dragen` have fixed resources (8 CPUs, 96 GB of memory and 24 hours) that do not change between attempts. Most other labels multiply their memory or time by the attempt number, so a retry asks for twice the resources of the first attempt.
 
-To change the resource requests, please see the [max resources](https://nf-co.re/docs/usage/configuration#max-resources) and [tuning workflow resources](https://nf-co.re/docs/usage/configuration#tuning-workflow-resources) section of the nf-core website.
+A task that exits with code 130 to 145 (except 134) or 104, which usually means it was killed, for example for running out of memory, is retried once. Any other exit code, including 134 (DRAGEN abort, SIGABRT), is not retried. The pipeline then uses `finish`: tasks that are already running complete, no new tasks start, and the run exits with an error naming the sample.
 
-### Custom Containers
+To change the resources of a process, pass a config file with `-c`. Select processes by label with `withLabel`, or by name with `withName`:
 
-In some cases you may wish to change which container or conda environment a step of the pipeline uses for a particular tool. By default nf-core pipelines use containers and software from the [biocontainers](https://biocontainers.pro/) or [bioconda](https://bioconda.github.io/) projects. However in some cases the pipeline specified version maybe out of date.
-
-To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/usage/configuration#updating-tool-versions) section of the nf-core website.
+```groovy
+process {
+    withLabel: dragen {
+        memory = 120.GB
+    }
+}
+```
 
 ### Custom Tool Arguments
 
 A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
 
 To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/usage/configuration#customising-tool-arguments) section of the nf-core website.
-
-### nf-core/configs
-
-In most cases, you will only need to create a custom config as a one-off but if you and others within your organisation are likely to be running nf-core pipelines regularly and need to use the same settings regularly it may be a good idea to request that your custom config file is uploaded to the `nf-core/configs` git repository. Before you do this please can you test that the config file works with your pipeline of choice using the `-c` parameter. You can then create a pull request to the `nf-core/configs` repository with the addition of your config file, associated documentation file (see examples in [`nf-core/configs/docs`](https://github.com/nf-core/configs/tree/master/docs)), and amending [`nfcore_custom.config`](https://github.com/nf-core/configs/blob/master/nfcore_custom.config) to include your custom profile.
-
-See the main [Nextflow documentation](https://www.nextflow.io/docs/latest/config.html) for more information about creating your own configuration files.
-
-If you have any questions or issues please send us a message on [Slack](https://nf-co.re/join/slack) on the [`#configs` channel](https://nfcore.slack.com/channels/configs).
-
-## Azure Resource Requests
-
-To be used with the `azurebatch` profile by specifying the `-profile azurebatch`.
-We recommend providing a compute `params.vm_type` of `Standard_D16_v3` VMs by default but these options can be changed if required.
-
-Note that the choice of VM size depends on your quota and the overall workload during the analysis.
-For a thorough list, please refer the [Azure Sizes for virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes).
 
 ## Running in the background
 

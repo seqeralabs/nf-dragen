@@ -1,0 +1,228 @@
+nextflow_pipeline {
+
+    name "Test pipeline"
+    script "../main.nf"
+    profile "test"
+
+    test("-profile test -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        then {
+            def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: false)
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    stable_name.sort(),
+                    path("$outputDir/pipeline_info/software_versions.yml").readLines()
+                ).match() }
+            )
+        }
+    }
+
+    test("tumour/normal, germline and RNA samples with target_bed -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        when {
+            params {
+                input      = "${baseDir}/tests/data/samplesheets/samplesheet_modes.csv"
+                target_bed = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed'
+            }
+        }
+
+        then {
+            // DRAGEN flags of each task, read from its command line (config selectors are not checked by name)
+            def flags = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').exists() }
+                .collect { task_dir ->
+                    def name = new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1')
+                    def command = new File(task_dir, '.command.sh').text
+                    [name, ['--vc-target-bed genome.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true', '--ht-build-cnv-hashtable true', '--enable-variant-caller true'].findAll { flag -> command.contains(flag) }]
+                }
+                .sort { entry -> entry[0] }
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    flags,
+                    getAllFilesFromDir(outputDir, relative: true, includeDir: false).sort()
+                ).match() }
+            )
+        }
+    }
+
+    test("--skip_dragen true -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        when {
+            params {
+                skip_dragen = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                // No DRAGEN task; MultiQC still reports the versions
+                { assert workflow.trace.tasks().collect { task -> task.name } == ['MULTIQC_REPORT:MULTIQC (multiqc)'] }
+            )
+        }
+    }
+
+    // Needs the secrets DRAGEN_USERNAME and DRAGEN_PASSWORD; CI sets dummy ones through NXF_SECRETS_FILE
+    // nf-test 0.9.5 has no per-test profile, so load the file the byol profile includes
+    test("byol licensing (conf/byol.config) -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        config "../conf/byol.config"
+
+        then {
+            // Tasks whose script passes the licence server with the secrets' names, not their values
+            def lic_tasks = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').exists() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').text.contains('--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com') }
+                .collect { task_dir -> new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1') }
+                .sort()
+            assertAll(
+                { assert workflow.success },
+                { assert lic_tasks == workflow.trace.tasks().collect { task -> task.name }.findAll { name -> name.contains('DRAGEN') }.sort() },
+                { assert lic_tasks.size() == 5 }
+            )
+        }
+    }
+
+    test("Platform verification run 1: given DNA and RNA indexes, germline, WGS tumour/normal and RNA -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        when {
+            params {
+                input            = "${baseDir}/tests/data/samplesheets/verification_run1.csv"
+                fasta            = null
+                dragen_index_dna = "${baseDir}/tests/data/dragen_index_dna"
+                dragen_index_rna = "${baseDir}/tests/data/dragen_index_dna"
+            }
+        }
+
+        then {
+            // RGIDs of each fastq list, per task, read from the task dirs
+            def task_dirs = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .findAll { task_dir -> new File(task_dir, '.command.sh').exists() }
+            def rgids = task_dirs.collectEntries { task_dir ->
+                def name = new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1')
+                [name, task_dir.listFiles().findAll { f -> f.name.endsWith('fastq_list.csv') }.collectEntries { f -> [f.name, f.readLines().drop(1).collect { row -> row.tokenize(',')[0] }] }]
+            }
+            def dna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('HG002') } }
+            def rna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('GM12878_REP1') } }
+            def published = getAllFilesFromDir(outputDir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.trace.tasks().collect { task -> task.name }.sort() == [
+                    'MULTIQC_REPORT:MULTIQC (multiqc)',
+                    'SEQERALABS_DRAGEN:DRAGEN_DNA (HG002)',
+                    'SEQERALABS_DRAGEN:DRAGEN_RNA (GM12878_REP1)',
+                    'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (HCC1395T_WGS_vs_HCC1395N_WGS)',
+                ] },
+                { assert rgids['SEQERALABS_DRAGEN:DRAGEN_SOMATIC (HCC1395T_WGS_vs_HCC1395N_WGS)'] == [
+                    'normal_fastq_list.csv': ['HCC1395N_WGS'],
+                    'tumour_fastq_list.csv': ['HCC1395T_WGS'],
+                ] },
+                { assert rgids['SEQERALABS_DRAGEN:DRAGEN_DNA (HG002)'] == ['fastq_list.csv': ['HG002.1', 'HG002.2']] },
+                { assert rgids['SEQERALABS_DRAGEN:DRAGEN_RNA (GM12878_REP1)'] == ['fastq_list.csv': ['GM12878_REP1']] },
+                // The DNA and RNA tasks read the given index, and no hash table is built or published
+                { assert new File(dna_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
+                { assert new File(dna_dir, 'dragen_index_dna').canonicalPath == new File("${baseDir}/tests/data/dragen_index_dna").canonicalPath },
+                { assert new File(rna_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
+                { assert new File(rna_dir, 'dragen_index_dna').canonicalPath == new File("${baseDir}/tests/data/dragen_index_dna").canonicalPath },
+                { assert !published.any { f -> f.startsWith('genome/') } },
+                { assert published.contains('dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz') },
+                { assert published.contains('pipeline_info/software_versions.yml') },
+                { assert published.contains('multiqc/multiqc_report.html') },
+                { assert snapshot(published).match() }
+            )
+        }
+    }
+
+    test("Platform verification run 2: given DNA index, no fasta, WES tumour/normal with target_bed -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        when {
+            params {
+                input            = "${baseDir}/tests/data/samplesheets/verification_run2.csv"
+                fasta            = null
+                dragen_index_dna = "${baseDir}/tests/data/dragen_index_dna"
+                target_bed       = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed'
+            }
+        }
+
+        then {
+            def task_dir = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .find { d -> new File(d, 'tumour_fastq_list.csv').exists() }
+            def rgids = { csv -> new File(task_dir, csv).readLines().drop(1).collect { row -> row.tokenize(',')[0] } }
+            def published = getAllFilesFromDir(outputDir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.trace.tasks().collect { task -> task.name }.sort() == [
+                    'MULTIQC_REPORT:MULTIQC (multiqc)',
+                    'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (HCC1395T_vs_HCC1395N)',
+                ] },
+                // The task reads the given index, not a built one
+                { assert new File(task_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
+                { assert new File(task_dir, 'dragen_index_dna').canonicalPath == new File("${baseDir}/tests/data/dragen_index_dna").canonicalPath },
+                { assert rgids('tumour_fastq_list.csv') == ['HCC1395T'] },
+                { assert rgids('normal_fastq_list.csv') == ['HCC1395N'] },
+                { assert !published.any { f -> f.startsWith('genome/') } },
+                { assert !published.any { f -> f.startsWith('dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N') && f.contains('.cnv.') } },
+                { assert published.contains('pipeline_info/software_versions.yml') },
+                { assert published.contains('multiqc/multiqc_report.html') },
+                { assert snapshot(published).match() }
+            )
+        }
+    }
+
+    test("one DRAGEN task exits 137: retried once, others finish, run fails naming the sample -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        config "./fail_one_sample.config"
+
+        then {
+            def output = workflow.stdout.join('\n') + workflow.stderr.join('\n')
+            def dragen = { tasks -> tasks.collect { task -> task.name }.findAll { name -> name.contains('DRAGEN_') && !name.contains('BUILDHASHTABLE') } }
+            assertAll(
+                { assert workflow.failed },
+                { assert dragen(workflow.trace.failed()) == ['SEQERALABS_DRAGEN:DRAGEN_DNA (P2_SE)'] * 2 },
+                { assert dragen(workflow.trace.succeeded()).sort() == [
+                    'SEQERALABS_DRAGEN:DRAGEN_RNA (P3_RNA)',
+                    'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)',
+                ] },
+                { assert output.contains('P2_SE') }
+            )
+        }
+    }
+
+    test("no fasta and no DRAGEN index fails before any DRAGEN task -stub") {
+
+        options "-stub -output-dir $outputDir"
+
+        when {
+            params {
+                fasta  = null
+            }
+        }
+
+        then {
+            def output = workflow.stdout.join('\n') + workflow.stderr.join('\n')
+            assertAll(
+                { assert workflow.failed },
+                { assert output =~ /Sample 'P\d_\w+' \(seq_type 'dna'\)/ },
+                { assert output.contains('--fasta') },
+                { assert output.contains('--dragen_index_dna') },
+                { assert !workflow.trace.tasks().any { task -> task.name.contains('DRAGEN') } }
+            )
+        }
+    }
+}

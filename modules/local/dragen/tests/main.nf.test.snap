@@ -1,0 +1,174 @@
+{
+    "whole-genome tumour/normal runs CNV - stub": {
+        "content": [
+            [
+                [
+                    "T_vs_N",
+                    [
+                        "T_vs_N.allele_transition_noise_metrics.csv",
+                        "T_vs_N.baf.bw",
+                        "T_vs_N.bam",
+                        "T_vs_N.bam.bai",
+                        "T_vs_N.cnv.vcf.gz",
+                        "T_vs_N.cnv.vcf.gz.tbi",
+                        "T_vs_N.cnv_metrics.csv",
+                        "T_vs_N.fastqc_metrics.csv",
+                        "T_vs_N.fragment_length_hist.csv",
+                        "T_vs_N.hard-filtered.baf.bw",
+                        "T_vs_N.hard-filtered.vcf.gz",
+                        "T_vs_N.hard-filtered.vcf.gz.tbi",
+                        "T_vs_N.mapping_metrics.csv",
+                        "T_vs_N.ploidy.vcf.gz",
+                        "T_vs_N.ploidy.vcf.gz.tbi",
+                        "T_vs_N.ploidy_estimation_metrics.csv",
+                        "T_vs_N.sv.vcf.gz",
+                        "T_vs_N.sv.vcf.gz.tbi",
+                        "T_vs_N.sv_metrics.csv",
+                        "T_vs_N.time_metrics.csv",
+                        "T_vs_N.trimmer_metrics.csv",
+                        "T_vs_N.vc_metrics.csv",
+                        "T_vs_N.wgs_contig_mean_cov_normal.csv",
+                        "T_vs_N.wgs_contig_mean_cov_tumor.csv",
+                        "T_vs_N.wgs_coverage_metrics_normal.csv",
+                        "T_vs_N.wgs_coverage_metrics_tumor.csv",
+                        "T_vs_N.wgs_fine_hist_normal.csv",
+                        "T_vs_N.wgs_fine_hist_tumor.csv",
+                        "T_vs_N.wgs_hist_normal.csv",
+                        "T_vs_N.wgs_hist_tumor.csv",
+                        "T_vs_N.wgs_overall_mean_cov_normal.csv",
+                        "T_vs_N.wgs_overall_mean_cov_tumor.csv",
+                        "T_vs_N.wgs_somatic_callable_regions.bed",
+                        "T_vs_N_tumor.bam",
+                        "T_vs_N_tumor.bam.bai"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "T,T,UnknownLibrary,1,tumour/1/test2_1.fastq.gz,"
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "N,N,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-21T19:27:24.085491638",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "two single-end tumour rows with paired-end normal, target BED - stub": {
+        "content": [
+            [
+                [
+                    "T_vs_N",
+                    [
+                        "T_vs_N.allele_transition_noise_metrics.csv",
+                        "T_vs_N.baf.bw",
+                        "T_vs_N.bam",
+                        "T_vs_N.bam.bai",
+                        "T_vs_N.fastqc_metrics.csv",
+                        "T_vs_N.fragment_length_hist.csv",
+                        "T_vs_N.hard-filtered.baf.bw",
+                        "T_vs_N.hard-filtered.vcf.gz",
+                        "T_vs_N.hard-filtered.vcf.gz.tbi",
+                        "T_vs_N.mapping_metrics.csv",
+                        "T_vs_N.ploidy.vcf.gz",
+                        "T_vs_N.ploidy.vcf.gz.tbi",
+                        "T_vs_N.ploidy_estimation_metrics.csv",
+                        "T_vs_N.sv.vcf.gz",
+                        "T_vs_N.sv.vcf.gz.tbi",
+                        "T_vs_N.sv_metrics.csv",
+                        "T_vs_N.target_bed_contig_mean_cov_normal.csv",
+                        "T_vs_N.target_bed_contig_mean_cov_tumor.csv",
+                        "T_vs_N.target_bed_coverage_metrics_normal.csv",
+                        "T_vs_N.target_bed_coverage_metrics_tumor.csv",
+                        "T_vs_N.target_bed_fine_hist_normal.csv",
+                        "T_vs_N.target_bed_fine_hist_tumor.csv",
+                        "T_vs_N.target_bed_hist_normal.csv",
+                        "T_vs_N.target_bed_hist_tumor.csv",
+                        "T_vs_N.target_bed_overall_mean_cov_normal.csv",
+                        "T_vs_N.target_bed_overall_mean_cov_tumor.csv",
+                        "T_vs_N.time_metrics.csv",
+                        "T_vs_N.trimmer_metrics.csv",
+                        "T_vs_N.vc_metrics.csv",
+                        "T_vs_N.wgs_contig_mean_cov_normal.csv",
+                        "T_vs_N.wgs_contig_mean_cov_tumor.csv",
+                        "T_vs_N.wgs_coverage_metrics_normal.csv",
+                        "T_vs_N.wgs_coverage_metrics_tumor.csv",
+                        "T_vs_N.wgs_fine_hist_normal.csv",
+                        "T_vs_N.wgs_fine_hist_tumor.csv",
+                        "T_vs_N.wgs_hist_normal.csv",
+                        "T_vs_N.wgs_hist_tumor.csv",
+                        "T_vs_N.wgs_overall_mean_cov_normal.csv",
+                        "T_vs_N.wgs_overall_mean_cov_tumor.csv",
+                        "T_vs_N_tumor.bam",
+                        "T_vs_N_tumor.bam.bai"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "T.1,T,UnknownLibrary,1,tumour/1/test_1.fastq.gz,",
+                "T.2,T,UnknownLibrary,2,tumour/2/test2_1.fastq.gz,"
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "N,N,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-21T19:27:18.780485684",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "paired-end DNA sample - stub": {
+        "content": [
+            [
+                [
+                    "test",
+                    [
+                        "test.allele_transition_noise_metrics.csv",
+                        "test.baf.bw",
+                        "test.bam",
+                        "test.bam.bai",
+                        "test.fastqc_metrics.csv",
+                        "test.fragment_length_hist.csv",
+                        "test.hard-filtered.baf.bw",
+                        "test.hard-filtered.vcf.gz",
+                        "test.hard-filtered.vcf.gz.tbi",
+                        "test.mapping_metrics.csv",
+                        "test.ploidy.vcf.gz",
+                        "test.ploidy.vcf.gz.tbi",
+                        "test.ploidy_estimation_metrics.csv",
+                        "test.roh.bed",
+                        "test.roh_metrics.csv",
+                        "test.targeted.json",
+                        "test.targeted.vcf.gz",
+                        "test.targeted.vcf.gz.tbi",
+                        "test.time_metrics.csv",
+                        "test.trimmer_metrics.csv",
+                        "test.vc_hethom_ratio_metrics.csv",
+                        "test.vc_metrics.csv",
+                        "test.wgs_contig_mean_cov.csv",
+                        "test.wgs_coverage_metrics.csv",
+                        "test.wgs_fine_hist.csv",
+                        "test.wgs_hist.csv",
+                        "test.wgs_overall_mean_cov.csv"
+                    ]
+                ]
+            ],
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "test,test,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-21T19:27:06.901076801",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

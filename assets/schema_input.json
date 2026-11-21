@@ -7,6 +7,24 @@
     "items": {
         "type": "object",
         "properties": {
+            "patient": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Patient ID cannot contain spaces",
+                "meta": ["patient"]
+            },
+            "sex": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sex cannot contain spaces",
+                "meta": ["sex"]
+            },
+            "status": {
+                "type": "integer",
+                "enum": [0, 1],
+                "errorMessage": "Status must be 0 (normal) or 1 (tumour)",
+                "meta": ["status"]
+            },
             "sample": {
                 "type": "string",
                 "pattern": "^\\S+$",
@@ -16,7 +34,7 @@
             "seq_type": {
                 "type": "string",
                 "enum": ["dna", "rna"],
-                "errorMessage": "Type of sequencing data must be provided and must be either 'DNA' or 'RNA'",
+                "errorMessage": "Type of sequencing data must be either 'dna' or 'rna'",
                 "meta": ["seq_type"]
             },
             "fastq_1": {

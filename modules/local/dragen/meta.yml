@@ -1,0 +1,124 @@
+name: dragen
+description: Run Illumina DRAGEN on one sample, or in tumour/normal mode on a normal and its tumour, reading its FASTQs through a FASTQ list
+keywords:
+  - dragen
+  - alignment
+  - variant calling
+  - somatic
+tools:
+  - dragen:
+      description: Illumina DRAGEN Bio-IT Platform, run from the AWS Marketplace pay-as-you-go DRAGEN AMI
+      homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
+      licence: ["Commercial"]
+input:
+  - sample:
+      type: record
+      description: One sample; for a tumour/normal run, the normal plus the `tumour_*` fields
+      fields:
+        id:
+          type: String
+          description: Sample name; RGSM, and the output file prefix unless a tumour is given. RGID is `<id>` for one FASTQ pair, `<id>.<n>` for pair n of several
+        fastq_1:
+          type: List<Path>
+          description: Read 1 FASTQs, one per read group, in samplesheet order; pair n is staged in `<n>/`
+        fastq_2:
+          type: List<Path>
+          description: Read 2 FASTQs, matching `fastq_1`; empty for single-end
+        tumour_id:
+          type: String?
+          description: Tumour sample name; null for germline and RNA runs. The run is then named and prefixed `<tumour_id>_vs_<id>`
+        tumour_fastq_1:
+          type: List<Path>?
+          description: Tumour read 1 FASTQs; pair n is staged in `tumour/<n>/`
+        tumour_fastq_2:
+          type: List<Path>?
+          description: Tumour read 2 FASTQs; empty for single-end
+  - index:
+      type: Path
+      description: DRAGEN hash table directory
+  - target_bed:
+      type: Path?
+      description: Target regions BED, passed as `--vc-target-bed` (and `--sv-call-regions-bed` with `--sv-exome true` for tumour/normal runs); null for whole-genome and RNA runs
+output:
+  - sample:
+      type: record
+      description: DRAGEN outputs of the run; every file is optional and depends on `ext.args`
+      fields:
+        id:
+          type: String
+          description: Sample name, or `<tumour_id>_vs_<id>` for a tumour/normal run
+        bam:
+          type: List<Path>
+          pattern: "${prefix}*.bam"
+        bai:
+          type: List<Path>
+          pattern: "${prefix}*.bam.bai"
+        vcf_filtered:
+          type: Path
+          pattern: "${prefix}.hard-filtered.vcf.gz"
+        tbi_filtered:
+          type: Path
+          pattern: "${prefix}.hard-filtered.vcf.gz.tbi"
+        sv_vcf:
+          type: Path
+          pattern: "${prefix}.sv.vcf.gz"
+          description: Tumour/normal runs only
+        sv_tbi:
+          type: Path
+          pattern: "${prefix}.sv.vcf.gz.tbi"
+        cnv_vcf:
+          type: Path
+          pattern: "${prefix}.cnv.vcf.gz"
+          description: Whole-genome tumour/normal runs only
+        cnv_tbi:
+          type: Path
+          pattern: "${prefix}.cnv.vcf.gz.tbi"
+        metrics:
+          type: List<Path>
+          pattern: "${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv"
+          description: DRAGEN QC metrics and coverage reports, e.g. `mapping_metrics`, `time_metrics`, `vc_metrics`, `wgs_coverage_metrics`, `wgs_hist`, `wgs_overall_mean_cov`, `target_bed_coverage_metrics`, `cnv_metrics` and `sv_metrics`; tumour/normal coverage files end in `_tumor`/`_normal`
+        ploidy_vcf:
+          type: Path
+          pattern: "${prefix}.ploidy.vcf.gz"
+          description: Germline and tumour/normal DNA runs
+        ploidy_tbi:
+          type: Path
+          pattern: "${prefix}.ploidy.vcf.gz.tbi"
+        roh_bed:
+          type: Path
+          pattern: "${prefix}.roh.bed"
+          description: Runs of homozygosity, germline runs only
+        baf:
+          type: Set<Path>
+          pattern: "${prefix}{,.hard-filtered}.baf.bw"
+          description: B-allele frequencies of the small variant calls, all and PASS only, as bigWig
+        targeted_vcf:
+          type: Path
+          pattern: "${prefix}.targeted.vcf.gz"
+          description: Targeted callers (e.g. CYP2D6, SMN), germline runs only
+        targeted_tbi:
+          type: Path
+          pattern: "${prefix}.targeted.vcf.gz.tbi"
+        targeted_json:
+          type: Path
+          pattern: "${prefix}.targeted.json"
+          description: Targeted caller results, germline runs only
+        callable_bed:
+          type: Path
+          pattern: "${prefix}.wgs_somatic_callable_regions.bed"
+          description: Callable regions, whole-genome tumour/normal runs only
+        junctions:
+          type: Set<Path>
+          pattern: "${prefix}.{SJ.out.tab,unfiltered.SJ.out.tab,Chimeric.out.junction}"
+          description: Splice junctions (filtered and unfiltered) and chimeric junctions, RNA runs only
+topics:
+  - versions:
+      type: Path
+      pattern: versions.yml
+notes: |
+  The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row, so one
+  read group: RGID and RGSM the sample name, Lane 1, Read2File empty for single-end. With a tumour it writes
+  `tumour_fastq_list.csv` and `normal_fastq_list.csv` instead and passes them as `--tumor-fastq-list` and `--fastq-list`,
+  each with its sample id.
+authors:
+  - "@adamrtalbot"

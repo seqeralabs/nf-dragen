@@ -1,0 +1,154 @@
+nextflow_process {
+
+    name "Test Process DRAGEN"
+    script "../main.nf"
+    process "DRAGEN"
+    tag "dragen"
+    config "./nextflow.config"
+
+    test("paired-end DNA sample - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'test',
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")]
+                ))
+                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
+                input[2] = null
+                """
+            }
+        }
+
+        then {
+            def fastq_list = path(process.out[0][0].vcf_filtered).parent.resolve('fastq_list.csv').readLines()
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics, sample.ploidy_vcf, sample.ploidy_tbi, sample.roh_bed, *sample.baf, sample.targeted_vcf, sample.targeted_tbi, sample.targeted_json].collect { f -> path(f).fileName.toString() }.sort()] },
+                    fastq_list
+                ).match() }
+            )
+        }
+    }
+
+    test("two FASTQ pairs with the same file names - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'test',
+                    // same file names in different folders, as lanes often are
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_2.fastq.gz")]
+                ))
+                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
+                input[2] = null
+                """
+            }
+        }
+
+        then {
+            def task_dir = path(process.out[0][0].vcf_filtered).parent
+            assertAll(
+                { assert process.success },
+                { assert task_dir.resolve('1/test_1.fastq.gz').toFile().exists() && task_dir.resolve('2/test_1.fastq.gz').toFile().exists() },
+                { assert task_dir.resolve('fastq_list.csv').readLines() == [
+                    'RGID,RGSM,RGLB,Lane,Read1File,Read2File',
+                    'test.1,test,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz',
+                    'test.2,test,UnknownLibrary,2,2/test_1.fastq.gz,2/test_2.fastq.gz',
+                ] }
+            )
+        }
+    }
+
+    test("two single-end tumour rows with paired-end normal, target BED - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'N',
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
+                    tumour_id: 'T',
+                    tumour_fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")],
+                    tumour_fastq_2: []
+                ))
+                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
+                input[2] = file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed")
+                """
+            }
+        }
+
+        then {
+            def task_dir = path(process.out[0][0].vcf_filtered).parent
+            def command = task_dir.resolve('.command.sh').text
+            assertAll(
+                { assert process.success },
+                { assert command.contains('--tumor-fastq-list tumour_fastq_list.csv') },
+                { assert command.contains('--fastq-list normal_fastq_list.csv') },
+                { assert command.contains('--vc-target-bed genome.bed') },
+                { assert command.contains('--sv-exome true --sv-call-regions-bed genome.bed') },
+                { assert !command.contains('--enable-cnv') && !command.contains('--cnv-') },
+                { assert process.out[0][0].cnv_vcf == null && process.out[0][0].cnv_tbi == null },
+                { assert snapshot(
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, *pair.metrics, pair.ploidy_vcf, pair.ploidy_tbi, *pair.baf].collect { f -> path(f).fileName.toString() }.sort()] },
+                    task_dir.resolve('tumour_fastq_list.csv').readLines(),
+                    task_dir.resolve('normal_fastq_list.csv').readLines()
+                ).match() }
+            )
+        }
+    }
+
+    test("whole-genome tumour/normal runs CNV - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'N',
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
+                    tumour_id: 'T',
+                    tumour_fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")],
+                    tumour_fastq_2: []
+                ))
+                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
+                input[2] = null
+                """
+            }
+        }
+
+        then {
+            def task_dir = path(process.out[0][0].vcf_filtered).parent
+            def command = task_dir.resolve('.command.sh').text
+            assertAll(
+                { assert process.success },
+                { assert command.contains('--tumor-fastq-list tumour_fastq_list.csv') },
+                { assert command.contains('--fastq-list normal_fastq_list.csv') },
+                { assert command.contains('--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true') },
+                { assert !command.contains('target-bed') },
+                { assert !command.contains('--sv-exome') },
+                { assert path(process.out[0][0].cnv_vcf).fileName.toString() == 'T_vs_N.cnv.vcf.gz' },
+                { assert path(process.out[0][0].cnv_tbi).fileName.toString() == 'T_vs_N.cnv.vcf.gz.tbi' },
+                { assert snapshot(
+                    process.out[0].collect { pair -> [pair.id, [*pair.bam, *pair.bai, pair.vcf_filtered, pair.tbi_filtered, pair.sv_vcf, pair.sv_tbi, pair.cnv_vcf, pair.cnv_tbi, *pair.metrics, pair.ploidy_vcf, pair.ploidy_tbi, *pair.baf, pair.callable_bed].collect { f -> path(f).fileName.toString() }.sort()] },
+                    task_dir.resolve('tumour_fastq_list.csv').readLines(),
+                    task_dir.resolve('normal_fastq_list.csv').readLines()
+                ).match() }
+            )
+        }
+    }
+}

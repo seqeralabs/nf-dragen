@@ -10,7 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": ["input"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -23,23 +23,12 @@
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
                 },
-                "outdir": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open"
-                },
                 "seq_type": {
                     "type": "string",
                     "default": "dna",
                     "description": "Default type of sequencing (dna, rna etc). Can be overridden in the samplesheet using the column `seq_type`.",
                     "fa_icon": "fas fa-dna",
                     "enum": ["dna", "rna"]
-                },
-                "multiqc_title": {
-                    "type": "string",
-                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature"
                 }
             }
         },
@@ -49,17 +38,15 @@
             "description": "Control pipeline behaviour",
             "default": "",
             "properties": {
-                "skip_fastqc": {
+                "skip_dragen": {
                     "type": "boolean",
-                    "description": "Skip running FASTQC"
+                    "description": "Skip all DRAGEN steps, including building the hash tables. Only MultiQC runs.",
+                    "default": false
                 },
                 "skip_multiqc": {
                     "type": "boolean",
-                    "description": "Skip running MultiQC"
-                },
-                "skip_dragen": {
-                    "type": "boolean",
-                    "description": "Skip running DRAGEN steps"
+                    "description": "Skip the MultiQC report",
+                    "default": false
                 }
             }
         },
@@ -69,122 +56,65 @@
             "fa_icon": "fas fa-dna",
             "description": "Reference genome related files and options required for the workflow.",
             "properties": {
-                "genome": {
-                    "type": "string",
-                    "description": "Name of iGenomes reference.",
-                    "fa_icon": "fas fa-book",
-                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
-                },
                 "fasta": {
                     "type": "string",
-                    "description": "Path to FASTA file",
-                    "fa_icon": "fas fa-dna"
+                    "description": "Reference genome FASTA file. The DRAGEN hash tables are built from it when no index is given with --dragen_index_dna or --dragen_index_rna.",
+                    "fa_icon": "fas fa-dna",
+                    "format": "file-path",
+                    "exists": true
                 },
                 "dragen_index_dna": {
                     "type": "string",
                     "description": "Path to DNA index created by Dragen.",
-                    "help_text": "Use a DNA index created using Dragen with argument '--build-hash-table true'. This parameter is *mandatory* if `--fasta` or `--genome` is not specified.",
+                    "help_text": "Use a DNA index created using Dragen with argument '--build-hash-table true'. If not set, an index is built from `--fasta`.",
                     "fa_icon": "far fa-file-alt",
-                    "format": "directory-path"
+                    "format": "directory-path",
+                    "exists": true
                 },
                 "dragen_index_rna": {
                     "type": "string",
                     "description": "Path to RNA index created by Dragen.",
-                    "help_text": "Use a DNA index created using Dragen with argument '--build-hash-table true' and '--ht-build-rna-hashtable true'. This parameter is *mandatory* if `--fasta` or `--genome` is not specified.",
+                    "help_text": "Use an RNA index created using Dragen with arguments '--build-hash-table true' and '--ht-build-rna-hashtable true'. If not set, an index is built from `--fasta`.",
                     "fa_icon": "far fa-file-alt",
-                    "format": "directory-path"
-                },
-                "igenomes_ignore": {
-                    "type": "boolean",
-                    "description": "Do not load the iGenomes reference config.",
-                    "fa_icon": "fas fa-ban",
-                    "hidden": true,
-                    "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
-                },
-                "igenomes_base": {
-                    "type": "string",
                     "format": "directory-path",
-                    "description": "The base path to the igenomes reference files",
-                    "fa_icon": "fas fa-ban",
-                    "hidden": true,
-                    "default": "s3://ngi-igenomes/igenomes/"
+                    "exists": true
+                },
+                "target_bed": {
+                    "type": "string",
+                    "description": "BED file of exome or panel target regions.",
+                    "help_text": "Passed to DRAGEN for germline and somatic DNA runs (`--vc-target-bed`; somatic runs also `--sv-call-regions-bed`), never to RNA runs. Leave unset for whole-genome data. Somatic exome runs skip CNV calling.",
+                    "fa_icon": "fas fa-bullseye",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.bed$"
                 }
             }
         },
-        "generic_options": {
-            "title": "Generic options",
+        "multiqc_options": {
+            "title": "MultiQC options",
             "type": "object",
-            "fa_icon": "fas fa-file-import",
-            "description": "Less common options for the pipeline, typically set in a config file.",
-            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+            "fa_icon": "fas fa-chart-bar",
+            "description": "Options for the MultiQC report.",
             "properties": {
-                "version": {
-                    "type": "boolean",
-                    "description": "Display version and exit.",
-                    "fa_icon": "fas fa-question-circle",
-                    "hidden": true
-                },
-                "publish_dir_mode": {
-                    "type": "string",
-                    "default": "copy",
-                    "description": "Method used to save pipeline results to output directory.",
-                    "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
-                    "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
-                    "hidden": true
-                },
-                "max_multiqc_email_size": {
-                    "type": "string",
-                    "description": "File size limit when attaching MultiQC reports to summary emails.",
-                    "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
-                    "default": "25.MB",
-                    "fa_icon": "fas fa-file-upload",
-                    "hidden": true
-                },
-                "monochrome_logs": {
-                    "type": "boolean",
-                    "description": "Do not use coloured log outputs.",
-                    "fa_icon": "fas fa-palette",
-                    "hidden": true
-                },
                 "multiqc_config": {
                     "type": "string",
                     "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
                     "description": "Custom config file to supply to MultiQC.",
-                    "fa_icon": "fas fa-cog",
-                    "hidden": true
+                    "fa_icon": "fas fa-cog"
+                },
+                "multiqc_title": {
+                    "type": "string",
+                    "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
+                    "fa_icon": "fas fa-file-signature"
                 },
                 "multiqc_logo": {
                     "type": "string",
-                    "description": "Custom logo file to supply to MultiQC. File name must also be set in the MultiQC config file",
-                    "fa_icon": "fas fa-image",
-                    "hidden": true
-                },
-                "multiqc_methods_description": {
-                    "type": "string",
-                    "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog",
-                    "hidden": true
-                },
-                "validate_params": {
-                    "type": "boolean",
-                    "description": "Boolean whether to validate parameters against the schema at runtime",
-                    "default": true,
-                    "fa_icon": "fas fa-check-square",
-                    "hidden": true
-                },
-                "pipelines_testdata_base_path": {
-                    "type": "string",
-                    "fa_icon": "far fa-check-circle",
-                    "description": "Base URL or local path to location of pipeline test dataset files",
-                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
-                    "hidden": true
-                },
-                "trace_report_suffix": {
-                    "type": "string",
-                    "fa_icon": "far calendar",
-                    "description": "Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.",
-                    "hidden": true
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Custom logo file to supply to MultiQC",
+                    "fa_icon": "fas fa-image"
                 }
             }
         }
@@ -200,7 +130,7 @@
             "$ref": "#/$defs/reference_genome_options"
         },
         {
-            "$ref": "#/$defs/generic_options"
+            "$ref": "#/$defs/multiqc_options"
         }
     ]
 }

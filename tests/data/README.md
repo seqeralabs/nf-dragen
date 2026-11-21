@@ -1,0 +1,20 @@
+# Test data
+
+Tests and `-profile test` read their FASTQs, FASTA, BED and DRAGEN metrics from raw GitHub URLs pinned to a commit, so they need network access to raw.githubusercontent.com. Only files with no public equivalent are in this directory.
+
+| File | Source |
+| --- | --- |
+| `genome.fasta` | `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.fasta`: 40 kb slice of chr22. `fasta` in `-profile test` and the hash table module test |
+| `genome.bed` | `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed`: one target over all of `genome.fasta`. `target_bed` in tests |
+| `test_1.fastq.gz`, `test_2.fastq.gz` | `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz` and `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz`: normal, germline and single-end (R1 only) DNA samples |
+| `test2_1.fastq.gz`, `test2_2.fastq.gz` | `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz` and `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_2.fastq.gz`: tumour samples |
+| `test_rnaseq_1.fastq.gz`, `test_rnaseq_2.fastq.gz` | `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_1.fastq.gz` and `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_2.fastq.gz`: RNA samples |
+| `TEST.mapping_metrics.csv` | Real DRAGEN output from MultiQC's test data: `https://raw.githubusercontent.com/MultiQC/test-data/ae5e10025fa1b0fd6792f8f2b513e160d78474fe/data/modules/dragen/alignment/TEST.mapping_metrics.csv`. Its name matches the DRAGEN module's `<prefix>.mapping_metrics.csv` |
+| `sarscov2/illumina/fastq/test_1.fastq.gz`, `test_2.fastq.gz` | `https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_1.fastq.gz` and `.../test_2.fastq.gz`: second FASTQ pair of multi-row samples; same file names as the human `test_1`/`test_2`, so tasks stage two files with one name |
+| `samplesheets/samplesheet_test.csv` | In this repository, written by hand on the FASTQs above: a tumour/normal pair (P1, the tumour on two rows), a single-end sample (P2) and an RNA sample on two rows (P3) |
+| `samplesheets/samplesheet_sarek.csv` | In this repository, written by hand: nf-core/sarek column order, an RNA sample and extra `lane` and `strandedness` columns, which the pipeline ignores |
+| `samplesheets/samplesheet_modes.csv` | In this repository, written by hand: a tumour/normal pair, two tumours with one normal, a normal alone and an RNA sample with status 1 |
+| `samplesheets/verification_run1.csv`, `samplesheets/verification_run2.csv` | In this repository, written by hand: the sample structure of the two real verification runs (germline, WGS tumour/normal and RNA; WES tumour/normal), one row per sample, on the FASTQs above |
+| `samplesheets/samplesheet_no_fastq_1.csv`, `samplesheet_missing_fastq.csv`, `samplesheet_patient_mismatch.csv` | In this repository, written by hand: invalid samplesheets for the samplesheet parsing tests (`samplesheet_patient_mismatch.csv`: two rows of one sample with different patients). The missing FASTQ is a local path that does not exist on purpose |
+| `dragen_index_dna/README` | In this repository: placeholder so git keeps the dummy DNA hash table directory given as `--dragen_index_dna` in stub tests |
+| `logo.png` | In this repository: a 1x1 PNG, the MultiQC logo in the module test (nf-core has no PNG fixture) |

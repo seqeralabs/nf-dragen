@@ -1,0 +1,27 @@
+nextflow_process {
+
+    name "Test Process DRAGEN_BUILDHASHTABLE"
+    script "../main.nf"
+    process "DRAGEN_BUILDHASHTABLE"
+    tag "dragen_buildhashtable"
+
+    test("fasta - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.fasta")
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(getAllFilesFromDir(process.out[0][0], relative: true, includeDir: false)).match() }
+            )
+        }
+    }
+}
