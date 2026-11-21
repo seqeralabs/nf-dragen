@@ -21,6 +21,7 @@ process DRAGEN {
         id: runId(id, tumour_id),
         bam: files("${prefix}*.bam", optional: true),
         bai: files("${prefix}*.bam.bai", optional: true),
+        // DRAGEN 4.4.4 germline and RNA runs write no unfiltered VCF; kept for somatic runs (unverified)
         vcf: file("${prefix}.vcf.gz", optional: true),
         tbi: file("${prefix}.vcf.gz.tbi", optional: true),
         vcf_filtered: file("${prefix}.hard-filtered.vcf.gz", optional: true),
@@ -67,7 +68,8 @@ process DRAGEN {
     prefix = task.ext.prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
-    // DRAGEN v4.4 coverage reports: whole genome, plus target_bed with --vc-target-bed; tumour/normal runs write one per sample
+    // Germline and RNA names are those DRAGEN 4.4.4 wrote in a real run; somatic names come from the DRAGEN docs (unverified).
+    // Coverage reports (RNA too): whole genome, plus target_bed with --vc-target-bed; tumour/normal runs write one per sample
     def suffixes = tumour_id ? ['_tumor', '_normal'] : ['']
     def coverage = (target_bed ? ['wgs', 'target_bed'] : ['wgs']).collectMany { region -> suffixes.collect { suffix -> "${prefix}.${region}_coverage_metrics${suffix}.csv" } }.join(' ')
     """
@@ -83,12 +85,11 @@ process DRAGEN {
         '${lic}' \\
         ${args}
 
-    touch ${prefix}.bam ${prefix}.bam.bai
-    ${args.contains('--enable-variant-caller') ? "touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv" : ''}
-    ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : ''}
+    touch ${prefix}.bam ${prefix}.bam.bai ${coverage} ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv
+    ${args.contains('--enable-variant-caller') ? "touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv" : ''}
+    ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : "touch ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv"}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv" : ''}
-    ${args.contains('--enable-rna') ? '' : "touch ${coverage}"}
-    touch ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv
+    ${!tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.ploidy_estimation_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.allele_transition_noise_metrics.csv" : ''}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

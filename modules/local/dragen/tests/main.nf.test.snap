@@ -88,15 +88,19 @@
                 [
                     "test",
                     [
+                        "test.allele_transition_noise_metrics.csv",
                         "test.bam",
                         "test.bam.bai",
+                        "test.fastqc_metrics.csv",
                         "test.hard-filtered.vcf.gz",
                         "test.hard-filtered.vcf.gz.tbi",
                         "test.mapping_metrics.csv",
+                        "test.ploidy_estimation_metrics.csv",
+                        "test.roh_metrics.csv",
                         "test.time_metrics.csv",
+                        "test.trimmer_metrics.csv",
+                        "test.vc_hethom_ratio_metrics.csv",
                         "test.vc_metrics.csv",
-                        "test.vcf.gz",
-                        "test.vcf.gz.tbi",
                         "test.wgs_coverage_metrics.csv"
                     ]
                 ]
@@ -106,7 +110,7 @@
                 "test,test,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-21T14:09:20.879652453",
+        "timestamp": "2026-11-21T15:47:55.850206376",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
