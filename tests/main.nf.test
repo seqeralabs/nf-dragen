@@ -3,18 +3,13 @@ nextflow_pipeline {
     name "Test pipeline"
     script "../main.nf"
     profile "test"
-    options "-stub"
 
     test("-profile test -stub") {
 
-        when {
-            params {
-                outdir = "$outputDir"
-            }
-        }
+        options "-stub -output-dir $outputDir"
 
         then {
-            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: false)
+            def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: false)
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
@@ -27,9 +22,10 @@ nextflow_pipeline {
 
     test("tumour/normal, germline and RNA samples with target_bed -stub") {
 
+        options "-stub -output-dir $outputDir"
+
         when {
             params {
-                outdir     = "$outputDir"
                 input      = "${baseDir}/tests/data/samplesheets/samplesheet_modes.csv"
                 target_bed = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed'
             }
@@ -49,7 +45,7 @@ nextflow_pipeline {
                 { assert workflow.success },
                 { assert snapshot(
                     flags,
-                    getAllFilesFromDir(params.outdir, relative: true, includeDir: false).sort()
+                    getAllFilesFromDir(outputDir, relative: true, includeDir: false).sort()
                 ).match() }
             )
         }
@@ -57,9 +53,10 @@ nextflow_pipeline {
 
     test("--skip_dragen true -stub") {
 
+        options "-stub -output-dir $outputDir"
+
         when {
             params {
-                outdir      = "$outputDir"
                 skip_dragen = true
             }
         }
@@ -77,13 +74,9 @@ nextflow_pipeline {
     // nf-test 0.9.5 has no per-test profile, so load the file the byol profile includes
     test("byol licensing (conf/byol.config) -stub") {
 
-        config "../conf/byol.config"
+        options "-stub -output-dir $outputDir"
 
-        when {
-            params {
-                outdir = "$outputDir"
-            }
-        }
+        config "../conf/byol.config"
 
         then {
             // Tasks whose script passes the licence server with the secrets' names, not their values
@@ -102,9 +95,10 @@ nextflow_pipeline {
 
     test("Platform verification run 1: given DNA and RNA indexes, germline, WGS tumour/normal and RNA -stub") {
 
+        options "-stub -output-dir $outputDir"
+
         when {
             params {
-                outdir           = "$outputDir"
                 input            = "${baseDir}/tests/data/samplesheets/verification_run1.csv"
                 fasta            = null
                 dragen_index_dna = "${baseDir}/tests/data/dragen_index_dna"
@@ -122,7 +116,7 @@ nextflow_pipeline {
             }
             def dna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('NA12878') } }
             def rna_dir = task_dirs.find { d -> d.listFiles().any { f -> f.name == 'fastq_list.csv' && f.text.contains('GM12878_REP1') } }
-            def published = getAllFilesFromDir(params.outdir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
+            def published = getAllFilesFromDir(outputDir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
             assertAll(
                 { assert workflow.success },
                 { assert workflow.trace.tasks().collect { task -> task.name }.sort() == [
@@ -153,9 +147,10 @@ nextflow_pipeline {
 
     test("Platform verification run 2: given DNA index, no fasta, WES tumour/normal with target_bed -stub") {
 
+        options "-stub -output-dir $outputDir"
+
         when {
             params {
-                outdir           = "$outputDir"
                 input            = "${baseDir}/tests/data/samplesheets/verification_run2.csv"
                 fasta            = null
                 dragen_index_dna = "${baseDir}/tests/data/dragen_index_dna"
@@ -167,7 +162,7 @@ nextflow_pipeline {
             def task_dir = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
                 .find { d -> new File(d, 'tumour_fastq_list.csv').exists() }
             def rgids = { csv -> new File(task_dir, csv).readLines().drop(1).collect { row -> row.tokenize(',')[0] } }
-            def published = getAllFilesFromDir(params.outdir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
+            def published = getAllFilesFromDir(outputDir, relative: true, includeDir: false).collect { f -> f.toString() }.sort()
             assertAll(
                 { assert workflow.success },
                 { assert workflow.trace.tasks().collect { task -> task.name }.sort() == [
@@ -190,13 +185,9 @@ nextflow_pipeline {
 
     test("one DRAGEN task exits 137: retried once, others finish, run fails naming the sample -stub") {
 
-        config "./fail_one_sample.config"
+        options "-stub -output-dir $outputDir"
 
-        when {
-            params {
-                outdir = "$outputDir"
-            }
-        }
+        config "./fail_one_sample.config"
 
         then {
             def output = workflow.stdout.join('\n') + workflow.stderr.join('\n')
@@ -215,9 +206,10 @@ nextflow_pipeline {
 
     test("no fasta and no DRAGEN index fails before any DRAGEN task -stub") {
 
+        options "-stub -output-dir $outputDir"
+
         when {
             params {
-                outdir = "$outputDir"
                 fasta  = null
             }
         }

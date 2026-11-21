@@ -1,9 +1,9 @@
 # seqeralabs/nf-dragen: Output
 
-The pipeline writes these files to the directory given with `--outdir`:
+The pipeline writes these files to the output directory given with `-output-dir` (one dash) or `outputDir` in a config file. It is required on every run:
 
 ```
-<outdir>/
+<output-dir>/
 ├── genome/
 │   └── index/
 │       ├── dragen_index_dna/          # DNA hash table, when built from --fasta
@@ -32,4 +32,4 @@ The pipeline writes these files to the directory given with `--outdir`:
 - `genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.
 - `dragen/` holds the DRAGEN outputs of each sample, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/dna_fastq_to_vcf/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each sample is one read group in the BAM, with the sample name as its ID.
 - `multiqc/` summarises every DRAGEN `*metrics.csv` and the software versions. With `--skip_dragen` it holds only the software versions. Set `--multiqc_title` to name the report (the HTML file name then starts with the title), `--multiqc_config` to add a MultiQC config and `--multiqc_logo` to add a logo.
-- Files are copied to `--outdir`. To change that, set `workflow.output.mode` in your own config (for example `workflow.output.mode = 'symlink'`).
+- Files are copied to the output directory. To change that, set `workflow.output.mode` in your own config (for example `workflow.output.mode = 'symlink'`).
