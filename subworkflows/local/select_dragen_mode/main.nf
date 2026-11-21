@@ -35,7 +35,8 @@ def dnaRuns(samples) {
             def normal = normals[0]
             if (!tumours) {
                 germline << normal
-            } else {
+            }
+            else {
                 def tumour = tumours[0]
                 somatic << record(
                     id: normal.id,
