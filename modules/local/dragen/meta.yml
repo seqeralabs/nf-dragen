@@ -52,12 +52,6 @@ output:
         bai:
           type: List<Path>
           pattern: "${prefix}*.bam.bai"
-        vcf:
-          type: Path
-          pattern: "${prefix}.vcf.gz"
-        tbi:
-          type: Path
-          pattern: "${prefix}.vcf.gz.tbi"
         vcf_filtered:
           type: Path
           pattern: "${prefix}.hard-filtered.vcf.gz"
@@ -80,24 +74,46 @@ output:
           pattern: "${prefix}.cnv.vcf.gz.tbi"
         metrics:
           type: List<Path>
-          pattern: "${prefix}.*metrics*.csv"
-          description: DRAGEN QC metrics, e.g. `mapping_metrics`, `time_metrics`, `vc_metrics`, `wgs_coverage_metrics`, `target_bed_coverage_metrics` and `cnv_metrics`; tumour/normal coverage files end in `_tumor`/`_normal`
+          pattern: "${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv"
+          description: DRAGEN QC metrics and coverage reports, e.g. `mapping_metrics`, `time_metrics`, `vc_metrics`, `wgs_coverage_metrics`, `wgs_hist`, `wgs_overall_mean_cov`, `target_bed_coverage_metrics`, `cnv_metrics` and `sv_metrics`; tumour/normal coverage files end in `_tumor`/`_normal`
         ploidy_vcf:
           type: Path
           pattern: "${prefix}.ploidy.vcf.gz"
-          description: Germline runs only
+          description: Germline and tumour/normal DNA runs
+        ploidy_tbi:
+          type: Path
+          pattern: "${prefix}.ploidy.vcf.gz.tbi"
         roh_bed:
           type: Path
           pattern: "${prefix}.roh.bed"
           description: Runs of homozygosity, germline runs only
         baf:
           type: Set<Path>
-          pattern: "${prefix}{,.hard-filtered}.baf{,.bw}"
-          description: B-allele frequencies of the small variant calls, all and PASS only
+          pattern: "${prefix}{,.hard-filtered}.baf.bw"
+          description: B-allele frequencies of the small variant calls, all and PASS only, as bigWig
+        targeted_vcf:
+          type: Path
+          pattern: "${prefix}.targeted.vcf.gz"
+          description: Targeted callers (e.g. CYP2D6, SMN), germline runs only
+        targeted_tbi:
+          type: Path
+          pattern: "${prefix}.targeted.vcf.gz.tbi"
+        targeted_json:
+          type: Path
+          pattern: "${prefix}.targeted.json"
+          description: Targeted caller results, germline runs only
+        callable_bed:
+          type: Path
+          pattern: "${prefix}.wgs_somatic_callable_regions.bed"
+          description: Callable regions, whole-genome tumour/normal runs only
         junctions:
           type: Set<Path>
-          pattern: "${prefix}.{SJ.out.tab*,Chimeric.out.junction}"
-          description: Splice and chimeric junctions, RNA runs only
+          pattern: "${prefix}.{SJ.out.tab,unfiltered.SJ.out.tab,Chimeric.out.junction}"
+          description: Splice junctions (filtered and unfiltered) and chimeric junctions, RNA runs only
+        dragen_files:
+          type: Path
+          pattern: "${prefix}.dragen_files.txt"
+          description: Recursive listing of the DRAGEN output directory
 topics:
   - versions:
       type: Path

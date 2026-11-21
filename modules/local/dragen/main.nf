@@ -21,9 +21,6 @@ process DRAGEN {
         id: runId(id, tumour_id),
         bam: files("${prefix}*.bam", optional: true),
         bai: files("${prefix}*.bam.bai", optional: true),
-        // DRAGEN 4.4.4 germline and RNA runs write no unfiltered VCF; kept for somatic runs (unverified)
-        vcf: file("${prefix}.vcf.gz", optional: true),
-        tbi: file("${prefix}.vcf.gz.tbi", optional: true),
         vcf_filtered: file("${prefix}.hard-filtered.vcf.gz", optional: true),
         tbi_filtered: file("${prefix}.hard-filtered.vcf.gz.tbi", optional: true),
         sv_vcf: file("${prefix}.sv.vcf.gz", optional: true),
@@ -31,12 +28,16 @@ process DRAGEN {
         cnv_vcf: file("${prefix}.cnv.vcf.gz", optional: true),
         cnv_tbi: file("${prefix}.cnv.vcf.gz.tbi", optional: true),
         metrics: files("${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv", optional: true),
-        // Germline: named in the DRAGEN 4.4.4 run log. BAF: the log names `.baf`, the v4.4 docs `.baf.bw` (somatic too, unverified)
         ploidy_vcf: file("${prefix}.ploidy.vcf.gz", optional: true),
+        ploidy_tbi: file("${prefix}.ploidy.vcf.gz.tbi", optional: true),
         roh_bed: file("${prefix}.roh.bed", optional: true),
-        baf: files("${prefix}{,.hard-filtered}.baf{,.bw}", optional: true),
-        // RNA splice junctions (v4.4 docs, unverified names): filtered and unfiltered SJ.out.tab, chimeric junctions
-        junctions: files("${prefix}.{SJ.out.tab*,Chimeric.out.junction}", optional: true),
+        baf: files("${prefix}{,.hard-filtered}.baf.bw", optional: true),
+        // Germline targeted callers (e.g. CYP2D6, SMN)
+        targeted_vcf: file("${prefix}.targeted.vcf.gz", optional: true),
+        targeted_tbi: file("${prefix}.targeted.vcf.gz.tbi", optional: true),
+        targeted_json: file("${prefix}.targeted.json", optional: true),
+        callable_bed: file("${prefix}.wgs_somatic_callable_regions.bed", optional: true),
+        junctions: files("${prefix}.{SJ.out.tab,unfiltered.SJ.out.tab,Chimeric.out.junction}", optional: true),
         dragen_files: file("${prefix}.dragen_files.txt"),
     )
 
@@ -77,11 +78,11 @@ process DRAGEN {
     prefix = task.ext.prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
-    // Germline and RNA names are those DRAGEN 4.4.4 wrote in a real run; somatic names come from the DRAGEN docs (unverified).
-    // Coverage reports (RNA too): whole genome, plus target_bed with --vc-target-bed; tumour/normal runs write one per sample
-    // The coverage histogram and mean-coverage names touched below are unverified until a real run
+    // File names are those DRAGEN 4.4.4 wrote in real germline WGS, somatic WGS and RNA runs; target_bed names come from the v4.4 docs
+    def rna = args.contains('--enable-rna')
+    def vc = args.contains('--enable-variant-caller')
     def suffixes = tumour_id ? ['_tumor', '_normal'] : ['']
-    def coverage = (target_bed ? ['wgs', 'target_bed'] : ['wgs']).collectMany { region -> suffixes.collect { suffix -> "${prefix}.${region}_coverage_metrics${suffix}.csv" } }.join(' ')
+    def coverage = (target_bed ? ['wgs', 'target_bed'] : ['wgs']).collectMany { region -> ['coverage_metrics', 'overall_mean_cov', 'contig_mean_cov', 'fine_hist', 'hist'].collectMany { kind -> suffixes.collect { suffix -> "${prefix}.${region}_${kind}${suffix}.csv" } } }.join(' ')
     """
     ${fastq_lists.tumour}
     ${fastq_lists.normal}
@@ -95,13 +96,12 @@ process DRAGEN {
         '${lic}' \\
         ${args}
 
-    touch ${prefix}.bam ${prefix}.bam.bai ${coverage} ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv
-    ${args.contains('--enable-variant-caller') ? "touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv" : ''}
-    ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : "touch ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv ${prefix}.wgs_overall_mean_cov.csv ${prefix}.wgs_contig_mean_cov.csv ${prefix}.wgs_fine_hist.csv ${prefix}.wgs_hist.csv ${prefix}.fragment_length_hist.csv"}
-    ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv" : ''}
-    ${!tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.ploidy_estimation_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.allele_transition_noise_metrics.csv ${prefix}.ploidy.vcf.gz ${prefix}.roh.bed ${prefix}.baf ${prefix}.hard-filtered.baf" : ''}
-    ${tumour_id && args.contains('--enable-variant-caller') ? "touch ${prefix}.baf.bw ${prefix}.hard-filtered.baf.bw" : ''}
-    ${args.contains('--enable-rna') ? "touch ${prefix}.SJ.out.tab ${prefix}.Chimeric.out.junction" : ''}
+    touch ${prefix}.bam ${prefix}.bam.bai ${coverage} ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv
+    ${rna ? "touch ${prefix}.SJ.out.tab ${prefix}.unfiltered.SJ.out.tab ${prefix}.Chimeric.out.junction" : "touch ${prefix}.fragment_length_hist.csv"}
+    ${vc ? "touch ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv ${prefix}.ploidy.vcf.gz ${prefix}.ploidy.vcf.gz.tbi ${prefix}.ploidy_estimation_metrics.csv ${prefix}.allele_transition_noise_metrics.csv ${prefix}.baf.bw ${prefix}.hard-filtered.baf.bw" : ''}
+    ${vc && !tumour_id ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.roh.bed ${prefix}.targeted.vcf.gz ${prefix}.targeted.vcf.gz.tbi ${prefix}.targeted.json" : ''}
+    ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi ${prefix}.sv_metrics.csv" : ''}
+    ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv ${prefix}.wgs_somatic_callable_regions.bed" : ''}
 
     ls -lR > ${prefix}.dragen_files.txt
 
