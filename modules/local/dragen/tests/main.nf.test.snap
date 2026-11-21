@@ -9,13 +9,18 @@
                         "T_vs_N.bam.bai",
                         "T_vs_N.cnv.vcf.gz",
                         "T_vs_N.cnv.vcf.gz.tbi",
+                        "T_vs_N.cnv_metrics.csv",
                         "T_vs_N.hard-filtered.vcf.gz",
                         "T_vs_N.hard-filtered.vcf.gz.tbi",
                         "T_vs_N.mapping_metrics.csv",
                         "T_vs_N.sv.vcf.gz",
                         "T_vs_N.sv.vcf.gz.tbi",
+                        "T_vs_N.time_metrics.csv",
+                        "T_vs_N.vc_metrics.csv",
                         "T_vs_N.vcf.gz",
                         "T_vs_N.vcf.gz.tbi",
+                        "T_vs_N.wgs_coverage_metrics_normal.csv",
+                        "T_vs_N.wgs_coverage_metrics_tumor.csv",
                         "T_vs_N_tumor.bam",
                         "T_vs_N_tumor.bam.bai"
                     ]
@@ -30,7 +35,7 @@
                 "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T22:20:19.947878556",
+        "timestamp": "2026-11-21T14:07:06.253263918",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -49,8 +54,14 @@
                         "T_vs_N.mapping_metrics.csv",
                         "T_vs_N.sv.vcf.gz",
                         "T_vs_N.sv.vcf.gz.tbi",
+                        "T_vs_N.target_bed_coverage_metrics_normal.csv",
+                        "T_vs_N.target_bed_coverage_metrics_tumor.csv",
+                        "T_vs_N.time_metrics.csv",
+                        "T_vs_N.vc_metrics.csv",
                         "T_vs_N.vcf.gz",
                         "T_vs_N.vcf.gz.tbi",
+                        "T_vs_N.wgs_coverage_metrics_normal.csv",
+                        "T_vs_N.wgs_coverage_metrics_tumor.csv",
                         "T_vs_N_tumor.bam",
                         "T_vs_N_tumor.bam.bai"
                     ]
@@ -65,7 +76,7 @@
                 "N,N,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T22:20:14.889464394",
+        "timestamp": "2026-11-21T14:07:01.23123156",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -79,11 +90,14 @@
                     [
                         "test.bam",
                         "test.bam.bai",
-                        "test.vcf.gz",
-                        "test.vcf.gz.tbi",
                         "test.hard-filtered.vcf.gz",
                         "test.hard-filtered.vcf.gz.tbi",
-                        "test.mapping_metrics.csv"
+                        "test.mapping_metrics.csv",
+                        "test.time_metrics.csv",
+                        "test.vc_metrics.csv",
+                        "test.vcf.gz",
+                        "test.vcf.gz.tbi",
+                        "test.wgs_coverage_metrics.csv"
                     ]
                 ]
             ],
@@ -92,7 +106,7 @@
                 "test,test,UnknownLibrary,1,test_1.fastq.gz,test_2.fastq.gz"
             ]
         ],
-        "timestamp": "2026-11-20T22:20:09.806350584",
+        "timestamp": "2026-11-21T14:09:20.879652453",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

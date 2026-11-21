@@ -1,1 +1,15 @@
-reports: {}
+reports:
+  "**/*multiqc_report.html":
+    display: "MultiQC report"
+  "**/*.mapping_metrics.csv":
+    display: "DRAGEN mapping metrics"
+  "**/*.vc_metrics.csv":
+    display: "DRAGEN variant calling metrics"
+  "**/*.wgs_coverage_metrics*.csv":
+    display: "DRAGEN whole-genome coverage metrics"
+  "**/*.target_bed_coverage_metrics*.csv":
+    display: "DRAGEN target region coverage metrics"
+  "**/*.cnv_metrics.csv":
+    display: "DRAGEN CNV metrics"
+  "**/*.time_metrics.csv":
+    display: "DRAGEN run time metrics"

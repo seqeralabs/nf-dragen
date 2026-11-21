@@ -80,7 +80,8 @@ output:
           pattern: "${prefix}.cnv.vcf.gz.tbi"
         metrics:
           type: List<Path>
-          pattern: "${prefix}.*metrics.csv"
+          pattern: "${prefix}.*metrics*.csv"
+          description: DRAGEN QC metrics, e.g. `mapping_metrics`, `time_metrics`, `vc_metrics`, `wgs_coverage_metrics`, `target_bed_coverage_metrics` and `cnv_metrics`; tumour/normal coverage files end in `_tumor`/`_normal`
 topics:
   - versions:
       type: Path
