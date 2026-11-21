@@ -17,7 +17,7 @@ workflow SELECT_DRAGEN_MODE {
     rna      = samples.filter { sample -> sample.seq_type == 'rna' }
 }
 
-// Per patient: a normal alone gets a germline run; each tumour gets a somatic run with the patient's one normal
+// Per patient: a normal alone gets a germline run; a normal with a tumour gets one somatic run (PARSE_SAMPLESHEET rejects two or more tumours)
 def dnaRuns(samples) {
     def germline = []
     def somatic = []
@@ -35,8 +35,8 @@ def dnaRuns(samples) {
             def normal = normals[0]
             if (!tumours) {
                 germline << normal
-            }
-            tumours.each { tumour ->
+            } else {
+                def tumour = tumours[0]
                 somatic << record(
                     id: normal.id,
                     seq_type: normal.seq_type,

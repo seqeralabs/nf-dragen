@@ -83,4 +83,20 @@ nextflow_workflow {
             assert workflow.stderr.any { line -> line.contains('Detected duplicate entries: [sample:SAMPLE1]') }
         }
     }
+
+    test("patient with two tumours fails") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_two_tumours.csv")
+                input[1] = 'dna'
+                """
+            }
+        }
+        then {
+            def output = workflow.stdout + workflow.stderr
+            assert workflow.failed
+            assert output.any { line -> line.contains("Patient 'P1' has 2 tumour DNA samples (P1_T1, P1_T2)") }
+        }
+    }
 }

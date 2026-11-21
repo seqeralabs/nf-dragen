@@ -48,14 +48,6 @@
                         "--enable-sv true",
                         "--enable-variant-caller true"
                     ]
-                ],
-                [
-                    "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T2_vs_P2_N)",
-                    [
-                        "--vc-target-bed genome.bed",
-                        "--enable-sv true",
-                        "--enable-variant-caller true"
-                    ]
                 ]
             ],
             [
@@ -81,17 +73,6 @@
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N.vcf.gz.tbi",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N_tumor.bam",
                 "dragen/dna_fastq_to_vcf/P2_T1_vs_P2_N_tumor.bam.bai",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.bam",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.bam.bai",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.hard-filtered.vcf.gz",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.hard-filtered.vcf.gz.tbi",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.mapping_metrics.csv",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.sv.vcf.gz",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.sv.vcf.gz.tbi",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.vcf.gz",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N.vcf.gz.tbi",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N_tumor.bam",
-                "dragen/dna_fastq_to_vcf/P2_T2_vs_P2_N_tumor.bam.bai",
                 "dragen/dna_fastq_to_vcf/P3_N.bam",
                 "dragen/dna_fastq_to_vcf/P3_N.bam.bai",
                 "dragen/dna_fastq_to_vcf/P3_N.hard-filtered.vcf.gz",
@@ -110,7 +91,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-20T22:21:56.282839751",
+        "timestamp": "2026-11-21T13:45:20.205848656",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
