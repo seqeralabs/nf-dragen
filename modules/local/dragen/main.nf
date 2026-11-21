@@ -29,7 +29,7 @@ process DRAGEN {
         sv_tbi: file("${prefix}.sv.vcf.gz.tbi", optional: true),
         cnv_vcf: file("${prefix}.cnv.vcf.gz", optional: true),
         cnv_tbi: file("${prefix}.cnv.vcf.gz.tbi", optional: true),
-        metrics: files("${prefix}.*metrics.csv", optional: true),
+        metrics: files("${prefix}.*metrics*.csv", optional: true),
     )
 
     topic:
@@ -67,6 +67,9 @@ process DRAGEN {
     prefix = task.ext.prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
+    // DRAGEN v4.4 coverage reports: whole genome, plus target_bed with --vc-target-bed; tumour/normal runs write one per sample
+    def suffixes = tumour_id ? ['_tumor', '_normal'] : ['']
+    def coverage = (target_bed ? ['wgs', 'target_bed'] : ['wgs']).collectMany { region -> suffixes.collect { suffix -> "${prefix}.${region}_coverage_metrics${suffix}.csv" } }.join(' ')
     """
     ${fastq_lists.tumour}
     ${fastq_lists.normal}
@@ -81,10 +84,11 @@ process DRAGEN {
         ${args}
 
     touch ${prefix}.bam ${prefix}.bam.bai
-    ${args.contains('--enable-variant-caller') ? "touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi" : ''}
+    ${args.contains('--enable-variant-caller') ? "touch ${prefix}.vcf.gz ${prefix}.vcf.gz.tbi ${prefix}.hard-filtered.vcf.gz ${prefix}.hard-filtered.vcf.gz.tbi ${prefix}.vc_metrics.csv" : ''}
     ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi" : ''}
-    ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi" : ''}
-    touch ${prefix}.mapping_metrics.csv
+    ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv" : ''}
+    ${args.contains('--enable-rna') ? '' : "touch ${coverage}"}
+    touch ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

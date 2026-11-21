@@ -29,7 +29,7 @@ nextflow_process {
             assertAll(
                 { assert process.success },
                 { assert snapshot(
-                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf, sample.tbi, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics].collect { f -> path(f).fileName.toString() }] },
+                    process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf, sample.tbi, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics].collect { f -> path(f).fileName.toString() }.sort()] },
                     fastq_list
                 ).match() }
             )
