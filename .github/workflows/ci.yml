@@ -16,6 +16,7 @@ jobs:
         with:
           version: ${{ env.NXF_VER }}
       - run: nextflow lint .
+      - run: nextflow lint -format -sort-declarations -harshil-alignment . && git diff --exit-code
 
   test:
     needs: lint
