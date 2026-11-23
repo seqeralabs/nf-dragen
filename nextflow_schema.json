@@ -67,6 +67,20 @@
                     "help_text": "The default is `--enable-duplicate-marking true`. Setting this parameter replaces the default, so repeat any default options you want to keep.",
                     "fa_icon": "fas fa-terminal"
                 },
+                "dragen_hashtable_dna_args": {
+                    "type": "string",
+                    "description": "DRAGEN options for the DNA hash table build. Replaces the default.",
+                    "default": "--ht-build-cnv-hashtable true",
+                    "help_text": "Used only when no `--dragen_index_dna` is given. The default is `--ht-build-cnv-hashtable true`. Setting this parameter replaces the default, so repeat any default options you want to keep.",
+                    "fa_icon": "fas fa-terminal"
+                },
+                "dragen_hashtable_rna_args": {
+                    "type": "string",
+                    "description": "DRAGEN options for the RNA hash table build. Replaces the default.",
+                    "default": "--ht-build-rna-hashtable true",
+                    "help_text": "Used only when no `--dragen_index_rna` is given. The default is `--ht-build-rna-hashtable true`. Setting this parameter replaces the default, so repeat any default options you want to keep.",
+                    "fa_icon": "fas fa-terminal"
+                },
                 "skip_dragen": {
                     "type": "boolean",
                     "description": "Skip all DRAGEN steps, including building the hash tables. Only MultiQC runs.",
