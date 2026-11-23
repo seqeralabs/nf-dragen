@@ -18,11 +18,11 @@ process DRAGEN {
 
     stage:
 
-    // FASTQ pair n goes to <n>/ (tumour: tumour/<n>/), as lanes, and a tumour and its normal, often share file names
-    stageAs fastq_1, '?/*'
-    stageAs fastq_2, '?/*'
-    stageAs tumour_fastq_1, 'tumour/?/*'
-    stageAs tumour_fastq_2, 'tumour/?/*'
+    // FASTQ pair n goes to r1/<n>/ and r2/<n>/ (tumour: tumour/...): lanes, mates and a tumour and its normal often share file names
+    stageAs fastq_1, 'r1/?/*'
+    stageAs fastq_2, 'r2/?/*'
+    stageAs tumour_fastq_1, 'tumour/r1/?/*'
+    stageAs tumour_fastq_2, 'tumour/r2/?/*'
 
     output:
     record(
@@ -136,7 +136,7 @@ def fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2) 
 // fastq_list.csv rows of one sample: one read group per FASTQ pair; a single pair keeps RGID = sample.
 // Paths follow the stage: patterns, not the staged variables, which map a file given twice to one name (and whose .name is the staged path)
 def fastqListRows(id, dir, fastq_1, fastq_2) {
-    return fastq_1.withIndex().collect { r1, i -> "'${fastq_1.size() == 1 ? id : "${id}.${i + 1}"},${id},UnknownLibrary,${i + 1},${dir}${i + 1}/${r1.name.tokenize("/").last()},${fastq_2 ? "${dir}${i + 1}/${fastq_2[i].name.tokenize("/").last()}" : ''}'" }.join(' ')
+    return fastq_1.withIndex().collect { r1, i -> "'${fastq_1.size() == 1 ? id : "${id}.${i + 1}"},${id},UnknownLibrary,${i + 1},${dir}r1/${i + 1}/${r1.name.tokenize("/").last()},${fastq_2 ? "${dir}r2/${i + 1}/${fastq_2[i].name.tokenize("/").last()}" : ''}'" }.join(' ')
 }
 
 def targetArgs(target_bed, tumour_id) {

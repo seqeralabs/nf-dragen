@@ -59,12 +59,37 @@ nextflow_process {
             def task_dir = path(process.out[0][0].vcf_filtered).parent
             assertAll(
                 { assert process.success },
-                { assert task_dir.resolve('1/test_1.fastq.gz').toFile().exists() && task_dir.resolve('2/test_1.fastq.gz').toFile().exists() },
+                { assert task_dir.resolve('r1/1/test_1.fastq.gz').toFile().exists() && task_dir.resolve('r1/2/test_1.fastq.gz').toFile().exists() },
                 { assert task_dir.resolve('fastq_list.csv').readLines() == [
                     'RGID,RGSM,RGLB,Lane,Read1File,Read2File',
-                    'test.1,test,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz',
-                    'test.2,test,UnknownLibrary,2,2/test_1.fastq.gz,2/test_2.fastq.gz',
+                    'test.1,test,UnknownLibrary,1,r1/1/test_1.fastq.gz,r2/1/test_2.fastq.gz',
+                    'test.2,test,UnknownLibrary,2,r1/2/test_1.fastq.gz,r2/2/test_2.fastq.gz',
                 ] }
+            )
+        }
+    }
+
+    test("R1 and R2 with the same file name - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                def root = java.nio.file.Files.createTempDirectory('same_name')
+                def fastqs = ['R1', 'R2'].collect { mate -> def d = root.resolve(mate); java.nio.file.Files.createDirectories(d); def f = d.resolve('reads.fastq.gz'); java.nio.file.Files.writeString(f, mate); file(f.toString()) }
+                input[0] = channel.of(record(id: 'S', fastq_1: [fastqs[0]], fastq_2: [fastqs[1]]))
+                input[1] = file("\${projectDir}/tests/data/dragen_index_dna")
+                input[2] = null
+                """
+            }
+        }
+
+        then {
+            def fastq_list = path(process.out[0][0].vcf_filtered).parent.resolve('fastq_list.csv').readLines()
+            assertAll(
+                { assert process.success },
+                { assert snapshot(fastq_list).match() }
             )
         }
     }
