@@ -57,7 +57,7 @@ DRAGEN options for somatic (tumour/normal) runs. Replaces the default.
 
 How DRAGEN is licensed.
 
-> `marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `-profile byol`, which sets this parameter to `byol` and declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.
+> `marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `byol` (or `-profile byol`), which declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.
 
 **Default:** `marketplace`
 

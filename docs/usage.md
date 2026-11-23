@@ -78,7 +78,7 @@ We can configure the reference in two ways:
 
 ## DRAGEN licence
 
-By default (`--dragen_license marketplace`) DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence, run with `-profile byol` and provide the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`. The profile sets `--dragen_license byol` and declares the secrets; every DRAGEN task, including the hash-table builds, then passes them to `--lic-server`. Setting `--dragen_license byol` without `-profile byol` does not declare the secrets, so the tasks cannot read them.
+By default (`--dragen_license marketplace`) DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence, run with `--dragen_license byol` (or `-profile byol`) and provide the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`. Either one declares the secrets; every DRAGEN task, including the hash-table builds, then passes them to `--lic-server`.
 
 ## Running the pipeline
 

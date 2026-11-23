@@ -57,7 +57,7 @@
                     "description": "How DRAGEN is licensed.",
                     "default": "marketplace",
                     "enum": ["marketplace", "byol"],
-                    "help_text": "`marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `-profile byol`, which sets this parameter to `byol` and declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.",
+                    "help_text": "`marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `byol` (or `-profile byol`), which declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.",
                     "fa_icon": "fas fa-key"
                 },
                 "dragen_rna_args": {

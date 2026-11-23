@@ -16,7 +16,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args`: the tunable DRAGEN options of each run type (for example to switch on HRD, TMB, HLA or MSI for somatic runs). Setting one replaces its default, so repeat the default options you want to keep.
 - `--target_bed`: exome or panel target regions for germline and somatic runs (not RNA runs). Somatic exome runs use DRAGEN's exome SV mode.
 - The DNA hash table is built with CNV k-mers. `--fasta` must not contain ALT contigs, for example use the GRCh38 no-ALT analysis set.
-- `--dragen_license` (`marketplace` by default, or `byol`) for Illumina's private DRAGEN AMI. Use `-profile byol`, which sets it to `byol` and declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`; every DRAGEN task then passes them to `--lic-server`. It is untested on real DRAGEN.
+- `--dragen_license` (`marketplace` by default, or `byol`) for Illumina's private DRAGEN AMI. Setting it to `byol`, or using `-profile byol`, declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`; every DRAGEN task then passes them to `--lic-server`. It is untested on real DRAGEN.
 - A run with DNA or RNA samples but neither `--fasta` nor the matching `--dragen_index_dna`/`--dragen_index_rna` stops before any DRAGEN task with an error naming a sample and both parameters.
 - Published DRAGEN files per run: BAM and index, `*metrics*.csv`, coverage histogram and mean-coverage CSVs, VCFs and SV/CNV calls where the mode produces them, the ploidy VCF, targeted-caller calls, runs of homozygosity and B-allele frequencies (germline), the callable-regions BED (somatic), and the splice junctions (RNA). FASTQ files are not published.
 - Index files `dragen/germline/germline_index.csv`, `dragen/somatic/somatic_index.csv` and `dragen/rna/rna_index.csv`: one row per DRAGEN run with its patient and sample (somatic: patient, tumour and normal) and the published path of each file.
@@ -29,7 +29,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 
 - The pipeline requires Nextflow 26.10.6 or later and nf-schema 3.1.0.
 - Results go to the output directory given by `-output-dir <dir>` (one dash), or `outputDir` in a config file or a Seqera Platform launch. `--outdir` fails the launch.
-- DRAGEN runs with the AWS Marketplace pay-as-you-go licence, so it needs no Nextflow secrets and no `--lic-server`. Use `-profile byol` for a private AMI.
+- DRAGEN runs with the AWS Marketplace pay-as-you-go licence, so it needs no Nextflow secrets and no `--lic-server`. Use `--dragen_license byol` or `-profile byol` for a private AMI.
 - DRAGEN options are not read from `ext.args` or `ext.prefix` in custom configs; use `--dragen_germline_args`, `--dragen_somatic_args` or `--dragen_rna_args`.
 - RNA runs do not call variants; `dragen/rna/` holds no VCFs.
 - DRAGEN tasks that abort with exit 134 (SIGABRT) are not retried; exit 143 and the other resource-class codes are.
@@ -48,7 +48,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The `publish_dir_mode` param: results are always copied. Set `workflow.output.mode` in your own config to change that.
 - The `monochrome_logs` param: set `validation.monochromeLogs = true` in your own config.
 - The `lane` column is not used.
-- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` secrets and `--lic-server`, unless `-profile byol` (`--dragen_license byol`) is set.
+- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` secrets and `--lic-server`, unless `--dragen_license byol` or `-profile byol` is set.
 
 ### `Dependencies`
 
