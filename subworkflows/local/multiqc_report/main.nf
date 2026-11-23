@@ -13,7 +13,7 @@ workflow MULTIQC_REPORT {
     ch_config = [file("${projectDir}/assets/multiqc_config.yml"), multiqc_config].findAll { config -> config }
 
     MULTIQC(
-        metrics.mix(ch_versions_mqc).collect().map { files -> record(id: 'multiqc', files: files.toSet(), configs: ch_config.toSet(), logo: multiqc_logo) }
+        metrics.mix(ch_versions_mqc).collect().map { files -> record(id: 'multiqc', files: files.toSet(), configs: ch_config, logo: multiqc_logo) }
     )
 
     emit:
