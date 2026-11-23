@@ -30,7 +30,7 @@ nextflow_workflow {
         }
     }
 
-    test("sarek sheet with status, sex, seq_type and extra lane and strandedness columns") {
+    test("sheet with tissue, sex, seq_type and extra lane and strandedness columns") {
         when {
             workflow {
                 """
@@ -115,6 +115,27 @@ SAMPLE1,${fastq}/test2_1.fastq.gz,
         then {
             assert workflow.failed
             assert (workflow.stdout + workflow.stderr).any { line -> line.contains("sample 'SAMPLE1' mixes paired-end and single-end rows") }
+        }
+    }
+
+    test("status column fails and points to tissue") {
+        when {
+            def fastq = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq'
+            def sheet = new File("${launchDir}/status.csv")
+            sheet.text = """patient,status,sample,fastq_1
+P1,0,P1_N,${fastq}/test_1.fastq.gz
+"""
+            workflow {
+                """
+                input[0] = file("${sheet}")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert (workflow.stdout + workflow.stderr).any { line -> line.contains("use 'tissue'") }
         }
     }
 

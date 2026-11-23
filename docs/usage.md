@@ -12,7 +12,7 @@ You will need to create a samplesheet with information about the samples you wou
 --input '[path to samplesheet file]'
 ```
 
-Columns can be in any order, and columns the pipeline does not know (for example nf-core/sarek's `lane` or nf-core/rnaseq's `strandedness`) are ignored. Each row is one FASTQ pair or one single-end FASTQ. Several rows with the same `sample` are that sample's FASTQ pairs (for example its lanes), so a nf-core/sarek samplesheet with several lanes per sample works as it is. DRAGEN reads each row as one read group: a sample with one row has the read group ID `<sample>`; a sample with several rows has `<sample>.1`, `<sample>.2`, ... in samplesheet order, all with the sample name `<sample>`. The `lane` column itself is not used.
+Columns can be in any order, and columns the pipeline does not know (for example nf-core/sarek's `lane` or nf-core/rnaseq's `strandedness`) are ignored. Each row is one FASTQ pair or one single-end FASTQ. Several rows with the same `sample` are that sample's FASTQ pairs (for example its lanes). DRAGEN reads each row as one read group: a sample with one row has the read group ID `<sample>`; a sample with several rows has `<sample>.1`, `<sample>.2`, ... in samplesheet order, all with the sample name `<sample>`. The `lane` column itself is not used.
 
 | Column     | Required | Description                                                                                                  |
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------ |
@@ -20,14 +20,14 @@ Columns can be in any order, and columns the pipeline does not know (for example
 | `fastq_1`  | yes      | Path to the read 1 FASTQ file. Must exist, be gzipped and end in `.fastq.gz` or `.fq.gz`.                    |
 | `fastq_2`  | no       | Path to the read 2 FASTQ file, for paired-end data.                                                          |
 | `patient`  | no       | Patient ID, without spaces. Defaults to the sample name.                                                     |
-| `status`   | no       | `0` for normal, `1` for tumour. Defaults to `0`.                                                             |
-| `sex`      | no       | Sex of the patient, for example `XX` or `XY`.                                                                |
+| `tissue`   | no       | `germline` for normal, `tumor` for tumour. Defaults to `germline`. A `status` column is rejected.            |
+| `sex`      | no       | `male`, `female` or `unknown`. Defaults to `unknown`. Carried in the sample metadata only.                   |
 | `seq_type` | no       | `dna` or `rna`. Defaults to `--seq_type` (default `dna`). One samplesheet can hold both DNA and RNA samples. |
 
 The pipeline stops before running anything, with a message naming the problem, when:
 
 - a required column is missing, or a FASTQ file does not exist;
-- the rows of one sample disagree on `patient`, `status`, `sex` or `seq_type`;
+- the rows of one sample disagree on `patient`, `tissue`, `sex` or `seq_type`;
 - the rows of one sample mix paired-end and single-end FASTQs.
 
 ### Minimal samplesheet
@@ -43,23 +43,23 @@ SAMPLE2,SAMPLE2_R1.fastq.gz,
 ### Full samplesheet
 
 ```csv title="samplesheet.csv"
-patient,sex,status,sample,fastq_1,fastq_2,seq_type
-PATIENT1,XX,0,PATIENT1_NORMAL,P1N_R1.fastq.gz,P1N_R2.fastq.gz,dna
-PATIENT1,XX,1,PATIENT1_TUMOUR,P1T_R1.fastq.gz,P1T_R2.fastq.gz,dna
-PATIENT2,XY,0,PATIENT2_RNA,P2R_R1.fastq.gz,P2R_R2.fastq.gz,rna
+patient,sex,tissue,sample,fastq_1,fastq_2,seq_type
+PATIENT1,female,germline,PATIENT1_NORMAL,P1N_R1.fastq.gz,P1N_R2.fastq.gz,dna
+PATIENT1,female,tumor,PATIENT1_TUMOUR,P1T_R1.fastq.gz,P1T_R2.fastq.gz,dna
+PATIENT2,male,germline,PATIENT2_RNA,P2R_R1.fastq.gz,P2R_R2.fastq.gz,rna
 ```
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 ### Germline, somatic and RNA runs
 
-The pipeline picks the DRAGEN run for each DNA sample from `patient` and `status`:
+The pipeline picks the DRAGEN run for each DNA sample from `patient` and `tissue`:
 
 - A patient with a normal and a tumour gets one **somatic** (tumour/normal) run. The normal gets no germline run.
 - A normal without a tumour gets a **germline** run.
 - A tumour without a normal, a patient with two or more normals, or a patient with two or more tumours stops the pipeline before any DNA task runs, with a message naming the patient. Tumour-only calling is not supported.
 
-RNA samples ignore `patient` and `status` and each get an **RNA** run.
+RNA samples ignore `patient` and `tissue` and each get an **RNA** run.
 
 Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. Each run type takes its tunable DRAGEN options from its own parameter: `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args`. Their defaults are listed in [parameters](parameters.md). A value you set replaces the default, so repeat the default options you want to keep. HRD, TMB, HLA and MSI are off; switch them on for somatic runs with, for example, `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true'`. The pipeline always sets the alignment, variant caller (germline and somatic), RNA and BAM output options itself.
 

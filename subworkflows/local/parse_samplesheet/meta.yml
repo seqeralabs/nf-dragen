@@ -9,7 +9,7 @@ input:
       type: file
       description: Samplesheet CSV, validated against the schema
       pattern: "*.csv"
-  - seq_type:
+  - default_seq_type:
       type: string
       description: Sequencing type for rows without a `seq_type` (`dna` or `rna`)
   - schema:
@@ -19,6 +19,6 @@ input:
 output:
   - samples:
       type: channel
-      description: One `Sample` record per sample (id, patient, status, sex, seq_type, fastq_1, fastq_2); several rows of a sample are its FASTQ pairs in samplesheet order
+      description: One `Sample` record per sample (id, patient, tissue, sex, seq_type, fastq_1, fastq_2); several rows of a sample are its FASTQ pairs in samplesheet order
 authors:
   - "@seqeralabs"

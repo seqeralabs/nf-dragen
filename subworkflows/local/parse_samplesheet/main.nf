@@ -5,17 +5,17 @@ include { samplesheetToList } from 'plugin/nf-schema'
 workflow PARSE_SAMPLESHEET {
     take:
     samplesheet: Path
-    seq_type: String  // for rows without a seq_type
-    schema: Path      // samplesheet JSON schema
+    default_seq_type: String // for rows without a seq_type
+    schema: Path             // samplesheet JSON schema
 
     main:
     // Validated and grouped here, so a bad samplesheet fails before any task runs
     def rows = samplesheetToList(samplesheet, schema)
-    def sample_records = rows.groupBy { row -> row[0].id }.collect { id, sample_rows -> toSample(id, sample_rows, seq_type) }
+    def sample_records = rows.groupBy { row -> row[0].id }.collect { id, sample_rows -> toSample(id, sample_rows, default_seq_type) }
 
     // One tumour per DNA patient, checked here so it fails before any task (SELECT_DRAGEN_MODE runs in an operator)
     sample_records
-        .findAll { sample -> sample.seq_type == 'dna' && sample.status == 1 }
+        .findAll { sample -> sample.seq_type == 'dna' && sample.tissue == 'tumor' }
         .groupBy { sample -> sample.patient }
         .each { patient, tumours ->
             if (tumours.size() > 1) {
@@ -33,12 +33,12 @@ def toSample(id, rows, default_seq_type) {
         def meta = row[0]
         [
             patient: meta.patient ?: id,
-            status: meta.status ?: 0,
-            sex: meta.sex ?: null,
+            tissue: meta.tissue,
+            sex: meta.sex,
             seq_type: meta.seq_type ?: default_seq_type,
         ]
     }
-    ['patient', 'status', 'sex', 'seq_type'].each { column ->
+    ['patient', 'tissue', 'sex', 'seq_type'].each { column ->
         def values = metas.collect { meta -> meta[column] }.unique()
         if (values.size() > 1) {
             error("Samplesheet: rows of sample '${id}' disagree on column '${column}' (${values.join(', ')})")
@@ -51,7 +51,7 @@ def toSample(id, rows, default_seq_type) {
     return record(
         id: id,
         patient: metas[0].patient,
-        status: metas[0].status,
+        tissue: metas[0].tissue,
         sex: metas[0].sex,
         seq_type: metas[0].seq_type,
         fastq_1: rows.collect { row -> row[1] },
@@ -63,8 +63,8 @@ def toSample(id, rows, default_seq_type) {
 record Sample {
     id: String
     patient: String
-    status: Integer
-    sex: String?
+    tissue: String
+    sex: String
     seq_type: String
     fastq_1: List<Path>
     fastq_2: List<Path>
