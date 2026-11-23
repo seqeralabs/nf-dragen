@@ -61,9 +61,24 @@ The pipeline picks the DRAGEN run for each DNA sample from `patient` and `tissue
 
 RNA samples ignore `patient` and `tissue` and each get an **RNA** run.
 
-Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. Each run type takes its tunable DRAGEN options from its own parameter: `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args`. Their defaults are listed in [parameters](parameters.md). A value you set replaces the default, so repeat the default options you want to keep. HRD, TMB, HLA and MSI are off; switch them on for somatic runs with, for example, `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true'`. The pipeline always sets the alignment, variant caller (germline and somatic), RNA and BAM output options itself.
+DRAGEN is one tool for every analysis. Options switch each analysis on, and the pipeline passes them to each DRAGEN run as args. Each run type has its own set of args:
 
-For exome or panel data, give the target regions with `--target_bed targets.bed`. Germline runs get it as `--vc-target-bed`; somatic runs also as `--sv-call-regions-bed`. Somatic exome runs skip CNV calling, because DRAGEN needs a panel of normals for exome CNV, which the pipeline does not support. RNA runs never get it.
+| Run type                | Set by the pipeline                                                                                                                                     | Default of the tunable param                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Germline                | `--enable-map-align true --enable-map-align-output true --enable-bam-indexing true --enable-sort=true --enable-variant-caller true --output-format=BAM` | `--dragen_germline_args '--enable-duplicate-marking true'`                                      |
+| Somatic (tumour/normal) | the same as germline                                                                                                                                    | `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true'` |
+| RNA                     | `--enable-rna true`, the alignment options above and `--output-format=BAM`                                                                              | `--dragen_rna_args '--enable-duplicate-marking true'`                                           |
+| DNA hash table          | none                                                                                                                                                    | `--dragen_hashtable_dna_args '--ht-build-cnv-hashtable true'`                                   |
+| RNA hash table          | none                                                                                                                                                    | `--dragen_hashtable_rna_args '--ht-build-rna-hashtable true'`                                   |
+
+A value you set for a param replaces its whole default, so repeat the default options you want to keep. The options the pipeline sets itself cannot be changed this way. For example, HRD, TMB, HLA and MSI are off; switch them on for somatic runs with `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true'`.
+
+For exome or panel data, give the target regions with `--target_bed targets.bed`. The pipeline sets the options that depend on it, so do not repeat them in the args:
+
+- Germline runs get `--vc-target-bed`.
+- Somatic runs get `--vc-target-bed`, `--sv-exome true` and `--sv-call-regions-bed`.
+- Somatic runs without a BED get `--enable-cnv true --cnv-use-somatic-vc-baf true --cnv-enable-self-normalization true`. Somatic exome runs skip CNV calling, because DRAGEN needs a panel of normals for exome CNV, which the pipeline does not support.
+- RNA runs never get it.
 
 ## MultiQC report
 
@@ -179,6 +194,8 @@ Each process has default CPUs, memory and time requests in `conf/base.config`. P
 
 A task that exits with code 130 to 145 (except 134) or 104, which usually means it was killed, for example for running out of memory, is retried once. Any other exit code, including 134 (DRAGEN abort, SIGABRT), is not retried. The pipeline then uses `finish`: tasks that are already running complete, no new tasks start, and the run exits with an error naming the sample.
 
+DRAGEN runs on the FPGA card and the host CPUs of one FPGA instance, and processes one sample at a time using all the hardware resources available ([Illumina FAQ](https://knowledge.illumina.com/software/dragen/software-dragen-faq-list/000006026.md)). Illumina recommends an `f2.6xlarge` instance on AWS, which has 24 vCPUs ([DRAGEN on AWS Batch](https://help.bioinsight.illumina.com/dragen/dragen-v4.4/reference/dragen-multi-cloud/dragen-on-aws-batch.md)). Asking for more CPUs than the instance has does not speed a run up.
+
 To change the resources of a process, pass a config file with `-c`. Select processes by label with `withLabel`, or by name with `withName`:
 
 ```groovy
@@ -191,7 +208,7 @@ process {
 
 ### Custom Tool Arguments
 
-The pipeline sets the DRAGEN options for each run type itself and does not read `ext.args` from custom configs. Change the tunable options with `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args` (see [Germline, somatic and RNA runs](#germline-somatic-and-rna-runs)).
+Change the tunable options with `--dragen_germline_args`, `--dragen_somatic_args`, `--dragen_rna_args` and, for the hash-table builds, `--dragen_hashtable_dna_args` and `--dragen_hashtable_rna_args` (see [Germline, somatic and RNA runs](#germline-somatic-and-rna-runs)).
 
 ## Running in the background
 

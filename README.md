@@ -19,14 +19,10 @@ The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs from
 ```mermaid
 flowchart LR
     SS[Samplesheet] --> PS[Parse and validate]
-    PS --> SEL[Select run per patient]
     FA[fasta] -.->|built when no index is given| HT[Hash tables]
-    SEL -->|normal only| GER[DRAGEN germline]
-    SEL -->|tumour and normal| SOM[DRAGEN somatic]
-    SEL -->|RNA samples| RNA[DRAGEN RNA]
-    HT --> GER
-    HT --> SOM
-    HT --> RNA
+    PS -->|normal only| GER[DRAGEN germline]
+    PS -->|tumour and normal| SOM[DRAGEN somatic]
+    PS -->|RNA samples| RNA[DRAGEN RNA]
     GER --> MQ[MultiQC]
     SOM --> MQ
     RNA --> MQ
@@ -89,7 +85,8 @@ process {
 }
 ```
 
-The `libdragen.so` version in `aws.batch.volumes` must match the DRAGEN version of your AMI.
+> [!WARNING]
+> The `libdragen.so` version in `aws.batch.volumes` must match the DRAGEN version of your AMI.
 
 Each launch must also set these:
 
