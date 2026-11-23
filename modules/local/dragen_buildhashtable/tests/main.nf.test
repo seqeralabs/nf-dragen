@@ -12,7 +12,12 @@ nextflow_process {
         when {
             process {
                 """
-                input[0] = file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.fasta")
+                input[0] = record(
+                    id: 'dna',
+                    fasta: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.fasta"),
+                    dragen_args: '--ht-build-cnv-hashtable true',
+                    output_prefix: 'dragen_index_dna'
+                )
                 """
             }
         }
@@ -20,7 +25,10 @@ nextflow_process {
         then {
             assertAll(
                 { assert process.success },
-                { assert snapshot(getAllFilesFromDir(process.out[0][0], relative: true, includeDir: false)).match() }
+                { assert process.out[0][0].id == 'dna' },
+                { assert new File(process.out[0][0].index).name == 'dragen_index_dna' },
+                { assert new File(new File(process.out[0][0].index).parentFile, '.command.out').text.contains('--ht-build-cnv-hashtable true') },
+                { assert snapshot(getAllFilesFromDir(process.out[0][0].index, relative: true, includeDir: false)).match() }
             )
         }
     }

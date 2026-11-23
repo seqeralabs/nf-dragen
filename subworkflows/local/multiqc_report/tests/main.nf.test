@@ -16,16 +16,18 @@ nextflow_workflow {
                 input[2] = null
                 input[3] = null
                 input[4] = file("${baseDir}/assets/multiqc_config.yml")
+                input[5] = 'Report title from multiqc_title'
                 """
             }
         }
 
         then {
-            def data = workflow.out.report.find { report_file -> report_file.toString().endsWith('multiqc_data') }
+            def data = workflow.out.report.find { report_file -> report_file.toString().endsWith('_data') }
             assertAll(
                 { assert workflow.success },
                 { assert path("${data}/dragen_map_metrics.txt").readLines()[1].startsWith("TEST\t10142922") },
                 { assert path("${data}/multiqc_software_versions.txt").readLines().contains("SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN\t4.4.4") },
+                { assert path(workflow.out.report.find { report_file -> report_file.toString().endsWith('.html') }).text.contains('Report title from multiqc_title') },
                 { assert snapshot(workflow.out.versions).match() }
             )
         }
@@ -41,6 +43,7 @@ nextflow_workflow {
                 input[2] = file("${baseDir}/tests/data/multiqc_user_config.yml")
                 input[3] = null
                 input[4] = file("${baseDir}/assets/multiqc_config.yml")
+                input[5] = null
                 """
             }
         }

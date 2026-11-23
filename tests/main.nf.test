@@ -10,8 +10,12 @@ nextflow_pipeline {
 
         then {
             def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: false)
+            // Without -profile byol no stub command line passes a licence server
+            def lic_tasks = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
+                .findAll { task_dir -> new File(task_dir, '.command.out').exists() && new File(task_dir, '.command.out').text.contains('--lic-server') }
             assertAll(
                 { assert workflow.success },
+                { assert lic_tasks == [] },
                 { assert snapshot(
                     stable_name.sort(),
                     path("$outputDir/pipeline_info/software_versions.yml").readLines()
@@ -79,10 +83,10 @@ nextflow_pipeline {
         config "../conf/byol.config"
 
         then {
-            // Tasks whose script passes the licence server with the secrets' names, not their values
+            // Tasks whose stub command line (echoed to .command.out) passes the licence server with the secrets' names, not their values
             def lic_tasks = new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }
-                .findAll { task_dir -> new File(task_dir, '.command.sh').exists() }
-                .findAll { task_dir -> new File(task_dir, '.command.sh').text.contains('--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com') }
+                .findAll { task_dir -> new File(task_dir, '.command.out').exists() }
+                .findAll { task_dir -> new File(task_dir, '.command.out').text.contains('--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com') }
                 .collect { task_dir -> new File(task_dir, '.command.run').readLines().find { line -> line.startsWith('### name:') }.replaceAll(/.*"(.*)".*/, '$1') }
                 .sort()
             assertAll(

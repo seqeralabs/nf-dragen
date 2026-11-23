@@ -5,18 +5,26 @@ process DRAGEN_BUILDHASHTABLE {
     label 'dragen'
 
     input:
-    fasta: Path
+    record(
+        id: String,
+        fasta: Path,
+        dragen_args: String?,
+        output_prefix: String?
+    )
 
     output:
-    file(prefix)
+    record(
+        id: id,
+        index: file(prefix),
+    )
 
     topic:
     file('versions.yml') >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def lic = task.ext.lic_server ?: ''
-    prefix = task.ext.prefix ?: 'dragen'
+    def args = dragen_args ?: ''
+    prefix = output_prefix ?: 'dragen'
+    // -profile byol provides the DRAGEN_USERNAME/DRAGEN_PASSWORD secrets as env vars; the script holds only their names
     """
     mkdir -p ${prefix}
 
@@ -24,7 +32,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
-        ${lic} \\
+        \${DRAGEN_USERNAME:+--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com} \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -34,10 +42,9 @@ process DRAGEN_BUILDHASHTABLE {
     """
 
     stub:
-    def args = task.ext.args ?: ''
-    // quoted below, so the echo prints the secret names, not the credentials
-    def lic = task.ext.lic_server ?: ''
-    prefix = task.ext.prefix ?: 'dragen'
+    def args = dragen_args ?: ''
+    prefix = output_prefix ?: 'dragen'
+    // single-quoted inside the expansion, so the echo prints the secret names, not the credentials
     """
     mkdir -p ${prefix}
 
@@ -45,7 +52,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
-        '${lic}' \\
+        \${DRAGEN_USERNAME:+'--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com'} \\
         ${args}
 
     touch ${prefix}/dragen.ht

@@ -26,6 +26,9 @@ input:
         logo:
           type: Path?
           description: Report logo, or null
+        multiqc_args:
+          type: String?
+          description: Extra MultiQC options, for example `--title "My report"`
 output:
   - report:
       type: record
