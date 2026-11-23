@@ -13,8 +13,8 @@ workflow SELECT_DRAGEN_MODE {
         .collect()
         .map { dna ->
             def runs = dnaRuns(dna)
-            if (runs.error) {
-                error(runs.error)
+            if (runs.errors) {
+                error(runs.errors.join('\n'))
             }
             runs
         }
@@ -26,7 +26,7 @@ workflow SELECT_DRAGEN_MODE {
 }
 
 // Per patient: a normal alone gets a germline run; a normal with a tumour gets one somatic run (PARSE_SAMPLESHEET rejects two or more tumours)
-// Returns the runs, or the error message: error() must be called in the operator closure to reach the console
+// Returns germline, somatic and errors (a list of messages, empty when the pairing is fine); the caller calls error() in its operator closure to reach the console
 def dnaRuns(samples) -> Map {
     def germline = []
     def somatic = []
@@ -62,10 +62,7 @@ def dnaRuns(samples) -> Map {
                 )
             }
         }
-    if (errors) {
-        return [error: errors.join('\n')]
-    }
-    return [germline: germline, somatic: somatic]
+    return [germline: germline, somatic: somatic, errors: errors]
 }
 
 // One tumour/normal run: `id` and the FASTQs are the normal's
