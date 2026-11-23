@@ -155,4 +155,27 @@ P1,0,P1_N,${fastq}/test_1.fastq.gz
             assert output.any { line -> line.contains("Patient 'P1' has 2 tumour DNA samples (P1_T1, P1_T2)") }
         }
     }
+
+    test("same FASTQ path in two samples fails") {
+        when {
+            def fastq = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq'
+            def sheet = new File("${launchDir}/duplicate_fastq.csv")
+            sheet.text = """sample,fastq_1
+SAMPLE1,${fastq}/test_1.fastq.gz
+SAMPLE2,${fastq}/test_1.fastq.gz
+"""
+            workflow {
+                """
+                input[0] = file("${sheet}")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            def output = workflow.stdout + workflow.stderr
+            assert workflow.failed
+            assert output.any { line -> line.contains('test_1.fastq.gz') && line.contains('SAMPLE1, SAMPLE2') }
+        }
+    }
 }
