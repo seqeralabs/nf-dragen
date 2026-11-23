@@ -61,7 +61,7 @@ The pipeline picks the DRAGEN run for each DNA sample from `patient` and `status
 
 RNA samples ignore `patient` and `status` and each get an **RNA** run.
 
-Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. HRD, TMB, HLA and MSI are off; switch them on by adding the DRAGEN options (for example `--enable-hrd true`, `--enable-tmb true`, `--enable-hla true`, `--msi-command tumor-normal`) to `ext.args` of `.*:DRAGEN_SOMATIC` in a custom config (see [Custom Tool Arguments](#custom-tool-arguments)).
+Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. HRD, TMB, HLA and MSI are off; switch them on by adding the DRAGEN options (for example `--enable-hrd true`, `--enable-tmb true`, `--enable-hla true`, `--msi-command tumor-normal`) to `--dragen_somatic_args`, for example `--dragen_somatic_args '--enable-hrd true --enable-tmb true'`. They are added after the pipeline's own somatic options; germline and RNA runs do not get them.
 
 For exome or panel data, give the target regions with `--target_bed targets.bed`. Germline runs get it as `--vc-target-bed`; somatic runs also as `--sv-call-regions-bed`. Somatic exome runs skip CNV calling, because DRAGEN needs a panel of normals for exome CNV, which the pipeline does not support. RNA runs never get it.
 
@@ -187,9 +187,7 @@ process {
 
 ### Custom Tool Arguments
 
-A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
-
-To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/usage/configuration#customising-tool-arguments) section of the nf-core website.
+The pipeline sets the DRAGEN options for each run type itself and does not read `ext.args` from custom configs. Add DRAGEN options to somatic runs with `--dragen_somatic_args` (see [Germline, somatic and RNA runs](#germline-somatic-and-rna-runs)).
 
 ## Running in the background
 

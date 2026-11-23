@@ -11,10 +11,12 @@ process DRAGEN {
         fastq_2: List<Path>,
         tumour_id: String?,
         tumour_fastq_1: List<Path>?,
-        tumour_fastq_2: List<Path>?
+        tumour_fastq_2: List<Path>?,
+        index: Path,
+        target_bed: Path?,
+        dragen_args: String?,
+        output_prefix: String?
     )
-    index: Path
-    target_bed: Path?
 
     stage:
 
@@ -53,11 +55,11 @@ process DRAGEN {
     file('versions.yml') >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def lic = task.ext.lic_server ?: ''
-    prefix = task.ext.prefix ?: runId(id, tumour_id)
+    def args = dragen_args ?: ''
+    prefix = output_prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
+    // -profile byol provides the DRAGEN_USERNAME/DRAGEN_PASSWORD secrets as env vars; the script holds only their names
     """
     ${fastq_lists.tumour}
     ${fastq_lists.normal}
@@ -68,7 +70,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         ${fastq_lists.args} \\
         ${targets} \\
-        ${lic} \\
+        \${DRAGEN_USERNAME:+--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com} \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -78,12 +80,11 @@ process DRAGEN {
     """
 
     stub:
-    def args = task.ext.args ?: ''
-    // quoted below, so the echo prints the secret names, not the credentials
-    def lic = task.ext.lic_server ?: ''
-    prefix = task.ext.prefix ?: runId(id, tumour_id)
+    def args = dragen_args ?: ''
+    prefix = output_prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
+    // The lic-server word is single-quoted inside the expansion, so the echo prints the secret names, not the credentials
     // File names are those DRAGEN 4.4.4 wrote in real germline WGS, somatic WGS and RNA runs; target_bed names come from the v4.4 docs
     def rna = args.contains('--enable-rna')
     def vc = args.contains('--enable-variant-caller')
@@ -99,7 +100,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         ${fastq_lists.args} \\
         ${targets} \\
-        '${lic}' \\
+        \${DRAGEN_USERNAME:+'--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com'} \\
         ${args}
 
     touch ${prefix}.bam ${prefix}.bam.bai ${coverage} ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv

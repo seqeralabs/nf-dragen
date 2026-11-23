@@ -4,7 +4,6 @@ nextflow_process {
     script "../main.nf"
     process "DRAGEN"
     tag "dragen"
-    config "./nextflow.config"
 
     test("paired-end DNA sample - stub") {
 
@@ -16,10 +15,12 @@ nextflow_process {
                 input[0] = channel.of(record(
                     id: 'test',
                     fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
-                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")]
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
+                    index: file("${projectDir}/tests/data/dragen_index_dna"),
+                    target_bed: null,
+                    dragen_args: '--enable-variant-caller true',
+                    output_prefix: null
                 ))
-                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
-                input[2] = null
                 """
             }
         }
@@ -47,10 +48,12 @@ nextflow_process {
                     id: 'test',
                     // same file names in different folders, as lanes often are
                     fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_1.fastq.gz")],
-                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_2.fastq.gz")]
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_2.fastq.gz")],
+                    index: file("${projectDir}/tests/data/dragen_index_dna"),
+                    target_bed: null,
+                    dragen_args: '--enable-variant-caller true',
+                    output_prefix: null
                 ))
-                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
-                input[2] = null
                 """
             }
         }
@@ -78,9 +81,7 @@ nextflow_process {
                 """
                 def root = java.nio.file.Files.createTempDirectory('same_name')
                 def fastqs = ['R1', 'R2'].collect { mate -> def d = root.resolve(mate); java.nio.file.Files.createDirectories(d); def f = d.resolve('reads.fastq.gz'); java.nio.file.Files.writeString(f, mate); file(f.toString()) }
-                input[0] = channel.of(record(id: 'S', fastq_1: [fastqs[0]], fastq_2: [fastqs[1]]))
-                input[1] = file("\${projectDir}/tests/data/dragen_index_dna")
-                input[2] = null
+                input[0] = channel.of(record(id: 'S', fastq_1: [fastqs[0]], fastq_2: [fastqs[1]], index: file("\${projectDir}/tests/data/dragen_index_dna"), target_bed: null, dragen_args: '--enable-variant-caller true', output_prefix: null))
                 """
             }
         }
@@ -107,10 +108,12 @@ nextflow_process {
                     fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
                     tumour_id: 'T',
                     tumour_fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"), file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")],
-                    tumour_fastq_2: []
+                    tumour_fastq_2: [],
+                    index: file("${projectDir}/tests/data/dragen_index_dna"),
+                    target_bed: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed"),
+                    dragen_args: '--enable-variant-caller true',
+                    output_prefix: null
                 ))
-                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
-                input[2] = file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.bed")
                 """
             }
         }
@@ -148,10 +151,12 @@ nextflow_process {
                     fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
                     tumour_id: 'T',
                     tumour_fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")],
-                    tumour_fastq_2: []
+                    tumour_fastq_2: [],
+                    index: file("${projectDir}/tests/data/dragen_index_dna"),
+                    target_bed: null,
+                    dragen_args: '--enable-variant-caller true',
+                    output_prefix: null
                 ))
-                input[1] = file("${projectDir}/tests/data/dragen_index_dna")
-                input[2] = null
                 """
             }
         }
