@@ -9,9 +9,8 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │       ├── dragen_index_dna/          # DNA hash table, when built from --fasta
 │       └── dragen_index_rna/          # RNA hash table, when built from --fasta
 ├── dragen/
-│   ├── dna_fastq_to_vcf/              # DNA samples
+│   ├── germline/                      # germline DNA samples
 │   │   ├── germline_index.csv         # one row per germline sample, see below
-│   │   ├── somatic_index.csv          # one row per tumour/normal run, see below
 │   │   ├── <sample>.bam
 │   │   ├── <sample>.bam.bai
 │   │   ├── <sample>.*metrics*.csv     # DRAGEN QC metrics, see below
@@ -20,12 +19,14 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │   │   ├── <sample>.ploidy.vcf.gz(.tbi)  # ploidy estimator calls
 │   │   ├── <sample>.baf.bw, .hard-filtered.baf.bw  # B-allele frequencies
 │   │   ├── <sample>.roh.bed, .targeted.vcf.gz(.tbi), .targeted.json  # germline runs, see below
-│   │   ├── <tumour>_vs_<normal>.*        # somatic runs: the same files as above (not .roh.bed or .targeted.*), plus
+│   ├── somatic/                       # tumour/normal runs: the same files as above (not .roh.bed or .targeted.*), plus
+│   │   ├── somatic_index.csv          # one row per tumour/normal run, see below
+│   │   ├── <tumour>_vs_<normal>.*
 │   │   ├── <tumour>_vs_<normal>_tumor.bam(.bai)   # tumour BAM; <tumour>_vs_<normal>.bam is the normal BAM
 │   │   ├── <tumour>_vs_<normal>.sv.vcf.gz(.tbi)   # structural variants
 │   │   ├── <tumour>_vs_<normal>.cnv.vcf.gz(.tbi)  # copy number variants, whole-genome somatic runs only
 │   │   └── <tumour>_vs_<normal>.wgs_somatic_callable_regions.bed  # whole-genome somatic runs only
-│   └── rna_fastq_to_bam/              # RNA samples: <sample>.bam, .bam.bai, metrics and splice junctions, no VCFs
+│   └── rna/                           # RNA samples: <sample>.bam, .bam.bai, metrics and splice junctions, no VCFs
 │       └── rna_index.csv              # one row per RNA sample, see below
 ├── multiqc/                           # unless --skip_multiqc
 │   ├── multiqc_report.html            # MultiQC report: DRAGEN metrics and software versions
@@ -36,7 +37,7 @@ The pipeline writes these files to the output directory given with `-output-dir`
 ```
 
 - `genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.
-- `dragen/` holds the DRAGEN outputs of each sample, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/dna_fastq_to_vcf/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each samplesheet row of a sample is one read group in the BAM: the ID is the sample name for a sample with one row, and `<sample>.1`, `<sample>.2`, ... for a sample with several rows.
+- `dragen/` holds the DRAGEN outputs of each sample in `germline/`, `somatic/` and `rna/`, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/somatic/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each samplesheet row of a sample is one read group in the BAM: the ID is the sample name for a sample with one row, and `<sample>.1`, `<sample>.2`, ... for a sample with several rows.
 - Index files list each DRAGEN run with the samples it came from and the published path of each of its files, as CSV with a header:
   - `germline_index.csv` and `rna_index.csv`: `id` (the file prefix), `patient` and `sample`;
   - `somatic_index.csv`: `id` (`<tumour>_vs_<normal>`), `patient`, `tumour` and `normal`;
