@@ -45,11 +45,15 @@ nextflow_pipeline {
                     [name, new File(task_dir, '.command.sh').text]
                 }
                 .sort { entry -> entry[0] }
+            def index = { csv -> path("$outputDir/dragen/dna_fastq_to_vcf/${csv}").readLines().collect { row -> row.tokenize(',').take(csv == 'somatic_index.csv' ? 4 : 3) }.with { rows -> [rows[0]] + rows.drop(1).sort { row -> row[0] } } }
             def flags = commands.collect { name, command -> [name, ['--vc-target-bed genome.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true', '--ht-build-cnv-hashtable true', '--enable-variant-caller true'].findAll { flag -> command.contains(flag) }] }
             assertAll(
                 { assert workflow.success },
                 // --dragen_somatic_args reaches only the tumour/normal run
                 { assert commands.findAll { _name, command -> command.contains('--enable-tmb true') }*.get(0) == ['SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)', 'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T1_vs_P2_N)'] },
+                // Index files name the samples behind each published record
+                { assert index('somatic_index.csv') == [['id', 'patient', 'tumour', 'normal'], ['P1_T_vs_P1_N', 'P1', 'P1_T', 'P1_N'], ['P2_T1_vs_P2_N', 'P2', 'P2_T1', 'P2_N']] },
+                { assert index('germline_index.csv') == [['id', 'patient', 'sample'], ['P3_N', 'P3', 'P3_N']] },
                 { assert snapshot(
                     flags,
                     getAllFilesFromDir(outputDir, relative: true, includeDir: false).sort()

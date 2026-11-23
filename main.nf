@@ -96,14 +96,84 @@ output {
     dragen_index_rna {
         path 'genome/index'
     }
-    dragen_dna {
-        path 'dragen/dna_fastq_to_vcf'
+    // DRAGEN records: every file field is routed (mapping_metrics is also in metrics); the index lists each record's sample fields and published paths
+    dragen_dna: Channel<Record> {
+        path { r ->
+            r.bam >> 'dragen/dna_fastq_to_vcf/'
+            r.bai >> 'dragen/dna_fastq_to_vcf/'
+            r.vcf_filtered >> 'dragen/dna_fastq_to_vcf/'
+            r.tbi_filtered >> 'dragen/dna_fastq_to_vcf/'
+            r.sv_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.sv_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.cnv_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.cnv_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.metrics >> 'dragen/dna_fastq_to_vcf/'
+            r.ploidy_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.ploidy_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.roh_bed >> 'dragen/dna_fastq_to_vcf/'
+            r.baf >> 'dragen/dna_fastq_to_vcf/'
+            r.targeted_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.targeted_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.targeted_json >> 'dragen/dna_fastq_to_vcf/'
+            r.callable_bed >> 'dragen/dna_fastq_to_vcf/'
+            r.junctions >> 'dragen/dna_fastq_to_vcf/'
+        }
+        index {
+            path 'dragen/dna_fastq_to_vcf/germline_index.csv'
+            header true
+        }
     }
-    dragen_somatic {
-        path 'dragen/dna_fastq_to_vcf'
+    dragen_somatic: Channel<Record> {
+        path { r ->
+            r.bam >> 'dragen/dna_fastq_to_vcf/'
+            r.bai >> 'dragen/dna_fastq_to_vcf/'
+            r.vcf_filtered >> 'dragen/dna_fastq_to_vcf/'
+            r.tbi_filtered >> 'dragen/dna_fastq_to_vcf/'
+            r.sv_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.sv_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.cnv_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.cnv_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.metrics >> 'dragen/dna_fastq_to_vcf/'
+            r.ploidy_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.ploidy_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.roh_bed >> 'dragen/dna_fastq_to_vcf/'
+            r.baf >> 'dragen/dna_fastq_to_vcf/'
+            r.targeted_vcf >> 'dragen/dna_fastq_to_vcf/'
+            r.targeted_tbi >> 'dragen/dna_fastq_to_vcf/'
+            r.targeted_json >> 'dragen/dna_fastq_to_vcf/'
+            r.callable_bed >> 'dragen/dna_fastq_to_vcf/'
+            r.junctions >> 'dragen/dna_fastq_to_vcf/'
+        }
+        index {
+            path 'dragen/dna_fastq_to_vcf/somatic_index.csv'
+            header true
+        }
     }
-    dragen_rna {
-        path 'dragen/rna_fastq_to_bam'
+    dragen_rna: Channel<Record> {
+        path { r ->
+            r.bam >> 'dragen/rna_fastq_to_bam/'
+            r.bai >> 'dragen/rna_fastq_to_bam/'
+            r.vcf_filtered >> 'dragen/rna_fastq_to_bam/'
+            r.tbi_filtered >> 'dragen/rna_fastq_to_bam/'
+            r.sv_vcf >> 'dragen/rna_fastq_to_bam/'
+            r.sv_tbi >> 'dragen/rna_fastq_to_bam/'
+            r.cnv_vcf >> 'dragen/rna_fastq_to_bam/'
+            r.cnv_tbi >> 'dragen/rna_fastq_to_bam/'
+            r.metrics >> 'dragen/rna_fastq_to_bam/'
+            r.ploidy_vcf >> 'dragen/rna_fastq_to_bam/'
+            r.ploidy_tbi >> 'dragen/rna_fastq_to_bam/'
+            r.roh_bed >> 'dragen/rna_fastq_to_bam/'
+            r.baf >> 'dragen/rna_fastq_to_bam/'
+            r.targeted_vcf >> 'dragen/rna_fastq_to_bam/'
+            r.targeted_tbi >> 'dragen/rna_fastq_to_bam/'
+            r.targeted_json >> 'dragen/rna_fastq_to_bam/'
+            r.callable_bed >> 'dragen/rna_fastq_to_bam/'
+            r.junctions >> 'dragen/rna_fastq_to_bam/'
+        }
+        index {
+            path 'dragen/rna_fastq_to_bam/rna_index.csv'
+            header true
+        }
     }
     multiqc {
         path 'multiqc'
@@ -189,11 +259,12 @@ workflow SEQERALABS_DRAGEN {
     )
 
     emit:
-    dna_index: Channel<Path> = ch_dna_index_built // only hash tables built here, not ones the user supplied
+    dna_index: Channel<Path> = ch_dna_index_built                                                                                                                                               // only hash tables built here, not ones the user supplied
     rna_index: Channel<Path> = ch_rna_index_built
-    dna: Channel<Record> = ch_dna
-    somatic: Channel<Record> = ch_somatic
-    rna: Channel<Record> = ch_rna
+    // DRAGEN results with the samples they came from, for the published index files
+    dna: Channel<Record> = modes.germline.map { sample -> record(id: sample.id, patient: sample.patient, sample: sample.id) }.join(ch_dna, by: 'id')
+    somatic: Channel<Record> = modes.somatic.map { run -> record(id: "${run.tumour_id}_vs_${run.id}", patient: run.patient, tumour: run.tumour_id, normal: run.id) }.join(ch_somatic, by: 'id')
+    rna: Channel<Record> = modes.rna.map { sample -> record(id: sample.id, patient: sample.patient, sample: sample.id) }.join(ch_rna, by: 'id')
 }
 
 // A sample whose sequencing type has neither --fasta nor a DRAGEN index cannot get a hash table; stop before any task.

@@ -10,6 +10,8 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │       └── dragen_index_rna/          # RNA hash table, when built from --fasta
 ├── dragen/
 │   ├── dna_fastq_to_vcf/              # DNA samples
+│   │   ├── germline_index.csv         # one row per germline sample, see below
+│   │   ├── somatic_index.csv          # one row per tumour/normal run, see below
 │   │   ├── <sample>.bam
 │   │   ├── <sample>.bam.bai
 │   │   ├── <sample>.*metrics*.csv     # DRAGEN QC metrics, see below
@@ -24,6 +26,7 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │   │   ├── <tumour>_vs_<normal>.cnv.vcf.gz(.tbi)  # copy number variants, whole-genome somatic runs only
 │   │   └── <tumour>_vs_<normal>.wgs_somatic_callable_regions.bed  # whole-genome somatic runs only
 │   └── rna_fastq_to_bam/              # RNA samples: <sample>.bam, .bam.bai, metrics and splice junctions, no VCFs
+│       └── rna_index.csv              # one row per RNA sample, see below
 ├── multiqc/                           # unless --skip_multiqc
 │   ├── multiqc_report.html            # MultiQC report: DRAGEN metrics and software versions
 │   ├── multiqc_data/                  # the report's data, as text files
@@ -34,6 +37,10 @@ The pipeline writes these files to the output directory given with `-output-dir`
 
 - `genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.
 - `dragen/` holds the DRAGEN outputs of each sample, named by the sample name. A somatic run writes the outputs of the tumour/normal pair under `dragen/dna_fastq_to_vcf/`, named `<tumour>_vs_<normal>`, with a BAM for each of the two samples. Each samplesheet row of a sample is one read group in the BAM: the ID is the sample name for a sample with one row, and `<sample>.1`, `<sample>.2`, ... for a sample with several rows.
+- Index files list each DRAGEN run with the samples it came from and the published path of each of its files, as CSV with a header:
+  - `germline_index.csv` and `rna_index.csv`: `id` (the file prefix), `patient` and `sample`;
+  - `somatic_index.csv`: `id` (`<tumour>_vs_<normal>`), `patient`, `tumour` and `normal`;
+  - then one column per DRAGEN output: `bam`, `bai`, `vcf_filtered`, `tbi_filtered`, `sv_vcf`, `sv_tbi`, `cnv_vcf`, `cnv_tbi`, `mapping_metrics`, `metrics`, `ploidy_vcf`, `ploidy_tbi`, `roh_bed`, `baf`, `targeted_vcf`, `targeted_tbi`, `targeted_json`, `callable_bed` and `junctions`. A column is empty (or `[]`) when the run did not write that file; columns that can hold several files (`bam`, `bai`, `metrics`, `baf`, `junctions`) hold a list such as `[<path>, <path>]`. A somatic run's `bam` and `bai` hold the normal and the tumour file.
 - DRAGEN QC metrics (`<prefix>` is the sample name, or `<tumour>_vs_<normal>` for a somatic run):
   - every run: `<prefix>.mapping_metrics.csv` (for RNA runs it includes the RNA-specific mapping metrics), `<prefix>.time_metrics.csv`, `<prefix>.fastqc_metrics.csv`, `<prefix>.trimmer_metrics.csv`, and the whole-genome coverage reports `<prefix>.wgs_coverage_metrics.csv`, `<prefix>.wgs_overall_mean_cov.csv`, `<prefix>.wgs_contig_mean_cov.csv`, `<prefix>.wgs_fine_hist.csv` and `<prefix>.wgs_hist.csv`;
   - germline and somatic runs: `<prefix>.fragment_length_hist.csv`, `<prefix>.vc_metrics.csv`, `<prefix>.ploidy_estimation_metrics.csv` and `<prefix>.allele_transition_noise_metrics.csv`, plus the same five coverage reports for the target regions (`<prefix>.target_bed_coverage_metrics.csv`, `_overall_mean_cov`, `_contig_mean_cov`, `_fine_hist`, `_hist`) with `--target_bed`;
