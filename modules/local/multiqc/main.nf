@@ -10,7 +10,7 @@ process MULTIQC {
     record(
         id: String,
         files: Set<Path>,
-        configs: Set<Path>,
+        configs: List<Path>,
         logo: Path?
     )
 
