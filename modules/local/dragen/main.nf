@@ -27,14 +27,15 @@ process DRAGEN {
     output:
     record(
         id: runId(id, tumour_id),
-        bam: files("${prefix}*.bam", optional: true),
-        bai: files("${prefix}*.bam.bai", optional: true),
+        bam: files("${prefix}*.bam"),
+        bai: files("${prefix}*.bam.bai"),
         vcf_filtered: file("${prefix}.hard-filtered.vcf.gz", optional: true),
         tbi_filtered: file("${prefix}.hard-filtered.vcf.gz.tbi", optional: true),
         sv_vcf: file("${prefix}.sv.vcf.gz", optional: true),
         sv_tbi: file("${prefix}.sv.vcf.gz.tbi", optional: true),
         cnv_vcf: file("${prefix}.cnv.vcf.gz", optional: true),
         cnv_tbi: file("${prefix}.cnv.vcf.gz.tbi", optional: true),
+        mapping_metrics: file("${prefix}.mapping_metrics.csv"), // also matched by metrics below; required, so a missing file fails the task
         metrics: files("${prefix}.{*metrics*,*_hist*,*_mean_cov*}.csv", optional: true),
         ploidy_vcf: file("${prefix}.ploidy.vcf.gz", optional: true),
         ploidy_tbi: file("${prefix}.ploidy.vcf.gz.tbi", optional: true),
