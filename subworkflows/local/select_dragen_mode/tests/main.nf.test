@@ -27,6 +27,28 @@ nextflow_workflow {
         }
     }
 
+    test("germline sample named like a tumour/normal run - fails naming both") {
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of(
+                    record(id: 'N', patient: 'P1', status: 0, seq_type: 'dna', fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")], fastq_2: []),
+                    record(id: 'T', patient: 'P1', status: 1, seq_type: 'dna', fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")], fastq_2: []),
+                    record(id: 'T_vs_N', patient: 'P2', status: 0, seq_type: 'dna', fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")], fastq_2: [])
+                )
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("Germline sample 'T_vs_N' has the same name as the tumour/normal run 'T_vs_N' (tumour 'T', normal 'N')") } }
+            )
+        }
+    }
+
     test("two normals - fails naming the patient") {
 
         when {
