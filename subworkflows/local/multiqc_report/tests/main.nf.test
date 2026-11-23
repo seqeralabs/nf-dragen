@@ -27,8 +27,7 @@ nextflow_workflow {
                 { assert workflow.success },
                 { assert path("${data}/dragen_map_metrics.txt").readLines()[1].startsWith("TEST\t10142922") },
                 { assert path("${data}/multiqc_software_versions.txt").readLines().contains("SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN\t4.4.4") },
-                { assert path(workflow.out.report.find { report_file -> report_file.toString().endsWith('.html') }).text.contains('Report title from multiqc_title') },
-                { assert snapshot(workflow.out.versions).match() }
+                { assert path(workflow.out.report.find { report_file -> report_file.toString().endsWith('.html') }).text.contains('Report title from multiqc_title') }
             )
         }
     }

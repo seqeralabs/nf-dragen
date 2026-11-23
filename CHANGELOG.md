@@ -53,7 +53,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - A samplesheet is rejected before anything runs when a sample name is on more than one row; the message names the sample.
 
 - The pipeline requires Nextflow 26.10.6 or later.
-- The software versions report is written to `pipeline_info/software_versions.yml` and lists the versions of every process, including the RNA steps.
+- The software versions report is written to `pipeline_info/software_versions.yml` and lists the DRAGEN version of every DRAGEN and hash-table process, including the RNA steps; MultiQC shows its own version in its report footer.
 - The `test` profile uses small public data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), and only works with `-stub`.
 - DRAGEN reads each sample as one read group named after the sample. The BAM index and DRAGEN's `*metrics.csv` files are now published; FASTQ files are not.
 

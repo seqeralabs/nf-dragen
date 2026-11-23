@@ -427,29 +427,22 @@
                 "pipeline_info/software_versions.yml"
             ],
             [
-                "\"MULTIQC_REPORT:MULTIQC\":",
-                "    multiqc: 1.35",
                 "\"SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_DNA\":",
                 "    dragen: stub",
-                "",
                 "\"SEQERALABS_DRAGEN:DRAGEN_BUILDHASHTABLE_RNA\":",
                 "    dragen: stub",
-                "",
                 "\"SEQERALABS_DRAGEN:DRAGEN_DNA\":",
                 "    dragen: stub",
-                "",
                 "\"SEQERALABS_DRAGEN:DRAGEN_RNA\":",
                 "    dragen: stub",
-                "",
                 "\"SEQERALABS_DRAGEN:DRAGEN_SOMATIC\":",
                 "    dragen: stub",
-                "",
                 "Workflow:",
                 "    Nextflow: 26.10.6",
                 "    seqeralabs/nf-dragen: 1.0.0dev"
             ]
         ],
-        "timestamp": "2026-11-21T18:48:45.827660207",
+        "timestamp": "2026-11-23T10:27:07.306613757",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"

@@ -19,10 +19,11 @@ process DRAGEN_BUILDHASHTABLE {
     )
 
     topic:
-    file('versions.yml') >> 'versions'
+    record(process: "${task.process}", tool: 'dragen', version: eval(version_cmd)) >> 'versions'
 
     script:
     def args = dragen_args ?: ''
+    version_cmd = 'echo $(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g"'
     prefix = output_prefix ?: 'dragen'
     // -profile byol provides the DRAGEN_USERNAME/DRAGEN_PASSWORD secrets as env vars; the script holds only their names
     """
@@ -34,15 +35,12 @@ process DRAGEN_BUILDHASHTABLE {
         --ht-reference ${fasta} \\
         \${DRAGEN_USERNAME:+--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com} \\
         ${args}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
-    END_VERSIONS
     """
 
     stub:
     def args = dragen_args ?: ''
+    // the stub never calls the binary, which exists only on DRAGEN hosts
+    version_cmd = 'echo stub'
     prefix = output_prefix ?: 'dragen'
     // single-quoted inside the expansion, so the echo prints the secret names, not the credentials
     """
@@ -56,10 +54,5 @@ process DRAGEN_BUILDHASHTABLE {
         ${args}
 
     touch ${prefix}/dragen.ht
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        dragen: stub
-    END_VERSIONS
     """
 }

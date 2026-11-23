@@ -119,8 +119,8 @@ output:
           description: Splice junctions (filtered and unfiltered) and chimeric junctions, RNA runs only
 topics:
   - versions:
-      type: Path
-      pattern: versions.yml
+      type: Record
+      description: "`{process, tool: dragen, version}`; the stub reports version `stub`"
 notes: |
   The script writes `fastq_list.csv` (columns RGID, RGSM, RGLB, Lane, Read1File, Read2File) with one row, so one
   read group: RGID and RGSM the sample name, Lane 1, Read2File empty for single-end. With a tumour it writes

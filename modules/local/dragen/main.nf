@@ -52,10 +52,11 @@ process DRAGEN {
     )
 
     topic:
-    file('versions.yml') >> 'versions'
+    record(process: "${task.process}", tool: 'dragen', version: eval(version_cmd)) >> 'versions'
 
     script:
     def args = dragen_args ?: ''
+    version_cmd = 'echo $(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g"'
     prefix = output_prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
@@ -72,15 +73,12 @@ process DRAGEN {
         ${targets} \\
         \${DRAGEN_USERNAME:+--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com} \\
         ${args}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        dragen: '\$(echo \$(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g")'
-    END_VERSIONS
     """
 
     stub:
     def args = dragen_args ?: ''
+    // the stub never calls the binary, which exists only on DRAGEN hosts
+    version_cmd = 'echo stub'
     prefix = output_prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
@@ -109,11 +107,6 @@ process DRAGEN {
     ${vc && !tumour_id ? "touch ${prefix}.vc_hethom_ratio_metrics.csv ${prefix}.roh_metrics.csv ${prefix}.roh.bed ${prefix}.targeted.vcf.gz ${prefix}.targeted.vcf.gz.tbi ${prefix}.targeted.json" : ''}
     ${tumour_id ? "touch ${prefix}_tumor.bam ${prefix}_tumor.bam.bai ${prefix}.sv.vcf.gz ${prefix}.sv.vcf.gz.tbi ${prefix}.sv_metrics.csv" : ''}
     ${tumour_id && !target_bed ? "touch ${prefix}.cnv.vcf.gz ${prefix}.cnv.vcf.gz.tbi ${prefix}.cnv_metrics.csv ${prefix}.wgs_somatic_callable_regions.bed" : ''}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        dragen: stub
-    END_VERSIONS
     """
 }
 
