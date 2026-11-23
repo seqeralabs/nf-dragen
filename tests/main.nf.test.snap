@@ -37,7 +37,6 @@
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)",
                     [
                         "--vc-target-bed genome.bed",
-                        "--enable-sv true",
                         "--enable-variant-caller true"
                     ]
                 ],
@@ -45,7 +44,6 @@
                     "SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T1_vs_P2_N)",
                     [
                         "--vc-target-bed genome.bed",
-                        "--enable-sv true",
                         "--enable-variant-caller true"
                     ]
                 ]
@@ -190,7 +188,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-23T11:23:07.12412962",
+        "timestamp": "2026-11-23T11:31:06.75884202",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
