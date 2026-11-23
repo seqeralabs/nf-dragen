@@ -28,7 +28,8 @@ The pipeline stops before running anything, with a message naming the problem, w
 
 - a required column is missing, or a FASTQ file does not exist;
 - the rows of one sample disagree on `patient`, `tissue`, `sex` or `seq_type`;
-- the rows of one sample mix paired-end and single-end FASTQs.
+- the rows of one sample mix paired-end and single-end FASTQs;
+- the same FASTQ path appears more than once, in `fastq_1` or `fastq_2`, in one sample or in different samples.
 
 ### Minimal samplesheet
 

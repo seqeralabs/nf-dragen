@@ -23,6 +23,16 @@ workflow PARSE_SAMPLESHEET {
             }
         }
 
+    // DRAGEN allows each FASTQ file once in its fastq-list, in fastq_1 and fastq_2 together
+    rows
+        .collectMany { row -> [row[1], row[2]].findAll { fastq -> fastq }.collect { fastq -> [path: fastq.toUriString(), sample: row[0].id] } }
+        .groupBy { entry -> entry.path }
+        .each { path, entries ->
+            if (entries.size() > 1) {
+                error("Samplesheet: FASTQ '${path}' is used ${entries.size()} times (samples ${entries*.sample.unique().join(', ')}); each FASTQ file may be listed only once")
+            }
+        }
+
     emit:
     samples: Channel<Sample> = channel.fromList(sample_records)
 }

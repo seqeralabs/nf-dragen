@@ -32,7 +32,7 @@
                 },
                 {
                     "fastq_1": [
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_germline_1.fq.gz"
                     ],
                     "fastq_2": [
                         
@@ -46,11 +46,11 @@
                 {
                     "fastq_1": [
                         "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_1.fastq.gz",
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_1.fastq.gz"
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test.methylated_1.fastq.gz"
                     ],
                     "fastq_2": [
                         "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_2.fastq.gz",
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test_2.fastq.gz"
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/sarscov2/illumina/fastq/test.methylated_2.fastq.gz"
                     ],
                     "id": "P3_RNA",
                     "patient": "P3",
