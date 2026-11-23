@@ -32,7 +32,6 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - DRAGEN runs with the AWS Marketplace pay-as-you-go licence, so it needs no Nextflow secrets and no `--lic-server`. Use `-profile byol` for a private AMI.
 - DRAGEN options are not read from `ext.args` or `ext.prefix` in custom configs; use `--dragen_somatic_args` for extra somatic options.
 - RNA runs do not call variants; `dragen/rna_fastq_to_bam/` holds no VCFs.
-- Somatic runs do not clip paired-end overhangs.
 - DRAGEN tasks that abort with exit 134 (SIGABRT) are not retried; exit 143 and the other resource-class codes are.
 - DNA hash tables built by an earlier version lack CNV k-mers and must be rebuilt for CNV calling.
 - The `test` profile uses small public data from nf-core/test-datasets, read from raw.githubusercontent.com (needs network access), and only works with `-stub`.
