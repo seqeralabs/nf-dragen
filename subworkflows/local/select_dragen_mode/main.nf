@@ -34,8 +34,8 @@ def dnaRuns(samples) -> Map {
     samples
         .groupBy { sample -> sample.patient }
         .each { patient, patient_samples ->
-            def normals = patient_samples.findAll { sample -> sample.status == 0 }
-            def tumours = patient_samples.findAll { sample -> sample.status == 1 }
+            def normals = patient_samples.findAll { sample -> sample.tissue == 'germline' }
+            def tumours = patient_samples.findAll { sample -> sample.tissue == 'tumor' }
             if (normals.size() > 1) {
                 errors << "Patient '${patient}' has ${normals.size()} normal DNA samples (${normals*.id.join(', ')}); give one normal per patient"
                 return null

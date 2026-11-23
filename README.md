@@ -10,7 +10,7 @@ The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs from
 
 ## Pipeline steps
 
-1. **Samplesheet parsing.** Reads the samplesheet, which uses the same columns as nf-core/sarek, and checks it before any task runs. Several rows with the same sample name are that sample's FASTQ pairs (for example its lanes; the `lane` column is ignored), and each becomes one DRAGEN read group, `<sample>.1`, `<sample>.2`, ... (`<sample>` for a single row). A sample's rows must agree on patient, status, sex and seq_type, and be all paired-end or all single-end.
+1. **Samplesheet parsing.** Reads the samplesheet (columns `patient`, `sex`, `tissue`, `sample`, `fastq_1`, `fastq_2`, `seq_type`) and checks it before any task runs. Several rows with the same sample name are that sample's FASTQ pairs (for example its lanes; the `lane` column is ignored), and each becomes one DRAGEN read group, `<sample>.1`, `<sample>.2`, ... (`<sample>` for a single row). A sample's rows must agree on patient, tissue, sex and seq_type, and be all paired-end or all single-end.
 2. **Run selection.** Groups DNA samples by patient: a normal without a tumour gets a germline run, and a normal with a tumour gets a somatic run (one tumour per patient). RNA samples get an RNA run.
 3. **Hash tables.** Builds the DRAGEN DNA and RNA hash tables from `--fasta`, unless you supply them with `--dragen_index_dna` and `--dragen_index_rna`. The `--fasta` must not contain ALT contigs, for example the GRCh38 no-ALT analysis set, because DRAGEN needs a liftover file to build from them and the pipeline does not pass one.
 4. **DRAGEN.** Runs germline and somatic DNA calling (somatic runs also call structural variants, and copy number variants for whole-genome data) and RNA alignment.

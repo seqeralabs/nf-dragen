@@ -15,14 +15,21 @@
             },
             "sex": {
                 "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Sex cannot contain spaces",
+                "enum": ["male", "female", "unknown"],
+                "default": "unknown",
+                "errorMessage": "Sex must be 'male', 'female' or 'unknown'",
                 "meta": ["sex"]
             },
+            "tissue": {
+                "type": "string",
+                "enum": ["germline", "tumor"],
+                "default": "germline",
+                "errorMessage": "Tissue must be 'germline' or 'tumor'",
+                "meta": ["tissue"]
+            },
             "status": {
-                "type": "integer",
-                "enum": [0, 1],
-                "errorMessage": "Status must be 0 (normal) or 1 (tumour)",
+                "not": {},
+                "errorMessage": "The 'status' column is not supported: use 'tissue' with 'germline' or 'tumor' instead",
                 "meta": ["status"]
             },
             "sample": {

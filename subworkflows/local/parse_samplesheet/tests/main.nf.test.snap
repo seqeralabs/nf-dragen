@@ -1,54 +1,4 @@
 {
-    "sarek sheet with status, sex, seq_type and extra lane and strandedness columns": {
-        "content": [
-            [
-                {
-                    "fastq_1": [
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz"
-                    ],
-                    "fastq_2": [
-                        
-                    ],
-                    "id": "P1_TUMOUR",
-                    "patient": "PATIENT1",
-                    "seq_type": "dna",
-                    "sex": "XX",
-                    "status": 1
-                },
-                {
-                    "fastq_1": [
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"
-                    ],
-                    "fastq_2": [
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"
-                    ],
-                    "id": "P1_NORMAL",
-                    "patient": "PATIENT1",
-                    "seq_type": "dna",
-                    "sex": "XX",
-                    "status": 0
-                },
-                {
-                    "fastq_1": [
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_1.fastq.gz"
-                    ],
-                    "fastq_2": [
-                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_2.fastq.gz"
-                    ],
-                    "id": "P2_RNA",
-                    "patient": "PATIENT2",
-                    "seq_type": "rna",
-                    "sex": "XY",
-                    "status": 0
-                }
-            ]
-        ],
-        "timestamp": "2026-11-21T19:28:16.020600801",
-        "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.10.6"
-        }
-    },
     "multi-row samples grouped in samplesheet order": {
         "content": [
             [
@@ -64,8 +14,8 @@
                     "id": "P1_T",
                     "patient": "P1",
                     "seq_type": "dna",
-                    "sex": null,
-                    "status": 1
+                    "sex": "unknown",
+                    "tissue": "tumor"
                 },
                 {
                     "fastq_1": [
@@ -77,8 +27,8 @@
                     "id": "P1_N",
                     "patient": "P1",
                     "seq_type": "dna",
-                    "sex": null,
-                    "status": 0
+                    "sex": "unknown",
+                    "tissue": "germline"
                 },
                 {
                     "fastq_1": [
@@ -90,8 +40,8 @@
                     "id": "P2_SE",
                     "patient": "P2",
                     "seq_type": "dna",
-                    "sex": null,
-                    "status": 0
+                    "sex": "unknown",
+                    "tissue": "germline"
                 },
                 {
                     "fastq_1": [
@@ -105,12 +55,62 @@
                     "id": "P3_RNA",
                     "patient": "P3",
                     "seq_type": "rna",
-                    "sex": null,
-                    "status": 0
+                    "sex": "unknown",
+                    "tissue": "germline"
                 }
             ]
         ],
-        "timestamp": "2026-11-21T19:28:11.27806126",
+        "timestamp": "2026-11-23T16:04:45.010219813",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "sheet with tissue, sex, seq_type and extra lane and strandedness columns": {
+        "content": [
+            [
+                {
+                    "fastq_1": [
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz"
+                    ],
+                    "fastq_2": [
+                        
+                    ],
+                    "id": "P1_TUMOUR",
+                    "patient": "PATIENT1",
+                    "seq_type": "dna",
+                    "sex": "female",
+                    "tissue": "tumor"
+                },
+                {
+                    "fastq_1": [
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz"
+                    ],
+                    "fastq_2": [
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz"
+                    ],
+                    "id": "P1_NORMAL",
+                    "patient": "PATIENT1",
+                    "seq_type": "dna",
+                    "sex": "female",
+                    "tissue": "germline"
+                },
+                {
+                    "fastq_1": [
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_1.fastq.gz"
+                    ],
+                    "fastq_2": [
+                        "/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_rnaseq_2.fastq.gz"
+                    ],
+                    "id": "P2_RNA",
+                    "patient": "PATIENT2",
+                    "seq_type": "rna",
+                    "sex": "male",
+                    "tissue": "germline"
+                }
+            ]
+        ],
+        "timestamp": "2026-11-23T16:04:49.46918994",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
