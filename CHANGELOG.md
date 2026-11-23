@@ -13,7 +13,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - Samplesheets in the nf-core/sarek format, in any column order: the optional columns `patient`, `status` (0 normal, 1 tumour) and `sex` are new, and unknown columns (for example `lane`) are ignored. `sample,fastq_1,fastq_2` samplesheets still work.
 - Several rows with the same `sample` are that sample's FASTQ pairs, for germline, tumour/normal and RNA runs. Each row is one DRAGEN read group: `<sample>.1`, `<sample>.2`, ... in samplesheet order; a sample with one row has the read group ID `<sample>`. The rows of a sample must agree on `patient`, `status`, `sex` and `seq_type` and be all paired-end or all single-end, otherwise the pipeline stops before any task with an error naming the sample and the column.
 - Tumour/normal calling for DNA samples: a patient with one normal and one tumour gets one somatic run (small variants and SV, plus CNV for whole-genome data, not for runs with `--target_bed`), published as `dragen/somatic/<tumour>_vs_<normal>.*`. A normal without a tumour gets a germline run. The pipeline stops before any task, with an error naming the patient or samples, for a tumour without a normal, two normals or two tumours for one patient.
-- `--dragen_somatic_args`: extra DRAGEN options for somatic runs, for example to switch on HRD, TMB, HLA or MSI.
+- `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args`: the tunable DRAGEN options of each run type (for example to switch on HRD, TMB, HLA or MSI for somatic runs). Setting one replaces its default, so repeat the default options you want to keep.
 - `--target_bed`: exome or panel target regions for germline and somatic runs (not RNA runs). Somatic exome runs use DRAGEN's exome SV mode.
 - The DNA hash table is built with CNV k-mers. `--fasta` must not contain ALT contigs, for example use the GRCh38 no-ALT analysis set.
 - `-profile byol` for Illumina's private DRAGEN AMI: every DRAGEN task then needs the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` and passes them to `--lic-server`. It is untested on real DRAGEN.
@@ -30,7 +30,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The pipeline requires Nextflow 26.10.6 or later and nf-schema 3.1.0.
 - Results go to the output directory given by `-output-dir <dir>` (one dash), or `outputDir` in a config file or a Seqera Platform launch. `--outdir` fails the launch.
 - DRAGEN runs with the AWS Marketplace pay-as-you-go licence, so it needs no Nextflow secrets and no `--lic-server`. Use `-profile byol` for a private AMI.
-- DRAGEN options are not read from `ext.args` or `ext.prefix` in custom configs; use `--dragen_somatic_args` for extra somatic options.
+- DRAGEN options are not read from `ext.args` or `ext.prefix` in custom configs; use `--dragen_germline_args`, `--dragen_somatic_args` or `--dragen_rna_args`.
 - RNA runs do not call variants; `dragen/rna/` holds no VCFs.
 - DRAGEN tasks that abort with exit 134 (SIGABRT) are not retried; exit 143 and the other resource-class codes are.
 - DNA hash tables built by an earlier version lack CNV k-mers and must be rebuilt for CNV calling.

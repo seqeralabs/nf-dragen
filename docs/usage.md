@@ -61,7 +61,7 @@ The pipeline picks the DRAGEN run for each DNA sample from `patient` and `status
 
 RNA samples ignore `patient` and `status` and each get an **RNA** run.
 
-Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. HRD, TMB, HLA and MSI are off; switch them on by adding the DRAGEN options (for example `--enable-hrd true`, `--enable-tmb true`, `--enable-hla true`, `--msi-command tumor-normal`) to `--dragen_somatic_args`, for example `--dragen_somatic_args '--enable-hrd true --enable-tmb true'`. They are added after the pipeline's own somatic options; germline and RNA runs do not get them.
+Somatic runs call small variants, structural variants (SV) and, for whole-genome data (no `--target_bed`), copy number variants (CNV) with self-normalization. Each run type takes its tunable DRAGEN options from its own parameter: `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args`. Their defaults are listed in [parameters](parameters.md). A value you set replaces the default, so repeat the default options you want to keep. HRD, TMB, HLA and MSI are off; switch them on for somatic runs with, for example, `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true'`. The pipeline always sets the alignment, variant caller (germline and somatic), RNA and BAM output options itself.
 
 For exome or panel data, give the target regions with `--target_bed targets.bed`. Germline runs get it as `--vc-target-bed`; somatic runs also as `--sv-call-regions-bed`. Somatic exome runs skip CNV calling, because DRAGEN needs a panel of normals for exome CNV, which the pipeline does not support. RNA runs never get it.
 
@@ -187,7 +187,7 @@ process {
 
 ### Custom Tool Arguments
 
-The pipeline sets the DRAGEN options for each run type itself and does not read `ext.args` from custom configs. Add DRAGEN options to somatic runs with `--dragen_somatic_args` (see [Germline, somatic and RNA runs](#germline-somatic-and-rna-runs)).
+The pipeline sets the DRAGEN options for each run type itself and does not read `ext.args` from custom configs. Change the tunable options with `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args` (see [Germline, somatic and RNA runs](#germline-somatic-and-rna-runs)).
 
 ## Running in the background
 

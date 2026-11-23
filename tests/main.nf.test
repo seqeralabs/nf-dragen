@@ -49,8 +49,10 @@ nextflow_pipeline {
             def flags = commands.collect { name, command -> [name, ['--vc-target-bed genome.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true', '--ht-build-cnv-hashtable true', '--enable-variant-caller true'].findAll { flag -> command.contains(flag) }] }
             assertAll(
                 { assert workflow.success },
-                // --dragen_somatic_args reaches only the tumour/normal run
+                // The user value replaces the somatic defaults, so --vc-target-vaf and --enable-sv leave the somatic commands
                 { assert commands.findAll { _name, command -> command.contains('--enable-tmb true') }*.get(0) == ['SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P1_T_vs_P1_N)', 'SEQERALABS_DRAGEN:DRAGEN_SOMATIC (P2_T1_vs_P2_N)'] },
+                { assert commands.findAll { name, _command -> name.contains('DRAGEN_SOMATIC') }.every { _name, command -> !command.contains('--vc-target-vaf 0.03') } },
+                { assert commands.findAll { name, _command -> name.contains('DRAGEN_DNA') || name.contains('DRAGEN_RNA') }.every { _name, command -> command.contains('--enable-duplicate-marking true') } },
                 // Index files name the samples behind each published record
                 { assert index('somatic_index.csv') == [['id', 'patient', 'tumour', 'normal'], ['P1_T_vs_P1_N', 'P1', 'P1_T', 'P1_N'], ['P2_T1_vs_P2_N', 'P2', 'P2_T1', 'P2_N']] },
                 { assert index('germline_index.csv') == [['id', 'patient', 'sample'], ['P3_N', 'P3', 'P3_N']] },

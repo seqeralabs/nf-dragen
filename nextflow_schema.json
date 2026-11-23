@@ -38,10 +38,25 @@
             "description": "Control pipeline behaviour",
             "default": "",
             "properties": {
+                "dragen_germline_args": {
+                    "type": "string",
+                    "description": "DRAGEN options for germline runs. Replaces the default.",
+                    "default": "--enable-duplicate-marking true",
+                    "help_text": "The default is `--enable-duplicate-marking true`. Setting this parameter replaces the default, so repeat any default options you want to keep.",
+                    "fa_icon": "fas fa-terminal"
+                },
                 "dragen_somatic_args": {
                     "type": "string",
-                    "description": "Extra DRAGEN options for somatic (tumour/normal) runs, added after the pipeline's own.",
-                    "help_text": "HRD, TMB, HLA and MSI are off by default. Switch them on with, for example, `--dragen_somatic_args '--enable-hrd true --enable-tmb true --enable-hla true --msi-command tumor-normal --msi-coverage-threshold 40'`. Germline and RNA runs do not get these options.",
+                    "description": "DRAGEN options for somatic (tumour/normal) runs. Replaces the default.",
+                    "default": "--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true",
+                    "help_text": "The default is `--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true`. Setting this parameter replaces the default, so repeat any default options you want to keep. HRD, TMB, HLA and MSI are off by default. Switch them on with, for example, `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true --enable-hla true --msi-command tumor-normal --msi-coverage-threshold 40'`.",
+                    "fa_icon": "fas fa-terminal"
+                },
+                "dragen_rna_args": {
+                    "type": "string",
+                    "description": "DRAGEN options for RNA runs. Replaces the default.",
+                    "default": "--enable-duplicate-marking true",
+                    "help_text": "The default is `--enable-duplicate-marking true`. Setting this parameter replaces the default, so repeat any default options you want to keep.",
                     "fa_icon": "fas fa-terminal"
                 },
                 "skip_dragen": {

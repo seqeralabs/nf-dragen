@@ -29,7 +29,9 @@ params {
     dragen_index_dna: Path?
     dragen_index_rna: Path?
     target_bed: Path?
-    dragen_somatic_args: String?
+    dragen_germline_args: String = '--enable-duplicate-marking true'
+    dragen_somatic_args: String = '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true'
+    dragen_rna_args: String = '--enable-duplicate-marking true'
 
     // Tools
     skip_dragen: Boolean = false
@@ -54,7 +56,9 @@ workflow {
         params.dragen_index_dna,
         params.dragen_index_rna,
         params.target_bed,
+        params.dragen_germline_args,
         params.dragen_somatic_args,
+        params.dragen_rna_args,
         params.skip_dragen,
     )
 
@@ -193,7 +197,9 @@ workflow SEQERALABS_DRAGEN {
     dna_index: Path?             // dragen index directory for dna
     rna_index: Path?             // dragen index directory for rna
     target_bed: Path?            // exome targets for germline and somatic runs
-    dragen_somatic_args: String? // extra DRAGEN options for somatic runs, e.g. HRD, TMB, HLA or MSI
+    dragen_germline_args: String // tunable DRAGEN options for germline runs
+    dragen_somatic_args: String  // tunable DRAGEN options for somatic runs
+    dragen_rna_args: String      // tunable DRAGEN options for RNA runs
     skip_dragen: Boolean         // skip all DRAGEN steps
 
     main:
@@ -243,15 +249,15 @@ workflow SEQERALABS_DRAGEN {
     }
 
     def map_align = '--enable-map-align true --enable-map-align-output true --enable-bam-indexing true --enable-sort=true'
-    def dna_args = "${map_align} --enable-variant-caller true --enable-duplicate-marking true --output-format=BAM"
-    def somatic_args = "${map_align} --enable-duplicate-marking true --enable-variant-caller true --output-format=BAM --vc-target-vaf 0.03 --enable-sv true"
-    def rna_args = "--enable-rna true ${map_align} --enable-duplicate-marking true --output-format=BAM"
+    def dna_args = "${map_align} --enable-variant-caller true --output-format=BAM ${dragen_germline_args}"
+    def somatic_args = "${map_align} --enable-variant-caller true --output-format=BAM ${dragen_somatic_args}"
+    def rna_args = "--enable-rna true ${map_align} --output-format=BAM ${dragen_rna_args}"
 
     ch_dna = DRAGEN_DNA(
         modes.germline.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: dna_args) }
     )
     ch_somatic = DRAGEN_SOMATIC(
-        modes.somatic.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: dragen_somatic_args ? "${somatic_args} ${dragen_somatic_args}" : somatic_args) }
+        modes.somatic.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: somatic_args) }
     )
     // RNA runs get no target_bed
     ch_rna = DRAGEN_RNA(
