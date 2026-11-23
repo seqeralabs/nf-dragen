@@ -84,12 +84,16 @@ nextflow_pipeline {
     }
 
     // Needs the secrets DRAGEN_USERNAME and DRAGEN_PASSWORD; CI sets dummy ones through NXF_SECRETS_FILE
-    // nf-test 0.9.5 has no per-test profile, so load the file the byol profile includes
-    test("byol licensing (conf/byol.config) -stub") {
+    // The parameter alone makes nextflow.config include conf/byol.config
+    test("byol licensing (--dragen_license byol) -stub") {
 
         options "-stub -output-dir $outputDir"
 
-        config "../conf/byol.config"
+        when {
+            params {
+                dragen_license = 'byol'
+            }
+        }
 
         then {
             // Tasks whose stub command line (echoed to .command.out) passes the licence server with the secrets' names, not their values

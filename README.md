@@ -58,7 +58,7 @@ Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 
 ### Bring your own licence
 
-By default DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence instead, run with `-profile byol` (it sets `--dragen_license byol`) and add the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` (in Seqera Platform, as pipeline secrets selected at launch). Every DRAGEN task then passes them to `--lic-server`. Without the secrets the DRAGEN tasks fail with `Required secrets are missing`. BYOL has only been tested in stub mode, not on real DRAGEN.
+By default DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence instead, run with `--dragen_license byol` (or `-profile byol`), which declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`, and add their values (in Seqera Platform, as pipeline secrets selected at launch). Every DRAGEN task then passes them to `--lic-server`. Without the secrets the DRAGEN tasks fail with `Required secrets are missing`. BYOL has only been tested in stub mode, not on real DRAGEN.
 
 ### Seqera Platform setup
 
