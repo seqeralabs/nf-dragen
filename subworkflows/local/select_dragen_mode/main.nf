@@ -62,14 +62,6 @@ def dnaRuns(samples) -> Map {
                 )
             }
         }
-    // Germline and somatic runs publish to the same folder, so equal prefixes would overwrite each other
-    somatic.each { run ->
-        def prefix = "${run.tumour_id}_vs_${run.id}"
-        def clash = germline.find { sample -> sample.id == prefix }
-        if (clash) {
-            errors = errors + ["Germline sample '${clash.id}' has the same name as the tumour/normal run '${prefix}' (tumour '${run.tumour_id}', normal '${run.id}'); rename the sample"]
-        }
-    }
     if (errors) {
         return [error: errors.join('\n')]
     }

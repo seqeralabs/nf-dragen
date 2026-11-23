@@ -45,7 +45,7 @@ nextflow_pipeline {
                     [name, new File(task_dir, '.command.sh').text]
                 }
                 .sort { entry -> entry[0] }
-            def index = { csv -> path("$outputDir/dragen/dna_fastq_to_vcf/${csv}").readLines().collect { row -> row.tokenize(',').take(csv == 'somatic_index.csv' ? 4 : 3) }.with { rows -> [rows[0]] + rows.drop(1).sort { row -> row[0] } } }
+            def index = { csv -> path("$outputDir/dragen/${csv.replace('_index.csv', '')}/${csv}").readLines().collect { row -> row.tokenize(',').take(csv == 'somatic_index.csv' ? 4 : 3) }.with { rows -> [rows[0]] + rows.drop(1).sort { row -> row[0] } } }
             def flags = commands.collect { name, command -> [name, ['--vc-target-bed genome.bed', '--enable-sv true', '--enable-cnv true', '--enable-rna true', '--ht-build-cnv-hashtable true', '--enable-variant-caller true'].findAll { flag -> command.contains(flag) }] }
             assertAll(
                 { assert workflow.success },
@@ -148,7 +148,7 @@ nextflow_pipeline {
                 { assert new File(rna_dir, '.command.sh').text.contains('-r dragen_index_dna ') },
                 { assert new File(rna_dir, 'dragen_index_dna').canonicalPath == new File("${baseDir}/tests/data/dragen_index_dna").canonicalPath },
                 { assert !published.any { f -> f.startsWith('genome/') } },
-                { assert published.contains('dragen/dna_fastq_to_vcf/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz') },
+                { assert published.contains('dragen/somatic/HCC1395T_WGS_vs_HCC1395N_WGS.cnv.vcf.gz') },
                 { assert published.contains('pipeline_info/software_versions.yml') },
                 { assert published.contains('multiqc/multiqc_report.html') },
                 { assert snapshot(published).match() }
@@ -186,7 +186,7 @@ nextflow_pipeline {
                 { assert rgids('tumour_fastq_list.csv') == ['HCC1395T'] },
                 { assert rgids('normal_fastq_list.csv') == ['HCC1395N'] },
                 { assert !published.any { f -> f.startsWith('genome/') } },
-                { assert !published.any { f -> f.startsWith('dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N') && f.contains('.cnv.') } },
+                { assert !published.any { f -> f.startsWith('dragen/somatic/HCC1395T_vs_HCC1395N') && f.contains('.cnv.') } },
                 { assert published.contains('pipeline_info/software_versions.yml') },
                 { assert published.contains('multiqc/multiqc_report.html') },
                 { assert snapshot(published).match() }
