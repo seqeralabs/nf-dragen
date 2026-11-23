@@ -1,0 +1,23 @@
+name: select_dragen_mode
+description: Split samples into germline, somatic tumour/normal and RNA DRAGEN runs
+keywords:
+  - dragen
+  - somatic
+  - germline
+components: []
+input:
+  - samples:
+      type: channel
+      description: Channel of `Sample` records from PARSE_SAMPLESHEET
+output:
+  - germline:
+      type: channel
+      description: DNA samples without a tumour/normal partner, as `Sample` records
+  - somatic:
+      type: channel
+      description: One `SomaticRun` record per patient with a normal and a tumour; `id` and the FASTQs are the normal's, plus `tumour_id` and `tumour_fastq_*`
+  - rna:
+      type: channel
+      description: RNA samples, as `Sample` records
+authors:
+  - "@seqeralabs"
