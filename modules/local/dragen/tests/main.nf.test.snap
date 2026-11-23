@@ -45,11 +45,11 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T,T,UnknownLibrary,1,tumour/1/test2_1.fastq.gz,"
+                "T,T,UnknownLibrary,1,tumour/r1/1/test2_1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N,N,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
+                "N,N,UnknownLibrary,1,r1/1/test_1.fastq.gz,r2/1/test_2.fastq.gz"
             ]
         ],
         "timestamp": "2026-11-21T19:27:24.085491638",
@@ -110,12 +110,12 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "T.1,T,UnknownLibrary,1,tumour/1/test_1.fastq.gz,",
-                "T.2,T,UnknownLibrary,2,tumour/2/test2_1.fastq.gz,"
+                "T.1,T,UnknownLibrary,1,tumour/r1/1/test_1.fastq.gz,",
+                "T.2,T,UnknownLibrary,2,tumour/r1/2/test2_1.fastq.gz,"
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "N,N,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
+                "N,N,UnknownLibrary,1,r1/1/test_1.fastq.gz,r2/1/test_2.fastq.gz"
             ]
         ],
         "timestamp": "2026-11-21T19:27:18.780485684",
@@ -162,10 +162,23 @@
             ],
             [
                 "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
-                "test,test,UnknownLibrary,1,1/test_1.fastq.gz,1/test_2.fastq.gz"
+                "test,test,UnknownLibrary,1,r1/1/test_1.fastq.gz,r2/1/test_2.fastq.gz"
             ]
         ],
         "timestamp": "2026-11-21T19:27:06.901076801",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    },
+    "R1 and R2 with the same file name - stub": {
+        "content": [
+            [
+                "RGID,RGSM,RGLB,Lane,Read1File,Read2File",
+                "S,S,UnknownLibrary,1,r1/1/reads.fastq.gz,r2/1/reads.fastq.gz"
+            ]
+        ],
+        "timestamp": "2026-11-23T09:09:22.922808507",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
