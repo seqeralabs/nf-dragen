@@ -70,6 +70,7 @@ workflow {
             params.multiqc_config,
             params.multiqc_logo,
             file("${projectDir}/assets/multiqc_config.yml"),
+            params.multiqc_title,
         )
         ch_multiqc = multiqc_report.report
         // MULTIQC cannot report to the versions topic, as its input waits on that topic
@@ -144,7 +145,9 @@ workflow SEQERALABS_DRAGEN {
                 }
                 fasta
             }
-        ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(ch_dna_fasta.unique())
+        ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(
+            ch_dna_fasta.unique().map { ref -> record(id: 'dna', fasta: ref, dragen_args: '--ht-build-cnv-hashtable true', output_prefix: 'dragen_index_dna') }
+        ).map { table -> table.index }
         ch_dna_index = ch_dna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
     else {
@@ -159,7 +162,9 @@ workflow SEQERALABS_DRAGEN {
             }
             fasta
         }
-        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(ch_rna_fasta.unique())
+        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(
+            ch_rna_fasta.unique().map { ref -> record(id: 'rna', fasta: ref, dragen_args: '--ht-build-rna-hashtable true', output_prefix: 'dragen_index_rna') }
+        ).map { table -> table.index }
         ch_rna_index = ch_rna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
     else {

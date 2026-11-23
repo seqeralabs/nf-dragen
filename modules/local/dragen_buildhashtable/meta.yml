@@ -10,18 +10,38 @@ tools:
       homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
       licence: ["Commercial"]
 input:
-  - fasta:
-      type: Path
-      description: Reference FASTA
-      pattern: "*.{fa,fasta}"
+  - table:
+      type: record
+      description: One hash-table build
+      fields:
+        id:
+          type: String
+          description: Build name, for example `dna` or `rna`
+        fasta:
+          type: Path
+          description: Reference FASTA
+          pattern: "*.{fa,fasta}"
+        dragen_args:
+          type: String?
+          description: Extra DRAGEN options, for example `--ht-build-rna-hashtable true` for an RNA hash table
+        output_prefix:
+          type: String?
+          description: Name of the hash table directory (default `dragen`)
 output:
-  - index:
-      type: Path
-      description: Hash table directory, named by `ext.prefix` (default `dragen`)
+  - table:
+      type: record
+      description: The built hash table
+      fields:
+        id:
+          type: String
+          description: Build name
+        index:
+          type: Path
+          description: Hash table directory, named by `output_prefix`
 topics:
   - versions:
       type: Path
       pattern: versions.yml
-notes: Add `--ht-build-rna-hashtable true` through `ext.args` for an RNA hash table.
+notes: With `-profile byol` (secret `DRAGEN_USERNAME` set in the task environment) the build also passes `--lic-server`.
 authors:
   - "@adamrtalbot"

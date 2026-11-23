@@ -11,7 +11,8 @@ process MULTIQC {
         id: String,
         files: Set<Path>,
         configs: List<Path>,
-        logo: Path?
+        logo: Path?,
+        multiqc_args: String?
     )
 
     stage:
@@ -29,7 +30,7 @@ process MULTIQC {
     )
 
     script:
-    def args = task.ext.args ?: ''
+    def args = multiqc_args ?: ''
     def config = configs.collect { config_file -> "--config ${config_file}" }.join(' ')
     def logo_arg = logo ? "--cl-config 'custom_logo: \"${logo}\"'" : ''
     """

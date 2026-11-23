@@ -43,7 +43,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 ### `Changed`
 
 - RNA runs no longer call variants; `dragen/rna_fastq_to_bam/` holds no VCFs.
-- DRAGEN process names: custom configs that set `ext.args` or `ext.prefix` must now target `.*:DRAGEN_DNA` (germline), `.*:DRAGEN_SOMATIC` (tumour/normal), `.*:DRAGEN_RNA` (RNA), `.*:DRAGEN_BUILDHASHTABLE_DNA` and `.*:DRAGEN_BUILDHASHTABLE_RNA`, instead of `.*:DRAGEN_DNA:DRAGEN`, `.*:DRAGEN_DNA:DRAGEN_SOMATIC`, `.*:DRAGEN_RNA:DRAGEN` and `.*:DRAGEN_{DNA,RNA}:DRAGEN_BUILDHASHTABLE`.
+- DRAGEN process names: custom configs that set `ext.args` or `ext.prefix` must now target `.*:DRAGEN_DNA` (germline), `.*:DRAGEN_SOMATIC` (tumour/normal), and `.*:DRAGEN_RNA` (RNA), instead of `.*:DRAGEN_DNA:DRAGEN`, `.*:DRAGEN_DNA:DRAGEN_SOMATIC` and `.*:DRAGEN_RNA:DRAGEN`.
 
 - Somatic runs no longer pass `--Aligner.clip-pe-overhang 2`, so paired-end overhangs are not clipped (it likely caused a DRAGEN 4.4.4 SV caller abort on a 1-base alignment, and Illumina's v4.4 tumour/normal recipes do not use it).
 - DRAGEN tasks that abort with exit 134 (SIGABRT) are no longer retried; exit 143 and the other resource-class codes still are. If you copied the README's F2 launch config, change its `errorStrategy` to `task.exitStatus in ((130..145) - 134) + 104 + Integer.MAX_VALUE`.
