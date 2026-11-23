@@ -52,6 +52,7 @@ def dnaRuns(samples) -> Map {
                 def tumour = tumours[0]
                 somatic << record(
                     id: normal.id,
+                    patient: patient,
                     seq_type: normal.seq_type,
                     fastq_1: normal.fastq_1,
                     fastq_2: normal.fastq_2,
@@ -78,6 +79,7 @@ def dnaRuns(samples) -> Map {
 // One tumour/normal run: `id` and the FASTQs are the normal's
 record SomaticRun {
     id: String
+    patient: String
     seq_type: String
     fastq_1: List<Path>
     fastq_2: List<Path>

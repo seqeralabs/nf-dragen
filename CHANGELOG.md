@@ -10,6 +10,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 ### `Added`
 
 - (10)[https://github.com/seqeralabs/nf-dragen/pull/10] - Use nf-core template v3.1.1
+- Index files `dragen/dna_fastq_to_vcf/germline_index.csv`, `dragen/dna_fastq_to_vcf/somatic_index.csv` and `dragen/rna_fastq_to_bam/rna_index.csv`: one row per DRAGEN run with its patient and sample (somatic: patient, tumour and normal) and the published path of each file.
 - `--dragen_somatic_args`: extra DRAGEN options for somatic runs, e.g. to switch on HRD, TMB, HLA or MSI.
 - DRAGEN coverage histogram and mean-coverage CSVs (`*_hist.csv`, `*_mean_cov.csv`) are published next to the `*metrics*.csv` files and passed to MultiQC when DRAGEN writes them.
 - More DRAGEN outputs are published next to each sample's DRAGEN outputs when DRAGEN writes them: for germline runs the ploidy VCF (`<prefix>.ploidy.vcf.gz`), runs of homozygosity (`<prefix>.roh.bed`) and B-allele frequencies (`<prefix>.baf.bw`, `<prefix>.hard-filtered.baf.bw`, also for somatic runs); for RNA runs the splice junctions (`<prefix>.SJ.out.tab`, `<prefix>.Chimeric.out.junction`).

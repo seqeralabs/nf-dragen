@@ -165,6 +165,8 @@
                 "dragen/dna_fastq_to_vcf/P3_N.wgs_fine_hist.csv",
                 "dragen/dna_fastq_to_vcf/P3_N.wgs_hist.csv",
                 "dragen/dna_fastq_to_vcf/P3_N.wgs_overall_mean_cov.csv",
+                "dragen/dna_fastq_to_vcf/germline_index.csv",
+                "dragen/dna_fastq_to_vcf/somatic_index.csv",
                 "dragen/rna_fastq_to_bam/P4_RNA.Chimeric.out.junction",
                 "dragen/rna_fastq_to_bam/P4_RNA.SJ.out.tab",
                 "dragen/rna_fastq_to_bam/P4_RNA.bam",
@@ -179,6 +181,7 @@
                 "dragen/rna_fastq_to_bam/P4_RNA.wgs_fine_hist.csv",
                 "dragen/rna_fastq_to_bam/P4_RNA.wgs_hist.csv",
                 "dragen/rna_fastq_to_bam/P4_RNA.wgs_overall_mean_cov.csv",
+                "dragen/rna_fastq_to_bam/rna_index.csv",
                 "genome/index/dragen_index_dna/dragen.ht",
                 "genome/index/dragen_index_rna/dragen.ht",
                 "multiqc/multiqc_data/.stub",
@@ -187,7 +190,7 @@
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-21T18:49:01.821577738",
+        "timestamp": "2026-11-23T10:35:57.261926214",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -258,6 +261,8 @@
                 "dragen/dna_fastq_to_vcf/HG002.wgs_fine_hist.csv",
                 "dragen/dna_fastq_to_vcf/HG002.wgs_hist.csv",
                 "dragen/dna_fastq_to_vcf/HG002.wgs_overall_mean_cov.csv",
+                "dragen/dna_fastq_to_vcf/germline_index.csv",
+                "dragen/dna_fastq_to_vcf/somatic_index.csv",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.Chimeric.out.junction",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.SJ.out.tab",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.bam",
@@ -272,13 +277,14 @@
                 "dragen/rna_fastq_to_bam/GM12878_REP1.wgs_fine_hist.csv",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.wgs_hist.csv",
                 "dragen/rna_fastq_to_bam/GM12878_REP1.wgs_overall_mean_cov.csv",
+                "dragen/rna_fastq_to_bam/rna_index.csv",
                 "multiqc/multiqc_data/.stub",
                 "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-21T19:44:20.530715485",
+        "timestamp": "2026-11-23T10:36:26.099600169",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -328,13 +334,16 @@
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N.wgs_overall_mean_cov_tumor.csv",
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N_tumor.bam",
                 "dragen/dna_fastq_to_vcf/HCC1395T_vs_HCC1395N_tumor.bam.bai",
+                "dragen/dna_fastq_to_vcf/germline_index.csv",
+                "dragen/dna_fastq_to_vcf/somatic_index.csv",
+                "dragen/rna_fastq_to_bam/rna_index.csv",
                 "multiqc/multiqc_data/.stub",
                 "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info/software_versions.yml"
             ]
         ],
-        "timestamp": "2026-11-21T18:49:56.455599457",
+        "timestamp": "2026-11-23T10:36:35.328593083",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
@@ -405,6 +414,8 @@
                 "dragen/dna_fastq_to_vcf/P2_SE.wgs_fine_hist.csv",
                 "dragen/dna_fastq_to_vcf/P2_SE.wgs_hist.csv",
                 "dragen/dna_fastq_to_vcf/P2_SE.wgs_overall_mean_cov.csv",
+                "dragen/dna_fastq_to_vcf/germline_index.csv",
+                "dragen/dna_fastq_to_vcf/somatic_index.csv",
                 "dragen/rna_fastq_to_bam/P3_RNA.Chimeric.out.junction",
                 "dragen/rna_fastq_to_bam/P3_RNA.SJ.out.tab",
                 "dragen/rna_fastq_to_bam/P3_RNA.bam",
@@ -419,6 +430,7 @@
                 "dragen/rna_fastq_to_bam/P3_RNA.wgs_fine_hist.csv",
                 "dragen/rna_fastq_to_bam/P3_RNA.wgs_hist.csv",
                 "dragen/rna_fastq_to_bam/P3_RNA.wgs_overall_mean_cov.csv",
+                "dragen/rna_fastq_to_bam/rna_index.csv",
                 "genome/index/dragen_index_dna/dragen.ht",
                 "genome/index/dragen_index_rna/dragen.ht",
                 "multiqc/multiqc_data/.stub",
@@ -442,7 +454,7 @@
                 "    seqeralabs/nf-dragen: 1.0.0dev"
             ]
         ],
-        "timestamp": "2026-11-23T10:27:07.306613757",
+        "timestamp": "2026-11-23T10:35:46.05159544",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.6"
