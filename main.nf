@@ -32,6 +32,8 @@ params {
     dragen_germline_args: String = '--enable-duplicate-marking true'
     dragen_somatic_args: String = '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true'
     dragen_rna_args: String = '--enable-duplicate-marking true'
+    dragen_hashtable_dna_args: String = '--ht-build-cnv-hashtable true'
+    dragen_hashtable_rna_args: String = '--ht-build-rna-hashtable true'
     dragen_license: String = 'marketplace'
 
     // Tools
@@ -60,6 +62,8 @@ workflow {
         params.dragen_germline_args,
         params.dragen_somatic_args,
         params.dragen_rna_args,
+        params.dragen_hashtable_dna_args,
+        params.dragen_hashtable_rna_args,
         params.dragen_license,
         params.skip_dragen,
     )
@@ -102,80 +106,23 @@ output {
     dragen_index_rna {
         path 'genome/index'
     }
-    // DRAGEN records: every file field is routed (mapping_metrics is also in metrics); the index lists each record's sample fields and published paths
+    // DRAGEN records: every file in a record is published; the index lists each record's sample fields and published paths
     dragen_dna: Channel<Record> {
-        path { r ->
-            r.bam >> 'dragen/germline/'
-            r.bai >> 'dragen/germline/'
-            r.vcf_filtered >> 'dragen/germline/'
-            r.tbi_filtered >> 'dragen/germline/'
-            r.sv_vcf >> 'dragen/germline/'
-            r.sv_tbi >> 'dragen/germline/'
-            r.cnv_vcf >> 'dragen/germline/'
-            r.cnv_tbi >> 'dragen/germline/'
-            r.metrics >> 'dragen/germline/'
-            r.ploidy_vcf >> 'dragen/germline/'
-            r.ploidy_tbi >> 'dragen/germline/'
-            r.roh_bed >> 'dragen/germline/'
-            r.baf >> 'dragen/germline/'
-            r.targeted_vcf >> 'dragen/germline/'
-            r.targeted_tbi >> 'dragen/germline/'
-            r.targeted_json >> 'dragen/germline/'
-            r.callable_bed >> 'dragen/germline/'
-            r.junctions >> 'dragen/germline/'
-        }
+        path 'dragen/germline/'
         index {
             path 'dragen/germline/germline_index.csv'
             header true
         }
     }
     dragen_somatic: Channel<Record> {
-        path { r ->
-            r.bam >> 'dragen/somatic/'
-            r.bai >> 'dragen/somatic/'
-            r.vcf_filtered >> 'dragen/somatic/'
-            r.tbi_filtered >> 'dragen/somatic/'
-            r.sv_vcf >> 'dragen/somatic/'
-            r.sv_tbi >> 'dragen/somatic/'
-            r.cnv_vcf >> 'dragen/somatic/'
-            r.cnv_tbi >> 'dragen/somatic/'
-            r.metrics >> 'dragen/somatic/'
-            r.ploidy_vcf >> 'dragen/somatic/'
-            r.ploidy_tbi >> 'dragen/somatic/'
-            r.roh_bed >> 'dragen/somatic/'
-            r.baf >> 'dragen/somatic/'
-            r.targeted_vcf >> 'dragen/somatic/'
-            r.targeted_tbi >> 'dragen/somatic/'
-            r.targeted_json >> 'dragen/somatic/'
-            r.callable_bed >> 'dragen/somatic/'
-            r.junctions >> 'dragen/somatic/'
-        }
+        path 'dragen/somatic/'
         index {
             path 'dragen/somatic/somatic_index.csv'
             header true
         }
     }
     dragen_rna: Channel<Record> {
-        path { r ->
-            r.bam >> 'dragen/rna/'
-            r.bai >> 'dragen/rna/'
-            r.vcf_filtered >> 'dragen/rna/'
-            r.tbi_filtered >> 'dragen/rna/'
-            r.sv_vcf >> 'dragen/rna/'
-            r.sv_tbi >> 'dragen/rna/'
-            r.cnv_vcf >> 'dragen/rna/'
-            r.cnv_tbi >> 'dragen/rna/'
-            r.metrics >> 'dragen/rna/'
-            r.ploidy_vcf >> 'dragen/rna/'
-            r.ploidy_tbi >> 'dragen/rna/'
-            r.roh_bed >> 'dragen/rna/'
-            r.baf >> 'dragen/rna/'
-            r.targeted_vcf >> 'dragen/rna/'
-            r.targeted_tbi >> 'dragen/rna/'
-            r.targeted_json >> 'dragen/rna/'
-            r.callable_bed >> 'dragen/rna/'
-            r.junctions >> 'dragen/rna/'
-        }
+        path 'dragen/rna/'
         index {
             path 'dragen/rna/rna_index.csv'
             header true
@@ -196,14 +143,16 @@ workflow SEQERALABS_DRAGEN {
     take:
     input: Channel<Sample>
     fasta: Path?
-    dna_index: Path?             // dragen index directory for dna
-    rna_index: Path?             // dragen index directory for rna
-    target_bed: Path?            // exome targets for germline and somatic runs
-    dragen_germline_args: String // tunable DRAGEN options for germline runs
-    dragen_somatic_args: String  // tunable DRAGEN options for somatic runs
-    dragen_rna_args: String      // tunable DRAGEN options for RNA runs
-    dragen_license: String       // marketplace or byol
-    skip_dragen: Boolean         // skip all DRAGEN steps
+    dna_index: Path?                  // dragen index directory for dna
+    rna_index: Path?                  // dragen index directory for rna
+    target_bed: Path?                 // exome targets for germline and somatic runs
+    dragen_germline_args: String      // tunable DRAGEN options for germline runs
+    dragen_somatic_args: String       // tunable DRAGEN options for somatic runs
+    dragen_rna_args: String           // tunable DRAGEN options for RNA runs
+    dragen_hashtable_dna_args: String // DRAGEN options for the DNA hash table build
+    dragen_hashtable_rna_args: String // DRAGEN options for the RNA hash table build
+    dragen_license: String            // marketplace or byol
+    skip_dragen: Boolean              // skip all DRAGEN steps
 
     main:
 
@@ -229,7 +178,7 @@ workflow SEQERALABS_DRAGEN {
                 fasta
             }
         ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(
-            ch_dna_fasta.unique().map { ref -> record(id: 'dna', fasta: ref, dragen_args: '--ht-build-cnv-hashtable true', dragen_lic_server: lic_server, output_prefix: 'dragen_index_dna') }
+            ch_dna_fasta.unique().map { ref -> record(id: 'dna', fasta: ref, dragen_args: dragen_hashtable_dna_args, dragen_lic_server: lic_server, output_prefix: 'dragen_index_dna') }
         ).map { table -> table.index }
         ch_dna_index = ch_dna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
@@ -246,7 +195,7 @@ workflow SEQERALABS_DRAGEN {
             fasta
         }
         ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(
-            ch_rna_fasta.unique().map { ref -> record(id: 'rna', fasta: ref, dragen_args: '--ht-build-rna-hashtable true', dragen_lic_server: lic_server, output_prefix: 'dragen_index_rna') }
+            ch_rna_fasta.unique().map { ref -> record(id: 'rna', fasta: ref, dragen_args: dragen_hashtable_rna_args, dragen_lic_server: lic_server, output_prefix: 'dragen_index_rna') }
         ).map { table -> table.index }
         ch_rna_index = ch_rna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
@@ -270,13 +219,23 @@ workflow SEQERALABS_DRAGEN {
         modes.rna.combine(index: ch_rna_index).map { run -> run + record(target_bed: null, dragen_args: rna_args, dragen_lic_server: lic_server) }
     )
 
-    emit:
-    dna_index: Channel<Path> = ch_dna_index_built                                                                                                                                               // only hash tables built here, not ones the user supplied
-    rna_index: Channel<Path> = ch_rna_index_built
     // DRAGEN results with the samples they came from, for the published index files
-    dna: Channel<Record> = modes.germline.map { sample -> record(id: sample.id, patient: sample.patient, sample: sample.id) }.join(ch_dna, by: 'id')
-    somatic: Channel<Record> = modes.somatic.map { run -> record(id: "${run.tumour_id}_vs_${run.id}", patient: run.patient, tumour: run.tumour_id, normal: run.id) }.join(ch_somatic, by: 'id')
-    rna: Channel<Record> = modes.rna.map { sample -> record(id: sample.id, patient: sample.patient, sample: sample.id) }.join(ch_rna, by: 'id')
+    ch_dna_published = modes.germline
+        .map { sample -> record(id: sample.id, patient: sample.patient, sample: sample.id) }
+        .join(ch_dna, by: 'id')
+    ch_somatic_published = modes.somatic
+        .map { run -> record(id: "${run.tumour_id}_vs_${run.id}", patient: run.patient, tumour: run.tumour_id, normal: run.id) }
+        .join(ch_somatic, by: 'id')
+    ch_rna_published = modes.rna
+        .map { sample -> record(id: sample.id, patient: sample.patient, sample: sample.id) }
+        .join(ch_rna, by: 'id')
+
+    emit:
+    dna_index: Channel<Path> = ch_dna_index_built   // only hash tables built here, not ones the user supplied
+    rna_index: Channel<Path> = ch_rna_index_built
+    dna: Channel<Record> = ch_dna_published
+    somatic: Channel<Record> = ch_somatic_published
+    rna: Channel<Record> = ch_rna_published
 }
 
 // A sample whose sequencing type has neither --fasta nor a DRAGEN index cannot get a hash table; stop before any task.
