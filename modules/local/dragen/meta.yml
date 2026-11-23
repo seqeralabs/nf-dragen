@@ -33,16 +33,22 @@ input:
         tumour_fastq_2:
           type: List<Path>?
           description: Tumour read 2 FASTQs; empty for single-end
-  - index:
-      type: Path
-      description: DRAGEN hash table directory
-  - target_bed:
-      type: Path?
-      description: Target regions BED, passed as `--vc-target-bed` (and `--sv-call-regions-bed` with `--sv-exome true` for tumour/normal runs); null for whole-genome and RNA runs
+        index:
+          type: Path
+          description: DRAGEN hash table directory
+        target_bed:
+          type: Path?
+          description: Target regions BED, passed as `--vc-target-bed` (and `--sv-call-regions-bed` with `--sv-exome true` for tumour/normal runs); null for whole-genome and RNA runs
+        dragen_args:
+          type: String?
+          description: DRAGEN options appended to the command line, e.g. the mapping, variant calling or `--enable-rna true` flags of the run's mode. The stub writes VCFs only with `--enable-variant-caller` and splice junctions only with `--enable-rna`
+        output_prefix:
+          type: String?
+          description: Output file prefix; defaults to `id`, or `<tumour_id>_vs_<id>` for a tumour/normal run
 output:
   - sample:
       type: record
-      description: DRAGEN outputs of the run; every file is optional and depends on `ext.args`
+      description: DRAGEN outputs of the run; every file but the BAM, BAI and mapping metrics is optional and depends on `dragen_args`
       fields:
         id:
           type: String

@@ -38,6 +38,12 @@
             "description": "Control pipeline behaviour",
             "default": "",
             "properties": {
+                "dragen_somatic_args": {
+                    "type": "string",
+                    "description": "Extra DRAGEN options for somatic (tumour/normal) runs, added after the pipeline's own.",
+                    "help_text": "HRD, TMB, HLA and MSI are off by default. Switch them on with, for example, `--dragen_somatic_args '--enable-hrd true --enable-tmb true --enable-hla true --msi-command tumor-normal --msi-coverage-threshold 40'`. Germline and RNA runs do not get these options.",
+                    "fa_icon": "fas fa-terminal"
+                },
                 "skip_dragen": {
                     "type": "boolean",
                     "description": "Skip all DRAGEN steps, including building the hash tables. Only MultiQC runs.",

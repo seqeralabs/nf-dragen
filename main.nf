@@ -29,6 +29,7 @@ params {
     dragen_index_dna: Path?
     dragen_index_rna: Path?
     target_bed: Path?
+    dragen_somatic_args: String?
 
     // Tools
     skip_dragen: Boolean = false
@@ -53,6 +54,7 @@ workflow {
         params.dragen_index_dna,
         params.dragen_index_rna,
         params.target_bed,
+        params.dragen_somatic_args,
         params.skip_dragen,
     )
 
@@ -120,10 +122,11 @@ workflow SEQERALABS_DRAGEN {
     take:
     input: Channel<Sample>
     fasta: Path?
-    dna_index: Path?       // dragen index directory for dna
-    rna_index: Path?       // dragen index directory for rna
-    target_bed: Path?      // exome targets for germline and somatic runs
-    skip_dragen: Boolean   // skip all DRAGEN steps
+    dna_index: Path?             // dragen index directory for dna
+    rna_index: Path?             // dragen index directory for rna
+    target_bed: Path?            // exome targets for germline and somatic runs
+    dragen_somatic_args: String? // extra DRAGEN options for somatic runs, e.g. HRD, TMB, HLA or MSI
+    skip_dragen: Boolean         // skip all DRAGEN steps
 
     main:
 
@@ -171,10 +174,21 @@ workflow SEQERALABS_DRAGEN {
         ch_rna_index = channel.value(rna_index)
     }
 
-    ch_dna = DRAGEN_DNA(modes.germline, ch_dna_index, target_bed)
-    ch_somatic = DRAGEN_SOMATIC(modes.somatic, ch_dna_index, target_bed)
+    def map_align = '--enable-map-align true --enable-map-align-output true --enable-bam-indexing true --enable-sort=true'
+    def dna_args = "${map_align} --enable-variant-caller true --enable-duplicate-marking true --output-format=BAM"
+    def somatic_args = "${map_align} --enable-duplicate-marking true --enable-variant-caller true --output-format=BAM --vc-target-vaf 0.03 --enable-sv true"
+    def rna_args = "--enable-rna true ${map_align} --enable-duplicate-marking true --output-format=BAM"
+
+    ch_dna = DRAGEN_DNA(
+        modes.germline.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: dna_args) }
+    )
+    ch_somatic = DRAGEN_SOMATIC(
+        modes.somatic.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: dragen_somatic_args ? "${somatic_args} ${dragen_somatic_args}" : somatic_args) }
+    )
     // RNA runs get no target_bed
-    ch_rna = DRAGEN_RNA(modes.rna, ch_rna_index, null)
+    ch_rna = DRAGEN_RNA(
+        modes.rna.combine(index: ch_rna_index).map { run -> run + record(target_bed: null, dragen_args: rna_args) }
+    )
 
     emit:
     dna_index: Channel<Path> = ch_dna_index_built // only hash tables built here, not ones the user supplied
