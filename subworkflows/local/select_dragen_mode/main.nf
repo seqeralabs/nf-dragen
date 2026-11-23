@@ -1,8 +1,10 @@
 nextflow.enable.types = true
 
+include { Sample } from '../parse_samplesheet'
+
 workflow SELECT_DRAGEN_MODE {
     take:
-    samples: Channel<ModeSample>
+    samples: Channel<Sample>
 
     main:
     // Pairing needs every DNA sample of a patient, so it waits for all samples (they come from the samplesheet at once)
@@ -18,14 +20,14 @@ workflow SELECT_DRAGEN_MODE {
         }
 
     emit:
-    germline = ch_dna_runs.flatMap { runs -> runs.germline }
-    somatic  = ch_dna_runs.flatMap { runs -> runs.somatic }
-    rna      = samples.filter { sample -> sample.seq_type == 'rna' }
+    germline: Channel<Sample> = ch_dna_runs.flatMap { runs -> runs.germline }
+    somatic: Channel<SomaticRun> = ch_dna_runs.flatMap { runs -> runs.somatic }
+    rna: Channel<Sample> = samples.filter { sample -> sample.seq_type == 'rna' }
 }
 
 // Per patient: a normal alone gets a germline run; a normal with a tumour gets one somatic run (PARSE_SAMPLESHEET rejects two or more tumours)
 // Returns the runs, or the error message: error() must be called in the operator closure to reach the console
-def dnaRuns(samples) {
+def dnaRuns(samples) -> Map {
     def germline = []
     def somatic = []
     def errors = [] as List<String>
@@ -70,13 +72,16 @@ def dnaRuns(samples) {
     if (errors) {
         return [error: errors.join('\n')]
     }
-    return [germline: germline, somatic: somatic, error: null]
+    return [germline: germline, somatic: somatic]
 }
 
-// The Sample fields that pick the mode; records keep their other fields
-record ModeSample {
+// One tumour/normal run: `id` and the FASTQs are the normal's
+record SomaticRun {
     id: String
-    patient: String
-    status: Integer
     seq_type: String
+    fastq_1: List<Path>
+    fastq_2: List<Path>
+    tumour_id: String
+    tumour_fastq_1: List<Path>
+    tumour_fastq_2: List<Path>
 }

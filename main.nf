@@ -7,8 +7,10 @@ Github : https://github.com/seqeralabs/nf-dragen
 ----------------------------------------------------------------------------------------
  */
 
+nextflow.enable.types = true
+
 include { validateParameters                                 } from 'plugin/nf-schema'
-include { PARSE_SAMPLESHEET                                  } from './subworkflows/local/parse_samplesheet'
+include { PARSE_SAMPLESHEET ; Sample } from './subworkflows/local/parse_samplesheet'
 include { SELECT_DRAGEN_MODE                                 } from './subworkflows/local/select_dragen_mode'
 include { DRAGEN as DRAGEN_DNA                               } from './modules/local/dragen'
 include { DRAGEN as DRAGEN_SOMATIC                           } from './modules/local/dragen'
@@ -43,10 +45,10 @@ workflow {
     main:
     validateParameters()
 
-    PARSE_SAMPLESHEET(params.input, params.seq_type)
+    ch_samples = PARSE_SAMPLESHEET(params.input, params.seq_type, file("${projectDir}/assets/schema_input.json"))
 
-    SEQERALABS_DRAGEN(
-        PARSE_SAMPLESHEET.out.samples,
+    dragen = SEQERALABS_DRAGEN(
+        ch_samples,
         params.fasta,
         params.dragen_index_dna,
         params.dragen_index_rna,
@@ -58,29 +60,30 @@ workflow {
     ch_versions_text = channel.topic('versions')
         .map { versions -> versions.text }
         .unique()
-        .mix(channel.of("Workflow:\n    Nextflow: ${workflow.nextflow.version}\n    ${workflow.manifest.name}: ${workflow.manifest.version}"))
+        .mix(channel.of("Workflow:\n    Nextflow: ${nextflow.version}\n    ${workflow.manifest.name}: ${workflow.manifest.version}"))
 
     ch_multiqc = channel.empty()
     if (!params.skip_multiqc) {
-        MULTIQC_REPORT(
-            SEQERALABS_DRAGEN.out.dna.mix(SEQERALABS_DRAGEN.out.somatic, SEQERALABS_DRAGEN.out.rna).map { result -> result.metrics.toList() }, // a Set, which collect() would not flatten
+        multiqc_report = MULTIQC_REPORT(
+            dragen.dna.mix(dragen.somatic).mix(dragen.rna).flatMap { result -> result.metrics },
             ch_versions_text,
             params.multiqc_config,
             params.multiqc_logo,
+            file("${projectDir}/assets/multiqc_config.yml"),
         )
-        ch_multiqc = MULTIQC_REPORT.out.report
+        ch_multiqc = multiqc_report.report
         // MULTIQC cannot report to the versions topic, as its input waits on that topic
-        ch_versions_text = ch_versions_text.mix(MULTIQC_REPORT.out.versions)
+        ch_versions_text = ch_versions_text.mix(multiqc_report.versions)
     }
 
     ch_versions = ch_versions_text.collectFile(name: 'software_versions.yml', sort: true, newLine: true)
 
     publish:
-    dragen_index_dna = SEQERALABS_DRAGEN.out.dna_index
-    dragen_index_rna = SEQERALABS_DRAGEN.out.rna_index
-    dragen_dna       = SEQERALABS_DRAGEN.out.dna
-    dragen_somatic   = SEQERALABS_DRAGEN.out.somatic
-    dragen_rna       = SEQERALABS_DRAGEN.out.rna
+    dragen_index_dna = dragen.dna_index
+    dragen_index_rna = dragen.rna_index
+    dragen_dna       = dragen.dna
+    dragen_somatic   = dragen.somatic
+    dragen_rna       = dragen.rna
     multiqc          = ch_multiqc
     versions         = ch_versions
 }
@@ -114,27 +117,34 @@ output {
 //
 workflow SEQERALABS_DRAGEN {
     take:
-    input       // channel: Sample records from PARSE_SAMPLESHEET
-    fasta       // path: fasta file
-    dna_index   // path: dragen index directory for dna
-    rna_index   // path: dragen index directory for rna
-    target_bed  // path: exome targets for germline and somatic runs, or null
-    skip_dragen // bool: skip all DRAGEN steps
+    input: Channel<Sample>
+    fasta: Path?
+    dna_index: Path?       // dragen index directory for dna
+    rna_index: Path?       // dragen index directory for rna
+    target_bed: Path?      // exome targets for germline and somatic runs
+    skip_dragen: Boolean   // skip all DRAGEN steps
 
     main:
 
     ch_input = input.filter { _sample -> !skip_dragen }
 
-    SELECT_DRAGEN_MODE(ch_input)
+    modes = SELECT_DRAGEN_MODE(ch_input)
 
     // Hash tables are built only when no index is given, from the samples so that no samples means no build.
     // reduce makes the one table a value that every sample reads (null when no samples, so nothing reads it).
     ch_dna_index_built = channel.empty()
     if (!dna_index) {
         // Germline and somatic runs share one DNA hash table
-        ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(
-            SELECT_DRAGEN_MODE.out.germline.mix(SELECT_DRAGEN_MODE.out.somatic).map { sample -> referenceFasta(sample, fasta, 'dna') }.unique()
-        )
+        ch_dna_fasta = modes.germline
+            .map { sample -> sample.id }
+            .mix(modes.somatic.map { run -> run.id })
+            .map { id ->
+                if (!fasta) {
+                    error(missingReference(id, 'dna'))
+                }
+                fasta
+            }
+        ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(ch_dna_fasta.unique())
         ch_dna_index = ch_dna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
     else {
@@ -143,30 +153,34 @@ workflow SEQERALABS_DRAGEN {
 
     ch_rna_index_built = channel.empty()
     if (!rna_index) {
-        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(SELECT_DRAGEN_MODE.out.rna.map { sample -> referenceFasta(sample, fasta, 'rna') }.unique())
+        ch_rna_fasta = modes.rna.map { sample ->
+            if (!fasta) {
+                error(missingReference(sample.id, 'rna'))
+            }
+            fasta
+        }
+        ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(ch_rna_fasta.unique())
         ch_rna_index = ch_rna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
     else {
         ch_rna_index = channel.value(rna_index)
     }
 
-    ch_dna = DRAGEN_DNA(SELECT_DRAGEN_MODE.out.germline, ch_dna_index, target_bed)
-    ch_somatic = DRAGEN_SOMATIC(SELECT_DRAGEN_MODE.out.somatic, ch_dna_index, target_bed)
+    ch_dna = DRAGEN_DNA(modes.germline, ch_dna_index, target_bed)
+    ch_somatic = DRAGEN_SOMATIC(modes.somatic, ch_dna_index, target_bed)
     // RNA runs get no target_bed
-    ch_rna = DRAGEN_RNA(SELECT_DRAGEN_MODE.out.rna, ch_rna_index, null)
+    ch_rna = DRAGEN_RNA(modes.rna, ch_rna_index, null)
 
     emit:
-    dna_index = ch_dna_index_built // only hash tables built here, not ones the user supplied
-    rna_index = ch_rna_index_built
-    dna       = ch_dna
-    somatic   = ch_somatic
-    rna       = ch_rna
+    dna_index: Channel<Path> = ch_dna_index_built // only hash tables built here, not ones the user supplied
+    rna_index: Channel<Path> = ch_rna_index_built
+    dna: Channel<Record> = ch_dna
+    somatic: Channel<Record> = ch_somatic
+    rna: Channel<Record> = ch_rna
 }
 
-// A sample whose sequencing type has neither --fasta nor a DRAGEN index cannot get a hash table; stop before any task
-def referenceFasta(sample, fasta, seq_type) {
-    if (!fasta) {
-        error("Sample '${sample.id}' (seq_type '${seq_type}') needs a reference: give --fasta to build the DRAGEN hash table, or --dragen_index_${seq_type} to use an existing one")
-    }
-    return fasta
+// A sample whose sequencing type has neither --fasta nor a DRAGEN index cannot get a hash table; stop before any task.
+// error() is called in the operator closure: under static typing an error() thrown inside a function called from an operator shows only 'InvocationTargetException'
+def missingReference(id: String, seq_type: String) -> String {
+    return "Sample '${id}' (seq_type '${seq_type}') needs a reference: give --fasta to build the DRAGEN hash table, or --dragen_index_${seq_type} to use an existing one"
 }

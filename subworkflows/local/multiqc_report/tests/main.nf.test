@@ -11,10 +11,11 @@ nextflow_workflow {
             workflow {
                 """
                 // MultiQC's own DRAGEN test file, already named as the DRAGEN module names it
-                input[0] = channel.of([file("https://raw.githubusercontent.com/MultiQC/test-data/ae5e10025fa1b0fd6792f8f2b513e160d78474fe/data/modules/dragen/alignment/TEST.mapping_metrics.csv")])
+                input[0] = channel.of(file("https://raw.githubusercontent.com/MultiQC/test-data/ae5e10025fa1b0fd6792f8f2b513e160d78474fe/data/modules/dragen/alignment/TEST.mapping_metrics.csv"))
                 input[1] = channel.of('"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN":\\n    dragen: 4.4.4\\n')
                 input[2] = null
                 input[3] = null
+                input[4] = file("${baseDir}/assets/multiqc_config.yml")
                 """
             }
         }
@@ -35,10 +36,11 @@ nextflow_workflow {
         when {
             workflow {
                 """
-                input[0] = channel.of([file("https://raw.githubusercontent.com/MultiQC/test-data/ae5e10025fa1b0fd6792f8f2b513e160d78474fe/data/modules/dragen/alignment/TEST.mapping_metrics.csv")])
+                input[0] = channel.of(file("https://raw.githubusercontent.com/MultiQC/test-data/ae5e10025fa1b0fd6792f8f2b513e160d78474fe/data/modules/dragen/alignment/TEST.mapping_metrics.csv"))
                 input[1] = channel.of('"SEQERALABS_DRAGEN:DRAGEN_DNA:DRAGEN":\\n    dragen: 4.4.4\\n')
-                input[2] = file("${projectDir}/tests/data/multiqc_user_config.yml")
+                input[2] = file("${baseDir}/tests/data/multiqc_user_config.yml")
                 input[3] = null
+                input[4] = file("${baseDir}/assets/multiqc_config.yml")
                 """
             }
         }
