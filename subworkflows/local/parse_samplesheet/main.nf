@@ -6,10 +6,11 @@ workflow PARSE_SAMPLESHEET {
     take:
     samplesheet: Path
     seq_type: String  // for rows without a seq_type
+    schema: Path      // samplesheet JSON schema
 
     main:
     // Validated and grouped here, so a bad samplesheet fails before any task runs
-    def rows = samplesheetToList(samplesheet, "${projectDir}/assets/schema_input.json")
+    def rows = samplesheetToList(samplesheet, schema)
     def sample_records = rows.groupBy { row -> row[0].id }.collect { id, sample_rows -> toSample(id, sample_rows, seq_type) }
 
     // One tumour per DNA patient, checked here so it fails before any task (SELECT_DRAGEN_MODE runs in an operator)

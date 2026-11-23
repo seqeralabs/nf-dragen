@@ -117,12 +117,12 @@ process DRAGEN {
 }
 
 // A tumour/normal run is named after both samples; `id` is then the normal
-def runId(id, tumour_id) {
+def runId(id: String, tumour_id: String?) -> String {
     return tumour_id ? "${tumour_id}_vs_${id}" : id
 }
 
 // Commands that write the FASTQ list(s) and the DRAGEN arguments that read them
-def fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2) {
+def fastqLists(id: String, fastq_1: List<Path>, fastq_2: List<Path>, tumour_id: String?, tumour_fastq_1: List<Path>?, tumour_fastq_2: List<Path>?) -> Map<String, String> {
     def header = "printf '%s\\n' 'RGID,RGSM,RGLB,Lane,Read1File,Read2File'"
     if (!tumour_id) {
         return [tumour: '', normal: "${header} ${fastqListRows(id, '', fastq_1, fastq_2)} > fastq_list.csv", args: '--fastq-list fastq_list.csv']
@@ -136,11 +136,11 @@ def fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2) 
 
 // fastq_list.csv rows of one sample: one read group per FASTQ pair; a single pair keeps RGID = sample.
 // Paths follow the stage: patterns, not the staged variables, which map a file given twice to one name (and whose .name is the staged path)
-def fastqListRows(id, dir, fastq_1, fastq_2) {
+def fastqListRows(id: String, dir: String, fastq_1: List<Path>, fastq_2: List<Path>) -> String {
     return fastq_1.withIndex().collect { r1, i -> "'${fastq_1.size() == 1 ? id : "${id}.${i + 1}"},${id},UnknownLibrary,${i + 1},${dir}r1/${i + 1}/${r1.name.tokenize("/").last()},${fastq_2 ? "${dir}r2/${i + 1}/${fastq_2[i].name.tokenize("/").last()}" : ''}'" }.join(' ')
 }
 
-def targetArgs(target_bed, tumour_id) {
+def targetArgs(target_bed: Path?, tumour_id: String?) -> String {
     if (!tumour_id) {
         return target_bed ? "--vc-target-bed ${target_bed}" : ''
     }
