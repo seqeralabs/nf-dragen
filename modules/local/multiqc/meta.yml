@@ -46,8 +46,5 @@ output:
         plots:
           type: Path?
           description: "`multiqc_plots/` directory"
-        version:
-          type: String
-          description: MultiQC version. Not a `versions` topic output, because the input waits on that topic and the run would deadlock
 authors:
   - "@seqeralabs"

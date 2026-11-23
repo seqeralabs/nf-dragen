@@ -29,7 +29,7 @@ The pipeline writes these files to the output directory given with `-output-dir`
 │   ├── multiqc_data/                  # the report's data, as text files
 │   └── multiqc_plots/                 # the report's plots, as PNG, SVG and PDF
 └── pipeline_info/
-    └── software_versions.yml          # versions of the software every process ran
+    └── software_versions.yml          # DRAGEN version of every DRAGEN process, plus Nextflow and pipeline versions
 ```
 
 - `genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.

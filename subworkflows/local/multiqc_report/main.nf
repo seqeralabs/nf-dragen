@@ -5,7 +5,7 @@ include { MULTIQC } from '../../../modules/local/multiqc/main'
 workflow MULTIQC_REPORT {
     take:
     metrics: Channel<Path>    // DRAGEN metrics CSVs
-    versions: Channel<String> // versions.yml text, one entry per process
+    versions: Channel<String> // software versions YAML text, one entry per process
     multiqc_config: Path?     // extra MultiQC config
     multiqc_logo: Path?       // report logo
     bundled_config: Path      // the pipeline's MultiQC config, overridden by multiqc_config
@@ -23,5 +23,4 @@ workflow MULTIQC_REPORT {
 
     emit:
     report: Channel<Path> = ch_multiqc.flatMap { run -> [run.report, run.data, run.plots].findAll { f -> f } } // HTML, multiqc_data/ and plots
-    versions: Value<String> = ch_multiqc.map { run -> "\"${run.process}\":\n    multiqc: ${run.version}" }
 }

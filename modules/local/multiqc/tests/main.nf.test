@@ -28,8 +28,7 @@ nextflow_process {
                 { assert process.success },
                 { assert report.contains('Test title') },
                 { assert report.contains("data:image/png;base64") },
-                { assert path("${run.data}/dragen_map_metrics.txt").readLines()[1].startsWith("TEST\t10142922") },
-                { assert snapshot(run.version).match() }
+                { assert path("${run.data}/dragen_map_metrics.txt").readLines()[1].startsWith("TEST\t10142922") }
             )
         }
     }

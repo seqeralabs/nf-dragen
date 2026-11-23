@@ -60,13 +60,14 @@ workflow {
 
     // One entry per distinct process/tool version, from every process; the Workflow entry keeps the report non-empty when no task runs
     ch_versions_text = channel.topic('versions')
-        .map { versions -> versions.text }
+        .map { v -> "\"${v.process}\":\n    ${v.tool}: ${v.version}" }
         .unique()
         .mix(channel.of("Workflow:\n    Nextflow: ${nextflow.version}\n    ${workflow.manifest.name}: ${workflow.manifest.version}"))
 
     ch_multiqc = channel.empty()
     if (!params.skip_multiqc) {
-        multiqc_report = MULTIQC_REPORT(
+        // MULTIQC reports no version: it reads the versions topic, and its report footer shows its own version
+        ch_multiqc = MULTIQC_REPORT(
             dragen.dna.mix(dragen.somatic).mix(dragen.rna).flatMap { result -> result.metrics },
             ch_versions_text,
             params.multiqc_config,
@@ -74,9 +75,6 @@ workflow {
             file("${projectDir}/assets/multiqc_config.yml"),
             params.multiqc_title,
         )
-        ch_multiqc = multiqc_report.report
-        // MULTIQC cannot report to the versions topic, as its input waits on that topic
-        ch_versions_text = ch_versions_text.mix(multiqc_report.versions)
     }
 
     ch_versions = ch_versions_text.collectFile(name: 'software_versions.yml', sort: true, newLine: true)
