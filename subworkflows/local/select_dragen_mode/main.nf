@@ -9,7 +9,13 @@ workflow SELECT_DRAGEN_MODE {
     ch_dna_runs = samples
         .filter { sample -> sample.seq_type == 'dna' }
         .collect()
-        .map { dna -> dnaRuns(dna) }
+        .map { dna ->
+            def runs = dnaRuns(dna)
+            if (runs.error) {
+                error(runs.error)
+            }
+            runs
+        }
 
     emit:
     germline = ch_dna_runs.flatMap { runs -> runs.germline }
@@ -18,19 +24,23 @@ workflow SELECT_DRAGEN_MODE {
 }
 
 // Per patient: a normal alone gets a germline run; a normal with a tumour gets one somatic run (PARSE_SAMPLESHEET rejects two or more tumours)
+// Returns the runs, or the error message: error() must be called in the operator closure to reach the console
 def dnaRuns(samples) {
     def germline = []
     def somatic = []
+    def errors = [] as List<String>
     samples
         .groupBy { sample -> sample.patient }
         .each { patient, patient_samples ->
             def normals = patient_samples.findAll { sample -> sample.status == 0 }
             def tumours = patient_samples.findAll { sample -> sample.status == 1 }
             if (normals.size() > 1) {
-                error("Patient '${patient}' has ${normals.size()} normal DNA samples (${normals*.id.join(', ')}); give one normal per patient")
+                errors << "Patient '${patient}' has ${normals.size()} normal DNA samples (${normals*.id.join(', ')}); give one normal per patient"
+                return null
             }
             if (!normals) {
-                error("Patient '${patient}' has tumour sample(s) ${tumours*.id.join(', ')} but no normal; tumour-only calling is not supported")
+                errors << "Patient '${patient}' has tumour sample(s) ${tumours*.id.join(', ')} but no normal; tumour-only calling is not supported"
+                return null
             }
             def normal = normals[0]
             if (!tumours) {
@@ -54,10 +64,13 @@ def dnaRuns(samples) {
         def prefix = "${run.tumour_id}_vs_${run.id}"
         def clash = germline.find { sample -> sample.id == prefix }
         if (clash) {
-            error("Germline sample '${clash.id}' has the same name as the tumour/normal run '${prefix}' (tumour '${run.tumour_id}', normal '${run.id}'); rename the sample")
+            errors = errors + ["Germline sample '${clash.id}' has the same name as the tumour/normal run '${prefix}' (tumour '${run.tumour_id}', normal '${run.id}'); rename the sample"]
         }
     }
-    return [germline: germline, somatic: somatic]
+    if (errors) {
+        return [error: errors.join('\n')]
+    }
+    return [germline: germline, somatic: somatic, error: null]
 }
 
 // The Sample fields that pick the mode; records keep their other fields
