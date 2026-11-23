@@ -1,0 +1,34 @@
+name: multiqc_report
+description: Aggregate DRAGEN metrics and the software versions report into a MultiQC report
+keywords:
+  - QC
+  - report
+components:
+  - multiqc
+input:
+  - metrics:
+      type: channel
+      description: DRAGEN metrics CSV files
+  - versions:
+      type: channel
+      description: Software versions YAML text, one entry per process
+  - multiqc_config:
+      type: file
+      description: Extra MultiQC config, or null; overrides the bundled config
+      pattern: "*.{yml,yaml}"
+  - multiqc_logo:
+      type: file
+      description: Report logo, or null
+  - bundled_config:
+      type: file
+      description: The pipeline's MultiQC config
+      pattern: "*.{yml,yaml}"
+  - multiqc_title:
+      type: string
+      description: Report title, or null
+output:
+  - report:
+      type: channel
+      description: MultiQC HTML report, `multiqc_data/` and `multiqc_plots/` (when written)
+authors:
+  - "@seqeralabs"
