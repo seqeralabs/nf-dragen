@@ -29,6 +29,7 @@ nextflow_process {
             def fastq_list = path(process.out[0][0].vcf_filtered).parent.resolve('fastq_list.csv').readLines()
             assertAll(
                 { assert process.success },
+                { assert !path(process.out[0][0].vcf_filtered).parent.resolve('.command.sh').text.contains('--lic-server') },
                 { assert snapshot(
                     process.out[0].collect { sample -> [sample.id, [*sample.bam, *sample.bai, sample.vcf_filtered, sample.tbi_filtered, *sample.metrics, sample.ploidy_vcf, sample.ploidy_tbi, sample.roh_bed, *sample.baf, sample.targeted_vcf, sample.targeted_tbi, sample.targeted_json].collect { f -> path(f).fileName.toString() }.sort()] },
                     fastq_list
@@ -178,6 +179,36 @@ nextflow_process {
                     task_dir.resolve('tumour_fastq_list.csv').readLines(),
                     task_dir.resolve('normal_fastq_list.csv').readLines()
                 ).match() }
+            )
+        }
+    }
+
+    test("licence server field - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = channel.of(record(
+                    id: 'test',
+                    fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")],
+                    fastq_2: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_2.fastq.gz")],
+                    index: file("\${projectDir}/tests/data/dragen_index_dna"),
+                    target_bed: null,
+                    dragen_args: '--enable-variant-caller true',
+                    dragen_lic_server: '--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com',
+                    output_prefix: null
+                ))
+                """
+            }
+        }
+
+        then {
+            def command = path(process.out[0][0].vcf_filtered).parent.resolve('.command.sh').text
+            assertAll(
+                { assert process.success },
+                { assert command.contains('--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com') }
             )
         }
     }

@@ -15,6 +15,7 @@ process DRAGEN {
         index: Path,
         target_bed: Path?,
         dragen_args: String?,
+        dragen_lic_server: String?,
         output_prefix: String?
     )
 
@@ -60,7 +61,6 @@ process DRAGEN {
     prefix = output_prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
-    // -profile byol provides the DRAGEN_USERNAME/DRAGEN_PASSWORD secrets as env vars; the script holds only their names
     """
     ${fastq_lists.tumour}
     ${fastq_lists.normal}
@@ -71,7 +71,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         ${fastq_lists.args} \\
         ${targets} \\
-        \${DRAGEN_USERNAME:+--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com} \\
+        ${dragen_lic_server ?: ''} \\
         ${args}
     """
 
@@ -82,7 +82,8 @@ process DRAGEN {
     prefix = output_prefix ?: runId(id, tumour_id)
     def fastq_lists = fastqLists(id, fastq_1, fastq_2, tumour_id, tumour_fastq_1, tumour_fastq_2)
     def targets = targetArgs(target_bed, tumour_id)
-    // The lic-server word is single-quoted inside the expansion, so the echo prints the secret names, not the credentials
+    // Quoted, so the echo prints the variable names, not the credentials
+    def lic_server = dragen_lic_server ? "'${dragen_lic_server}'" : ''
     // File names are those DRAGEN 4.4.4 wrote in real germline WGS, somatic WGS and RNA runs; target_bed names come from the v4.4 docs
     def rna = args.contains('--enable-rna')
     def vc = args.contains('--enable-variant-caller')
@@ -98,7 +99,7 @@ process DRAGEN {
         --output-file-prefix ${prefix} \\
         ${fastq_lists.args} \\
         ${targets} \\
-        \${DRAGEN_USERNAME:+'--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com'} \\
+        ${lic_server} \\
         ${args}
 
     touch ${prefix}.bam ${prefix}.bam.bai ${coverage} ${prefix}.mapping_metrics.csv ${prefix}.time_metrics.csv ${prefix}.fastqc_metrics.csv ${prefix}.trimmer_metrics.csv

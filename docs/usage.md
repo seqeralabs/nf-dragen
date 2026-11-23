@@ -76,6 +76,10 @@ We can configure the reference in two ways:
 1. Supply a `--fasta`, from which Dragen will build a genome index for alignment. The FASTA must not contain ALT contigs, for example use the GRCh38 no-ALT analysis set: DRAGEN refuses to build from ALT contigs without a liftover file, and the pipeline does not pass one. The DNA hash table is built with CNV k-mers, so CNV calling can use it; a DNA index built by an earlier version of the pipeline lacks them and must be rebuilt for CNV.
 2. If you have already performed a pipeline run using `1.`, the reference index will be written to a results directory at `<output-dir>/genome/index/dragen_index_dna` or `<output-dir>/genome/index/dragen_index_rna`. You can reuse these indexes by supplying the parameter `--dragen_index_dna` and/or `--dragen_index_rna` which will skip 1 for DNA and RNA respectively.
 
+## DRAGEN licence
+
+By default (`--dragen_license marketplace`) DRAGEN runs from the AWS Marketplace AMI and needs no credentials. To use Illumina's private DRAGEN AMI and your own licence, run with `-profile byol` and provide the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`. The profile sets `--dragen_license byol` and declares the secrets; every DRAGEN task, including the hash-table builds, then passes them to `--lic-server`. Setting `--dragen_license byol` without `-profile byol` does not declare the secrets, so the tasks cannot read them.
+
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:

@@ -51,6 +51,21 @@ DRAGEN options for somatic (tumour/normal) runs. Replaces the default.
 
 **Default:** `--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true`
 
+### `--dragen_license` {#dragen-license}
+
+**Type:** `string` | _Optional_
+
+How DRAGEN is licensed.
+
+> `marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `-profile byol`, which sets this parameter to `byol` and declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.
+
+**Default:** `marketplace`
+
+**Allowed values:**
+
+- `marketplace`
+- `byol`
+
 ### `--dragen_rna_args` {#dragen-rna-args}
 
 **Type:** `string` | _Optional_

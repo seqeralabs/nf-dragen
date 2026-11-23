@@ -42,6 +42,9 @@ input:
         dragen_args:
           type: String?
           description: DRAGEN options appended to the command line, e.g. the mapping, variant calling or `--enable-rna true` flags of the run's mode. The stub writes VCFs only with `--enable-variant-caller` and splice junctions only with `--enable-rna`
+        dragen_lic_server:
+          type: String?
+          description: Licence-server option, for example `--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com` with the variables left for the shell to expand; null passes none
         output_prefix:
           type: String?
           description: Output file prefix; defaults to `id`, or `<tumour_id>_vs_<id>` for a tumour/normal run

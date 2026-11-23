@@ -24,6 +24,9 @@ input:
         dragen_args:
           type: String?
           description: Extra DRAGEN options, for example `--ht-build-rna-hashtable true` for an RNA hash table
+        dragen_lic_server:
+          type: String?
+          description: Licence-server option, for example `--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com` with the variables left for the shell to expand; null passes none
         output_prefix:
           type: String?
           description: Name of the hash table directory (default `dragen`)
@@ -42,6 +45,5 @@ topics:
   - versions:
       type: Record
       description: "`{process, tool: dragen, version}`; the stub reports version `stub`"
-notes: With `-profile byol` (secret `DRAGEN_USERNAME` set in the task environment) the build also passes `--lic-server`.
 authors:
   - "@adamrtalbot"
