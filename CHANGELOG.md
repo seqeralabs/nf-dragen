@@ -16,7 +16,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - `--dragen_germline_args`, `--dragen_somatic_args` and `--dragen_rna_args`: the tunable DRAGEN options of each run type (for example to switch on HRD, TMB, HLA or MSI for somatic runs). Setting one replaces its default, so repeat the default options you want to keep.
 - `--target_bed`: exome or panel target regions for germline and somatic runs (not RNA runs). Somatic exome runs use DRAGEN's exome SV mode.
 - The DNA hash table is built with CNV k-mers. `--fasta` must not contain ALT contigs, for example use the GRCh38 no-ALT analysis set.
-- `-profile byol` for Illumina's private DRAGEN AMI: every DRAGEN task then needs the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` and passes them to `--lic-server`. It is untested on real DRAGEN.
+- `--dragen_license` (`marketplace` by default, or `byol`) for Illumina's private DRAGEN AMI. Use `-profile byol`, which sets it to `byol` and declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`; every DRAGEN task then passes them to `--lic-server`. It is untested on real DRAGEN.
 - A run with DNA or RNA samples but neither `--fasta` nor the matching `--dragen_index_dna`/`--dragen_index_rna` stops before any DRAGEN task with an error naming a sample and both parameters.
 - Published DRAGEN files per run: BAM and index, `*metrics*.csv`, coverage histogram and mean-coverage CSVs, VCFs and SV/CNV calls where the mode produces them, the ploidy VCF, targeted-caller calls, runs of homozygosity and B-allele frequencies (germline), the callable-regions BED (somatic), and the splice junctions (RNA). FASTQ files are not published.
 - Index files `dragen/germline/germline_index.csv`, `dragen/somatic/somatic_index.csv` and `dragen/rna/rna_index.csv`: one row per DRAGEN run with its patient and sample (somatic: patient, tumour and normal) and the published path of each file.
@@ -47,9 +47,8 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - The `outdir` param (see `Changed`).
 - The `publish_dir_mode` param: results are always copied. Set `workflow.output.mode` in your own config to change that.
 - The `monochrome_logs` param: set `validation.monochromeLogs = true` in your own config.
-- The `dragen_license` param: use `-profile byol` instead of `--dragen_license byol`, and drop `--dragen_license marketplace`.
 - The `lane` column is not used.
-- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` secrets and `--lic-server`, unless `-profile byol` is set.
+- The `DRAGEN_USERNAME` and `DRAGEN_PASSWORD` secrets and `--lic-server`, unless `-profile byol` (`--dragen_license byol`) is set.
 
 ### `Dependencies`
 

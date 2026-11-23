@@ -52,6 +52,14 @@
                     "help_text": "The default is `--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true`. Setting this parameter replaces the default, so repeat any default options you want to keep. HRD, TMB, HLA and MSI are off by default. Switch them on with, for example, `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true --enable-hla true --msi-command tumor-normal --msi-coverage-threshold 40'`.",
                     "fa_icon": "fas fa-terminal"
                 },
+                "dragen_license": {
+                    "type": "string",
+                    "description": "How DRAGEN is licensed.",
+                    "default": "marketplace",
+                    "enum": ["marketplace", "byol"],
+                    "help_text": "`marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `-profile byol`, which sets this parameter to `byol` and declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.",
+                    "fa_icon": "fas fa-key"
+                },
                 "dragen_rna_args": {
                     "type": "string",
                     "description": "DRAGEN options for RNA runs. Replaces the default.",

@@ -9,6 +9,7 @@ process DRAGEN_BUILDHASHTABLE {
         id: String,
         fasta: Path,
         dragen_args: String?,
+        dragen_lic_server: String?,
         output_prefix: String?
     )
 
@@ -25,7 +26,6 @@ process DRAGEN_BUILDHASHTABLE {
     def args = dragen_args ?: ''
     version_cmd = 'echo $(/opt/edico/bin/dragen --version 2>&1) | sed -e "s/dragen Version //g"'
     prefix = output_prefix ?: 'dragen'
-    // -profile byol provides the DRAGEN_USERNAME/DRAGEN_PASSWORD secrets as env vars; the script holds only their names
     """
     mkdir -p ${prefix}
 
@@ -33,7 +33,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
-        \${DRAGEN_USERNAME:+--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com} \\
+        ${dragen_lic_server ?: ''} \\
         ${args}
     """
 
@@ -42,7 +42,8 @@ process DRAGEN_BUILDHASHTABLE {
     // the stub never calls the binary, which exists only on DRAGEN hosts
     version_cmd = 'echo stub'
     prefix = output_prefix ?: 'dragen'
-    // single-quoted inside the expansion, so the echo prints the secret names, not the credentials
+    // Quoted, so the echo prints the variable names, not the credentials
+    def lic_server = dragen_lic_server ? "'${dragen_lic_server}'" : ''
     """
     mkdir -p ${prefix}
 
@@ -50,7 +51,7 @@ process DRAGEN_BUILDHASHTABLE {
         --build-hash-table true \\
         --output-directory ${prefix} \\
         --ht-reference ${fasta} \\
-        \${DRAGEN_USERNAME:+'--lic-server=\$DRAGEN_USERNAME:\$DRAGEN_PASSWORD@license.edicogenome.com'} \\
+        ${lic_server} \\
         ${args}
 
     touch ${prefix}/dragen.ht

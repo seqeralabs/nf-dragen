@@ -32,6 +32,7 @@ params {
     dragen_germline_args: String = '--enable-duplicate-marking true'
     dragen_somatic_args: String = '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true'
     dragen_rna_args: String = '--enable-duplicate-marking true'
+    dragen_license: String = 'marketplace'
 
     // Tools
     skip_dragen: Boolean = false
@@ -59,6 +60,7 @@ workflow {
         params.dragen_germline_args,
         params.dragen_somatic_args,
         params.dragen_rna_args,
+        params.dragen_license,
         params.skip_dragen,
     )
 
@@ -200,6 +202,7 @@ workflow SEQERALABS_DRAGEN {
     dragen_germline_args: String // tunable DRAGEN options for germline runs
     dragen_somatic_args: String  // tunable DRAGEN options for somatic runs
     dragen_rna_args: String      // tunable DRAGEN options for RNA runs
+    dragen_license: String       // marketplace or byol
     skip_dragen: Boolean         // skip all DRAGEN steps
 
     main:
@@ -207,6 +210,9 @@ workflow SEQERALABS_DRAGEN {
     ch_input = input.filter { _sample -> !skip_dragen }
 
     modes = SELECT_DRAGEN_MODE(ch_input)
+
+    // Single quotes: the shell, not Nextflow, expands the secrets
+    def lic_server = dragen_license == 'byol' ? '--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com' : null
 
     // Hash tables are built only when no index is given, from the samples so that no samples means no build.
     // reduce makes the one table a value that every sample reads (null when no samples, so nothing reads it).
@@ -223,7 +229,7 @@ workflow SEQERALABS_DRAGEN {
                 fasta
             }
         ch_dna_index_built = DRAGEN_BUILDHASHTABLE_DNA(
-            ch_dna_fasta.unique().map { ref -> record(id: 'dna', fasta: ref, dragen_args: '--ht-build-cnv-hashtable true', output_prefix: 'dragen_index_dna') }
+            ch_dna_fasta.unique().map { ref -> record(id: 'dna', fasta: ref, dragen_args: '--ht-build-cnv-hashtable true', dragen_lic_server: lic_server, output_prefix: 'dragen_index_dna') }
         ).map { table -> table.index }
         ch_dna_index = ch_dna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
@@ -240,7 +246,7 @@ workflow SEQERALABS_DRAGEN {
             fasta
         }
         ch_rna_index_built = DRAGEN_BUILDHASHTABLE_RNA(
-            ch_rna_fasta.unique().map { ref -> record(id: 'rna', fasta: ref, dragen_args: '--ht-build-rna-hashtable true', output_prefix: 'dragen_index_rna') }
+            ch_rna_fasta.unique().map { ref -> record(id: 'rna', fasta: ref, dragen_args: '--ht-build-rna-hashtable true', dragen_lic_server: lic_server, output_prefix: 'dragen_index_rna') }
         ).map { table -> table.index }
         ch_rna_index = ch_rna_index_built.reduce(null) { _acc, index_dir -> index_dir }
     }
@@ -254,14 +260,14 @@ workflow SEQERALABS_DRAGEN {
     def rna_args = "--enable-rna true ${map_align} --output-format=BAM ${dragen_rna_args}"
 
     ch_dna = DRAGEN_DNA(
-        modes.germline.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: dna_args) }
+        modes.germline.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: dna_args, dragen_lic_server: lic_server) }
     )
     ch_somatic = DRAGEN_SOMATIC(
-        modes.somatic.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: somatic_args) }
+        modes.somatic.combine(index: ch_dna_index).map { run -> run + record(target_bed: target_bed, dragen_args: somatic_args, dragen_lic_server: lic_server) }
     )
     // RNA runs get no target_bed
     ch_rna = DRAGEN_RNA(
-        modes.rna.combine(index: ch_rna_index).map { run -> run + record(target_bed: null, dragen_args: rna_args) }
+        modes.rna.combine(index: ch_rna_index).map { run -> run + record(target_bed: null, dragen_args: rna_args, dragen_lic_server: lic_server) }
     )
 
     emit:

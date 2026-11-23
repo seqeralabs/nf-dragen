@@ -101,7 +101,10 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert lic_tasks == workflow.trace.tasks().collect { task -> task.name }.findAll { name -> name.contains('DRAGEN') }.sort() },
-                { assert lic_tasks.size() == 5 }
+                { assert lic_tasks.size() == 5 },
+                // The credentials never reach the script, only the variable names
+                { assert new File("${launchDir}/work").listFiles().collectMany { d -> d.listFiles().toList() }.findAll { task_dir -> new File(task_dir, '.command.sh').exists() && new File(task_dir, '.command.sh').text.contains('/opt/edico/bin/dragen') }
+                    .every { task_dir -> def script = new File(task_dir, '.command.sh').text; script.contains('$DRAGEN_USERNAME') && !script.contains('dummy-user') && !script.contains('dummy-password') } }
             )
         }
     }
