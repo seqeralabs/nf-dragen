@@ -51,11 +51,12 @@ jobs:
         timeout-minutes: 180
         run: |
           while true; do
-            status=$(curl -fsS -H "Authorization: Bearer $TOKEN" "https://api.cloud.seqera.io/workflow/$ID?workspaceId=34830707738561" | jq -r .workflow.status)
+            status=$(curl -fsS --retry 5 --retry-all-errors -H "Authorization: Bearer $TOKEN" "https://api.cloud.seqera.io/workflow/$ID?workspaceId=34830707738561" | jq -r .workflow.status)
             echo "$status"
             case "$status" in
               SUCCEEDED) exit 0 ;;
-              FAILED|CANCELLED|UNKNOWN) exit 1 ;;
+              # Empty status means the API call failed after retries
+              ""|FAILED|CANCELLED|UNKNOWN) exit 1 ;;
             esac
             sleep 60
           done
