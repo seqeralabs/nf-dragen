@@ -1,6 +1,6 @@
 # seqeralabs/nf-dragen: Parameters
 
-The output directory is not a parameter: set it with `-output-dir <dir>` (one dash) or `outputDir` in a config file. It is required on every run.
+The output directory is not a parameter: set it with `-output-dir <dir>` (one dash) or `outputDir` in a config file. You must set one of them on every run.
 
 See [usage.md](usage.md) for how the DRAGEN args, `--target_bed` and the hash-table options behave.
 

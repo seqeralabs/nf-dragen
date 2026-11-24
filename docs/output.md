@@ -1,6 +1,6 @@
 # seqeralabs/nf-dragen: Output
 
-The pipeline writes its results to the output directory given with `-output-dir` (one dash) or `outputDir` in a config file. It is required on every run.
+The pipeline writes its results to the output directory given with `-output-dir` (one dash) or `outputDir` in a config file. You must set one of them on every run.
 
 ```
 <output-dir>/
@@ -13,7 +13,7 @@ The pipeline writes its results to the output directory given with `-output-dir`
 └── pipeline_info/     # software versions
 ```
 
-Files are copied to the output directory. To change that, set `workflow.output.mode` in your own config, for example `workflow.output.mode = 'symlink'`.
+The pipeline copies files to the output directory. To link them instead, set `workflow.output.mode` in your own config, for example `workflow.output.mode = 'symlink'`.
 
 On Seqera Platform, the MultiQC report and the DRAGEN QC files appear in the run's Reports tab (listed in `tower.yml`).
 
@@ -24,7 +24,7 @@ On Seqera Platform, the MultiQC report and the DRAGEN QC files appear in the run
 | `genome/index/dragen_index_dna/` | DNA hash table, when built from `--fasta` |
 | `genome/index/dragen_index_rna/` | RNA hash table, when built from `--fasta` |
 
-`genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. An index you supply is not copied.
+`genome/index/` holds a hash table only when the pipeline built it. Pass it back with `--dragen_index_dna` or `--dragen_index_rna` to skip the build in a later run. The pipeline does not copy an index you supply.
 
 ## DRAGEN
 
@@ -32,7 +32,7 @@ On Seqera Platform, the MultiQC report and the DRAGEN QC files appear in the run
 
 Each samplesheet row of a sample is one read group in the BAM. The read group ID is the sample name for a sample with one row, and `<sample>.1`, `<sample>.2`, ... for a sample with several rows.
 
-Each file is published when DRAGEN writes it.
+The pipeline publishes a file only when DRAGEN writes it.
 
 ### Germline
 
@@ -104,7 +104,7 @@ A column is empty (or `[]`) when the run did not write that file. Columns that c
 
 ## MultiQC
 
-`multiqc/` is written unless you pass `--skip_multiqc`. It summarises every DRAGEN `*metrics*.csv` and the software versions. With `--skip_dragen` it holds only the software versions.
+The pipeline writes `multiqc/` unless you pass `--skip_multiqc`. It summarises every DRAGEN `*metrics*.csv` and the software versions. With `--skip_dragen` it holds only the software versions.
 
 | Path                          | Contents                                |
 | ----------------------------- | --------------------------------------- |

@@ -18,7 +18,7 @@ The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs from
 
 ![seqeralabs/nf-dragen metro map](docs/images/metro_map.svg)
 
-The map is drawn with [nf-metro](https://github.com/pinin4fjords/nf-metro) from [docs/images/metro_map.mmd](docs/images/metro_map.mmd).
+[nf-metro](https://github.com/pinin4fjords/nf-metro) draws the map from [docs/images/metro_map.mmd](docs/images/metro_map.mmd).
 
 ## Quickstart
 
