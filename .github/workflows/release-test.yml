@@ -1,0 +1,65 @@
+name: Release test on Seqera Platform
+# Runs DRAGEN on a real F2 instance for release PRs (dev -> master), or by hand from the Actions tab.
+# The seqera-platform environment holds the token and needs approval from scientific-development.
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  dragen-f2:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'dev'
+    runs-on: ubuntu-latest
+    environment: seqera-platform
+    steps:
+      - uses: seqeralabs/action-seqera-launch@6854ad5e03f3be560f412a6d762d20448be468ca # v1.1.0
+        id: launch
+        with:
+          access-token: ${{ secrets.SEQERA_ACCESS_TOKEN }}
+          workspace-id: "34830707738561" # seqeralabs/testing
+          compute-env: dragen-poc-f2-6x-ondemand-444-20261030
+          revision: ${{ github.event.pull_request.head.sha || github.sha }}
+          run-name: release_test_${{ github.run_id }}
+          output-dir: s3://dragen-poc-511037203066/work/results/release-test/${{ github.run_id }}
+          syntax-parser: v2
+          nextflow-version: "26.10.6"
+          parameters: |
+            input: s3://dragen-poc-511037203066/work/data/samplesheet_hg002_2pair.csv
+            dragen_index_dna: s3://dragen-poc-511037203066/work/references/hg38-pangenome-v5/
+            dragen_index_rna: s3://dragen-poc-511037203066/work/references/hg38-pangenome-v5/
+          # Launch config from the README "Seqera Platform" section; keep the two in sync.
+          nextflow-config: |
+            aws.batch.volumes = '/scratch/fusion:/tmp,/opt/edico,/var/lib/edico,/lib64/libdragen.so.4.4.4,/ephemeral'
+
+            process {
+                withLabel: 'dragen' {
+                    containerOptions = '-e FUSION_CACHE_LOCATION=/ephemeral -e FUSION_COMPACT_SYMLINKS=true -e FUSION_STOP_SHUTDOWN_TIMEOUT=2h'
+                    errorStrategy = { task.exitStatus in ((130..145) - 134) + 104 + Integer.MAX_VALUE ? 'retry' : 'finish' }
+                    maxRetries = 3
+                }
+            }
+
+      - if: github.event_name == 'pull_request'
+        run: gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} --body "DRAGEN release test launched on Seqera Platform ${{ steps.launch.outputs.workflow-url }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Wait for the run to finish
+        timeout-minutes: 180
+        run: |
+          while true; do
+            status=$(curl -fsS --retry 5 --retry-all-errors -H "Authorization: Bearer $TOKEN" "https://api.cloud.seqera.io/workflow/$ID?workspaceId=34830707738561" | jq -r .workflow.status)
+            echo "$status"
+            case "$status" in
+              SUCCEEDED) exit 0 ;;
+              # Empty status means the API call failed after retries
+              ""|FAILED|CANCELLED|UNKNOWN) exit 1 ;;
+            esac
+            sleep 60
+          done
+        env:
+          TOKEN: ${{ secrets.SEQERA_ACCESS_TOKEN }}
+          ID: ${{ steps.launch.outputs.workflow-id }}
