@@ -1,49 +1,28 @@
 name: Release test on Seqera Platform
 # Runs DRAGEN on a real F2 instance for release PRs (dev -> master), or by hand from the Actions tab.
-# Each run costs F2 and DRAGEN time. Cancelling this job does not cancel the Platform run.
+# The seqera-platform environment holds the token and needs approval from scientific-development.
 on:
   pull_request:
-    branches: [master, main]
+    branches: [master]
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 permissions:
-  contents: read
   pull-requests: write
-
-env:
-  SEQERA_API: https://api.cloud.seqera.io
-  WORKSPACE_ID: "34830707738561" # seqeralabs/testing
 
 jobs:
   dragen-f2:
-    if: github.event_name == 'workflow_dispatch' || (github.head_ref == 'dev' && github.event.pull_request.head.repo.full_name == github.repository)
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'dev'
     runs-on: ubuntu-latest
+    environment: seqera-platform
     steps:
-      # The run uses the Platform token and AWS account, so only people with write access may start it.
-      # The repository has no outside collaborators, so write access means a Seqera org member.
-      - name: Check the user can start a run
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ACTOR: ${{ github.triggering_actor }}
-        run: |
-          permission=$(gh api "repos/${{ github.repository }}/collaborators/$ACTOR/permission" --jq .permission)
-          case "$permission" in
-            admin|maintain|write) echo "$ACTOR has $permission access" ;;
-            *) echo "::error::$ACTOR has '$permission' access; write access is needed to launch DRAGEN runs"; exit 1 ;;
-          esac
-
       - uses: seqeralabs/action-seqera-launch@6854ad5e03f3be560f412a6d762d20448be468ca # v1.1.0
         id: launch
         with:
           access-token: ${{ secrets.SEQERA_ACCESS_TOKEN }}
-          workspace-id: ${{ env.WORKSPACE_ID }}
+          workspace-id: "34830707738561" # seqeralabs/testing
           compute-env: dragen-poc-f2-6x-ondemand-444-20261030
           revision: ${{ github.event.pull_request.head.sha || github.sha }}
-          run-name: release_test_${{ github.event.pull_request.number || 'manual' }}_${{ github.run_id }}
+          run-name: release_test_${{ github.run_id }}
           output-dir: s3://dragen-poc-511037203066/work/results/release-test/${{ github.run_id }}
           syntax-parser: v2
           nextflow-version: "26.10.6"
@@ -62,29 +41,24 @@ jobs:
                     maxRetries = 3
                 }
             }
-          wait: running
 
-      - name: Comment on the PR
-        if: github.event_name == 'pull_request'
+      - if: github.event_name == 'pull_request'
+        run: gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} --body "DRAGEN release test launched on Seqera Platform ${{ steps.launch.outputs.workflow-url }}"
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr comment ${{ github.event.pull_request.number }} -R ${{ github.repository }} --body \
-            "DRAGEN release test launched on Seqera Platform for ${{ github.event.pull_request.head.sha }}: [${{ steps.launch.outputs.workflow-id }}](${{ steps.launch.outputs.workflow-url }}). Results in [this job](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
 
       - name: Wait for the run to finish
         timeout-minutes: 180
-        env:
-          TOKEN: ${{ secrets.SEQERA_ACCESS_TOKEN }}
-          WORKFLOW_ID: ${{ steps.launch.outputs.workflow-id }}
         run: |
           while true; do
-            status=$(curl -fsS -H "Authorization: Bearer $TOKEN" \
-              "$SEQERA_API/workflow/$WORKFLOW_ID?workspaceId=$WORKSPACE_ID" | jq -r .workflow.status) || status="API error, retrying"
-            echo "$(date -u +%H:%M:%S) $status"
+            status=$(curl -fsS -H "Authorization: Bearer $TOKEN" "https://api.cloud.seqera.io/workflow/$ID?workspaceId=34830707738561" | jq -r .workflow.status)
+            echo "$status"
             case "$status" in
               SUCCEEDED) exit 0 ;;
-              FAILED|CANCELLED|UNKNOWN) echo "::error::Platform run $WORKFLOW_ID ended $status"; exit 1 ;;
+              FAILED|CANCELLED|UNKNOWN) exit 1 ;;
             esac
             sleep 60
           done
+        env:
+          TOKEN: ${{ secrets.SEQERA_ACCESS_TOKEN }}
+          ID: ${{ steps.launch.outputs.workflow-id }}
