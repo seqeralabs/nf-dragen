@@ -1,0 +1,49 @@
+name: dragen_buildhashtable
+description: Build a DRAGEN hash table from a FASTA reference
+keywords:
+  - dragen
+  - index
+  - hash table
+tools:
+  - dragen:
+      description: Illumina DRAGEN Bio-IT Platform, run from the AWS Marketplace pay-as-you-go DRAGEN AMI
+      homepage: https://www.illumina.com/products/by-type/informatics-products/dragen-bio-it-platform.html
+      licence: ["Commercial"]
+input:
+  - table:
+      type: record
+      description: One hash-table build
+      fields:
+        id:
+          type: String
+          description: Build name, for example `dna` or `rna`
+        fasta:
+          type: Path
+          description: Reference FASTA
+          pattern: "*.{fa,fasta}"
+        dragen_args:
+          type: String?
+          description: Extra DRAGEN options, for example `--ht-build-rna-hashtable true` for an RNA hash table
+        dragen_lic_server:
+          type: String?
+          description: Licence-server option, for example `--lic-server=$DRAGEN_USERNAME:$DRAGEN_PASSWORD@license.edicogenome.com` with the variables left for the shell to expand; null passes none
+        output_prefix:
+          type: String?
+          description: Name of the hash table directory (default `dragen`)
+output:
+  - table:
+      type: record
+      description: The built hash table
+      fields:
+        id:
+          type: String
+          description: Build name
+        index:
+          type: Path
+          description: Hash table directory, named by `output_prefix`
+topics:
+  - versions:
+      type: Record
+      description: "`{process, tool: dragen, version}`; the stub reports version `stub`"
+authors:
+  - "@adamrtalbot"

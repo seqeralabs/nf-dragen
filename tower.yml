@@ -1,5 +1,29 @@
 reports:
-  multiqc_report.html:
-    display: "MultiQC HTML report"
-  samplesheet.csv:
-    display: "Auto-created samplesheet with collated metadata and FASTQ paths"
+  "**/*multiqc_report.html":
+    display: "MultiQC report"
+  "**/*.mapping_metrics.csv":
+    display: "DRAGEN mapping metrics"
+  "**/*.vc_metrics.csv":
+    display: "DRAGEN variant calling metrics"
+  "**/*.wgs_coverage_metrics*.csv":
+    display: "DRAGEN whole-genome coverage metrics"
+  "**/*.target_bed_coverage_metrics*.csv":
+    display: "DRAGEN target region coverage metrics"
+  "**/*.cnv_metrics.csv":
+    display: "DRAGEN CNV metrics"
+  "**/*.sv_metrics.csv":
+    display: "DRAGEN SV metrics"
+  "**/*.time_metrics.csv":
+    display: "DRAGEN run time metrics"
+  "**/*.fastqc_metrics.csv":
+    display: "DRAGEN FastQC metrics"
+  "**/*.trimmer_metrics.csv":
+    display: "DRAGEN read trimmer metrics"
+  "**/*.ploidy_estimation_metrics.csv":
+    display: "DRAGEN ploidy estimation metrics"
+  "**/*.vc_hethom_ratio_metrics.csv":
+    display: "DRAGEN variant het/hom ratio metrics"
+  "**/*.roh_metrics.csv":
+    display: "DRAGEN runs of homozygosity metrics"
+  "**/*.allele_transition_noise_metrics.csv":
+    display: "DRAGEN allele transition noise metrics"

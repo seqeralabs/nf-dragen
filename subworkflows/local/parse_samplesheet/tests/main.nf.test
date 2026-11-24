@@ -1,0 +1,181 @@
+nextflow_workflow {
+
+    name "Test Workflow PARSE_SAMPLESHEET"
+    script "../main.nf"
+    workflow "PARSE_SAMPLESHEET"
+    tag "parse_samplesheet"
+
+    test("multi-row samples grouped in samplesheet order") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_test.csv")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            def samples = workflow.out.samples
+            def tumour = samples.find { sample -> sample.id == 'P1_T' }
+            assertAll(
+                { assert workflow.success },
+                { assert samples*.id.sort() == ['P1_N', 'P1_T', 'P2_SE', 'P3_RNA'] },
+                // the two rows of P1_T, in samplesheet order
+                { assert tumour.fastq_1.collect { f -> f.toString().tokenize('/')[-4..-1].join('/') } == ['homo_sapiens/illumina/fastq/test2_1.fastq.gz', 'sarscov2/illumina/fastq/test_1.fastq.gz'] },
+                { assert tumour.fastq_2.collect { f -> f.toString().tokenize('/')[-4..-1].join('/') } == ['homo_sapiens/illumina/fastq/test2_2.fastq.gz', 'sarscov2/illumina/fastq/test_2.fastq.gz'] },
+                { assert samples.find { sample -> sample.id == 'P2_SE' }.fastq_2 == [] },
+                { assert snapshot(samples).match() }
+            )
+        }
+    }
+
+    test("sheet with tissue, sex, seq_type and extra lane and strandedness columns") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_sarek.csv")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(workflow.out.samples).match() }
+            )
+        }
+    }
+
+    test("missing fastq_1 column fails") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_no_fastq_1.csv")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert workflow.stderr.any { line -> line.contains('Missing required field(s): fastq_1') }
+        }
+    }
+
+    test("non-existent FASTQ fails") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_missing_fastq.csv")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert workflow.stderr.any { line -> line.contains("'tests/data/does_not_exist_R1.fastq.gz' does not exist") }
+        }
+    }
+
+    test("rows of one sample with different patient fail") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_patient_mismatch.csv")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert (workflow.stdout + workflow.stderr).any { line -> line.contains("rows of sample 'SAMPLE1' disagree on column 'patient' (PATIENT1, PATIENT2)") }
+        }
+    }
+
+    test("sample mixing paired-end and single-end rows fails") {
+        when {
+            def fastq = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq'
+            def sheet = new File("${launchDir}/mixed_pe_se.csv")
+            sheet.text = """sample,fastq_1,fastq_2
+SAMPLE1,${fastq}/test_1.fastq.gz,${fastq}/test_2.fastq.gz
+SAMPLE1,${fastq}/test2_1.fastq.gz,
+"""
+            workflow {
+                """
+                input[0] = file("${sheet}")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert (workflow.stdout + workflow.stderr).any { line -> line.contains("sample 'SAMPLE1' mixes paired-end and single-end rows") }
+        }
+    }
+
+    test("status column fails and points to tissue") {
+        when {
+            def fastq = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq'
+            def sheet = new File("${launchDir}/status.csv")
+            sheet.text = """patient,status,sample,fastq_1
+P1,0,P1_N,${fastq}/test_1.fastq.gz
+"""
+            workflow {
+                """
+                input[0] = file("${sheet}")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            assert workflow.failed
+            assert (workflow.stdout + workflow.stderr).any { line -> line.contains("use 'tissue'") }
+        }
+    }
+
+    test("patient with two tumours fails") {
+        when {
+            workflow {
+                """
+                input[0] = file("${baseDir}/tests/data/samplesheets/samplesheet_two_tumours.csv")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            def output = workflow.stdout + workflow.stderr
+            assert workflow.failed
+            assert output.any { line -> line.contains("Patient 'P1' has 2 tumour DNA samples (P1_T1, P1_T2)") }
+        }
+    }
+
+    test("same FASTQ path in two samples fails") {
+        when {
+            def fastq = 'https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq'
+            def sheet = new File("${launchDir}/duplicate_fastq.csv")
+            sheet.text = """sample,fastq_1
+SAMPLE1,${fastq}/test_1.fastq.gz
+SAMPLE2,${fastq}/test_1.fastq.gz
+"""
+            workflow {
+                """
+                input[0] = file("${sheet}")
+                input[1] = 'dna'
+                input[2] = file("${baseDir}/assets/schema_input.json")
+                """
+            }
+        }
+        then {
+            def output = workflow.stdout + workflow.stderr
+            assert workflow.failed
+            assert output.any { line -> line.contains('test_1.fastq.gz') && line.contains('SAMPLE1, SAMPLE2') }
+        }
+    }
+}

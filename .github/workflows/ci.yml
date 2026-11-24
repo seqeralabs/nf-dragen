@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+env:
+  NXF_VER: "26.10.6"
+  NFT_VER: "0.9.5"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: nf-core/setup-nextflow@6c2e22b4d901f0c42ca66c5069f8026df026d165 # v2
+        with:
+          version: ${{ env.NXF_VER }}
+      - run: nextflow lint .
+      - run: nextflow lint -format -sort-declarations -harshil-alignment . && git diff --exit-code
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: nf-core/setup-nextflow@6c2e22b4d901f0c42ca66c5069f8026df026d165 # v2
+        with:
+          version: ${{ env.NXF_VER }}
+      - uses: nf-core/setup-nf-test@f2db585128ae681918440f6c074dededeceadce1 # v1
+        with:
+          version: ${{ env.NFT_VER }}
+      # Dummy DRAGEN licence secrets for the '-profile byol' stub test
+      - run: |
+          nextflow secrets set DRAGEN_USERNAME dummy-user
+          nextflow secrets set DRAGEN_PASSWORD dummy-password
+        env:
+          NXF_SECRETS_FILE: ${{ runner.temp }}/secrets.json
+      - run: nf-test test --ci
+        env:
+          NXF_SECRETS_FILE: ${{ runner.temp }}/secrets.json

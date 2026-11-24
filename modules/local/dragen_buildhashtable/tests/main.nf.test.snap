@@ -1,0 +1,14 @@
+{
+    "fasta - stub": {
+        "content": [
+            [
+                "dragen.ht"
+            ]
+        ],
+        "timestamp": "2026-11-20T13:15:32.259365467",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.6"
+        }
+    }
+}

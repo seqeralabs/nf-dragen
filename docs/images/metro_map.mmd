@@ -1,0 +1,43 @@
+%%metro title: seqeralabs/nf-dragen
+%%metro style: seqera
+%%metro file: samplesheet | CSV | Samplesheet
+%%metro file: report_html | HTML | MultiQC report
+%%metro line: germline | DNA germline | #0dc09d
+%%metro line: somatic | DNA tumour/normal | #8b5cf6
+%%metro line: rna | RNA | #f59e0b
+%%metro legend: bl
+
+graph LR
+    subgraph input [Input]
+        %%metro exit: right | germline, somatic, rna
+        samplesheet[ ]
+        parse[Parse and validate]
+
+        samplesheet -->|germline,somatic,rna| parse
+    end
+
+    subgraph dragen [DRAGEN]
+        %%metro entry: left | germline, somatic, rna
+        %%metro exit: right | germline, somatic, rna
+        hashtables[Hash tables]
+        germline[Germline]
+        somatic[Somatic]
+        rna_align[RNA alignment]
+
+        hashtables -->|germline| germline
+        hashtables -->|somatic| somatic
+        hashtables -->|rna| rna_align
+    end
+
+    subgraph report [Report]
+        %%metro entry: left | germline, somatic, rna
+        multiqc[MultiQC]
+        report_html[ ]
+
+        multiqc -->|germline,somatic,rna| report_html
+    end
+
+    parse -->|germline,somatic,rna| hashtables
+    germline -->|germline| multiqc
+    somatic -->|somatic| multiqc
+    rna_align -->|rna| multiqc
