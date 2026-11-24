@@ -1,0 +1,45 @@
+name: Release test on Seqera Platform
+# Runs DRAGEN on a real F2 instance for release PRs (dev -> master). Each run costs F2 and DRAGEN time.
+# Cancelling this job does not cancel the Platform run.
+on:
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dragen-f2:
+    if: github.event_name == 'workflow_dispatch' || (github.head_ref == 'dev' && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: seqeralabs/action-seqera-launch@6854ad5e03f3be560f412a6d762d20448be468ca # v1.1.0
+        id: launch
+        with:
+          access-token: ${{ secrets.SEQERA_ACCESS_TOKEN }}
+          workspace-id: "34830707738561" # seqeralabs/testing
+          compute-env: dragen-poc-f2-6x-ondemand-444-20261030
+          revision: ${{ github.event.pull_request.head.sha || github.sha }}
+          run-name: release_test_${{ github.event.pull_request.number || 'manual' }}_${{ github.run_id }}
+          output-dir: s3://dragen-poc-511037203066/work/results/release-test/${{ github.run_id }}
+          syntax-parser: v2
+          nextflow-version: "26.10.6"
+          parameters: |
+            input: s3://dragen-poc-511037203066/work/data/samplesheet_hg002_2pair.csv
+            dragen_index_dna: s3://dragen-poc-511037203066/work/references/hg38-pangenome-v5/
+            dragen_index_rna: s3://dragen-poc-511037203066/work/references/hg38-pangenome-v5/
+          # Launch config from the README "Seqera Platform" section; keep the two in sync.
+          nextflow-config: |
+            aws.batch.volumes = '/scratch/fusion:/tmp,/opt/edico,/var/lib/edico,/lib64/libdragen.so.4.4.4,/ephemeral'
+
+            process {
+                withLabel: 'dragen' {
+                    containerOptions = '-e FUSION_CACHE_LOCATION=/ephemeral -e FUSION_COMPACT_SYMLINKS=true -e FUSION_STOP_SHUTDOWN_TIMEOUT=2h'
+                    errorStrategy = { task.exitStatus in ((130..145) - 134) + 104 + Integer.MAX_VALUE ? 'retry' : 'finish' }
+                    maxRetries = 3
+                }
+            }
+          wait: completion
+          timeout: 3h

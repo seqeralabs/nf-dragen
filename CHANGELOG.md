@@ -10,6 +10,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 ### `Added`
 
 - [#10](https://github.com/seqeralabs/nf-dragen/pull/10) - Use nf-core template v3.1.1
+- Release test: a pull request from `dev` to `master` launches the HG002 two-pair DRAGEN run on an F2 compute environment in the Seqera Platform `seqeralabs/testing` workspace and fails if the run does not succeed. It needs the `SEQERA_ACCESS_TOKEN` repository secret.
 - Samplesheet columns, in any column order: the optional columns `patient`, `tissue` (`germline` or `tumor`, default `germline`) and `sex` (`male`, `female` or `unknown`, default `unknown`) are new, and unknown columns (for example `lane`) are ignored. A samplesheet with a `status` column is rejected; use `tissue`. `sample,fastq_1,fastq_2` samplesheets still work.
 - Several rows with the same `sample` are that sample's FASTQ pairs, for germline, tumour/normal and RNA runs. Each row is one DRAGEN read group: `<sample>.1`, `<sample>.2`, ... in samplesheet order; a sample with one row has the read group ID `<sample>`. The rows of a sample must agree on `patient`, `tissue`, `sex` and `seq_type` and be all paired-end or all single-end, otherwise the pipeline stops before any task with an error naming the sample and the column.
 - A samplesheet that lists the same FASTQ path more than once (in `fastq_1` or `fastq_2`, same or different samples) is rejected before any task, with an error naming the path and the samples.
