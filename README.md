@@ -16,17 +16,9 @@ The pipeline is built with [Nextflow](https://www.nextflow.io). DRAGEN runs from
 4. **DRAGEN.** Runs germline and somatic DNA calling (somatic runs also call structural variants, and copy number variants for whole-genome data) and RNA alignment.
 5. **MultiQC.** Summarises the DRAGEN metrics and the software versions in one report. Skip it with `--skip_multiqc`.
 
-```mermaid
-flowchart LR
-    SS[Samplesheet] --> PS[Parse and validate]
-    FA[fasta] -.->|built when no index is given| HT[Hash tables]
-    PS -->|normal only| GER[DRAGEN germline]
-    PS -->|tumour and normal| SOM[DRAGEN somatic]
-    PS -->|RNA samples| RNA[DRAGEN RNA]
-    GER --> MQ[MultiQC]
-    SOM --> MQ
-    RNA --> MQ
-```
+![seqeralabs/nf-dragen metro map](docs/images/metro_map.svg)
+
+The map is drawn with [nf-metro](https://github.com/pinin4fjords/nf-metro) from [docs/images/metro_map.mmd](docs/images/metro_map.mmd).
 
 ## Quickstart
 
@@ -50,7 +42,6 @@ Read [docs/usage.md](docs/usage.md) for the samplesheet format and run options.
 
 - Nextflow 26.10.6 or later.
 - A DRAGEN-capable compute environment: the AWS Marketplace pay-as-you-go DRAGEN AMI on AWS F2 instances, in a region where F2 instances are available. AWS meters the DRAGEN licence, so no credentials are needed. The instances need outbound internet access for DRAGEN's licence check. The DRAGEN processes carry the `dragen` label, which sends them to those instances.
-- Docker on the machine that runs MultiQC. The DRAGEN processes run on the host and need no container.
 
 ### Bring your own licence
 

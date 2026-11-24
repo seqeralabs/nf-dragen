@@ -1,172 +1,47 @@
-# Pipeline Inputs
-
-This page documents all input parameters for the pipeline.
+# seqeralabs/nf-dragen: Parameters
 
 The output directory is not a parameter: set it with `-output-dir <dir>` (one dash) or `outputDir` in a config file. It is required on every run.
 
+See [usage.md](usage.md) for how the DRAGEN args, `--target_bed` and the hash-table options behave.
+
 ## Input/output options
 
-### `--input` {#input}
-
-**Type:** `string` | **Required** | **Format:** `file-path`
-
-Path to comma-separated file containing information about the samples in the experiment.
-
-> You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.
-
-**Pattern:** `^\S+\.csv$`
-
-### `--seq_type` {#seq-type}
-
-**Type:** `string` | _Optional_
-
-Default type of sequencing (dna, rna etc). Can be overridden in the samplesheet using the column `seq_type`.
-
-**Default:** `dna`
-
-**Allowed values:**
-
-- `dna`
-- `rna`
+| Name         | Description                                                                                                  | Type     | Default | Required |
+| ------------ | ------------------------------------------------------------------------------------------------------------ | -------- | ------- | :------: |
+| `--input`    | Path to comma-separated file containing information about the samples in the experiment.                     | `string` | n/a     |   yes    |
+| `--seq_type` | Default type of sequencing (dna, rna etc). Can be overridden in the samplesheet using the column `seq_type`. | `string` | `dna`   |    no    |
 
 ## Tools
 
-### `--dragen_germline_args` {#dragen-germline-args}
-
-**Type:** `string` | _Optional_
-
-DRAGEN options for germline runs. Replaces the default.
-
-> The default is `--enable-duplicate-marking true`. Setting this parameter replaces the default, so repeat any default options you want to keep.
-
-**Default:** `--enable-duplicate-marking true`
-
-### `--dragen_somatic_args` {#dragen-somatic-args}
-
-**Type:** `string` | _Optional_
-
-DRAGEN options for somatic (tumour/normal) runs. Replaces the default.
-
-> The default is `--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true`. Setting this parameter replaces the default, so repeat any default options you want to keep. HRD, TMB, HLA and MSI are off by default. Switch them on with, for example, `--dragen_somatic_args '--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true --enable-hrd true --enable-tmb true --enable-hla true --msi-command tumor-normal --msi-coverage-threshold 40'`.
-
-**Default:** `--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true`
-
-### `--dragen_license` {#dragen-license}
-
-**Type:** `string` | _Optional_
-
-How DRAGEN is licensed.
-
-> `marketplace` (default) uses the AWS Marketplace AMI and passes no licence server. For your own licence use `byol` (or `-profile byol`), which declares the Nextflow secrets `DRAGEN_USERNAME` and `DRAGEN_PASSWORD`.
-
-**Default:** `marketplace`
-
-**Allowed values:**
-
-- `marketplace`
-- `byol`
-
-### `--dragen_rna_args` {#dragen-rna-args}
-
-**Type:** `string` | _Optional_
-
-DRAGEN options for RNA runs. Replaces the default.
-
-> The default is `--enable-duplicate-marking true`. Setting this parameter replaces the default, so repeat any default options you want to keep.
-
-**Default:** `--enable-duplicate-marking true`
-
-### `--dragen_hashtable_dna_args` {#dragen-hashtable-dna-args}
-
-**Type:** `string` | _Optional_
-
-DRAGEN options for the DNA hash table build. Replaces the default.
-
-> Used only when no `--dragen_index_dna` is given. The default is `--ht-build-cnv-hashtable true`. Setting this parameter replaces the default, so repeat any default options you want to keep.
-
-**Default:** `--ht-build-cnv-hashtable true`
-
-### `--dragen_hashtable_rna_args` {#dragen-hashtable-rna-args}
-
-**Type:** `string` | _Optional_
-
-DRAGEN options for the RNA hash table build. Replaces the default.
-
-> Used only when no `--dragen_index_rna` is given. The default is `--ht-build-rna-hashtable true`. Setting this parameter replaces the default, so repeat any default options you want to keep.
-
-**Default:** `--ht-build-rna-hashtable true`
-
-### `--skip_dragen` {#skip-dragen}
-
-**Type:** `boolean` | _Optional_
-
-Skip all DRAGEN steps, including building the hash tables. Only MultiQC runs.
-
-**Default:** `False`
-
-### `--skip_multiqc` {#skip-multiqc}
-
-**Type:** `boolean` | _Optional_
-
-Skip the MultiQC report
-
-**Default:** `False`
+| Name                          | Description                                                                   | Type      | Default                                                                 | Required |
+| ----------------------------- | ----------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------- | :------: |
+| `--dragen_germline_args`      | DRAGEN options for germline runs. Replaces the default.                       | `string`  | `--enable-duplicate-marking true`                                       |    no    |
+| `--dragen_somatic_args`       | DRAGEN options for somatic (tumour/normal) runs. Replaces the default.        | `string`  | `--enable-duplicate-marking true --vc-target-vaf 0.03 --enable-sv true` |    no    |
+| `--dragen_license`            | How DRAGEN is licensed.                                                       | `string`  | `marketplace`                                                           |    no    |
+| `--dragen_rna_args`           | DRAGEN options for RNA runs. Replaces the default.                            | `string`  | `--enable-duplicate-marking true`                                       |    no    |
+| `--dragen_hashtable_dna_args` | DRAGEN options for the DNA hash table build. Replaces the default.            | `string`  | `--ht-build-cnv-hashtable true`                                         |    no    |
+| `--dragen_hashtable_rna_args` | DRAGEN options for the RNA hash table build. Replaces the default.            | `string`  | `--ht-build-rna-hashtable true`                                         |    no    |
+| `--skip_dragen`               | Skip all DRAGEN steps, including building the hash tables. Only MultiQC runs. | `boolean` | `False`                                                                 |    no    |
+| `--skip_multiqc`              | Skip the MultiQC report                                                       | `boolean` | `False`                                                                 |    no    |
 
 ## Reference genome options
 
-### `--fasta` {#fasta}
-
-**Type:** `string` | _Optional_ | **Format:** `file-path`
-
-Reference genome FASTA file. The DRAGEN hash tables are built from it when no index is given with --dragen_index_dna or --dragen_index_rna.
-
-### `--dragen_index_dna` {#dragen-index-dna}
-
-**Type:** `string` | _Optional_ | **Format:** `directory-path`
-
-Path to DNA index created by Dragen.
-
-> Use a DNA index created using Dragen with argument '--build-hash-table true'. If not set, an index is built from `--fasta`.
-
-### `--dragen_index_rna` {#dragen-index-rna}
-
-**Type:** `string` | _Optional_ | **Format:** `directory-path`
-
-Path to RNA index created by Dragen.
-
-> Use an RNA index created using Dragen with arguments '--build-hash-table true' and '--ht-build-rna-hashtable true'. If not set, an index is built from `--fasta`.
-
-### `--target_bed` {#target-bed}
-
-**Type:** `string` | _Optional_ | **Format:** `file-path`
-
-BED file of exome or panel target regions.
-
-> Passed to DRAGEN for germline and somatic DNA runs (`--vc-target-bed`; somatic runs also `--sv-call-regions-bed`), never to RNA runs. Leave unset for whole-genome data. Somatic exome runs skip CNV calling.
-
-**Pattern:** `^\S+\.bed$`
+| Name                 | Description                                                                                                                                 | Type     | Default | Required |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | :------: |
+| `--fasta`            | Reference genome FASTA file. The DRAGEN hash tables are built from it when no index is given with --dragen_index_dna or --dragen_index_rna. | `string` | n/a     |    no    |
+| `--dragen_index_dna` | Path to DNA index created by Dragen.                                                                                                        | `string` | n/a     |    no    |
+| `--dragen_index_rna` | Path to RNA index created by Dragen.                                                                                                        | `string` | n/a     |    no    |
+| `--target_bed`       | BED file of exome or panel target regions.                                                                                                  | `string` | n/a     |    no    |
 
 ## MultiQC options
 
-### `--multiqc_config` {#multiqc-config}
-
-**Type:** `string` | _Optional_ | **Format:** `file-path`
-
-Custom config file to supply to MultiQC.
-
-### `--multiqc_title` {#multiqc-title}
-
-**Type:** `string` | _Optional_
-
-MultiQC report title. Printed as page header, used for filename if not otherwise specified.
-
-### `--multiqc_logo` {#multiqc-logo}
-
-**Type:** `string` | _Optional_ | **Format:** `file-path`
-
-Custom logo file to supply to MultiQC
+| Name               | Description                                                                                 | Type     | Default | Required |
+| ------------------ | ------------------------------------------------------------------------------------------- | -------- | ------- | :------: |
+| `--multiqc_config` | Custom config file to supply to MultiQC.                                                    | `string` | n/a     |    no    |
+| `--multiqc_title`  | MultiQC report title. Printed as page header, used for filename if not otherwise specified. | `string` | n/a     |    no    |
+| `--multiqc_logo`   | Custom logo file to supply to MultiQC                                                       | `string` | n/a     |    no    |
 
 ---
 
 _This pipeline was built with [Nextflow](https://nextflow.io).
-Documentation generated by [nf-docs](https://github.com/ewels/nf-docs) v0.4.0 on 2026-11-23 16:12:36 UTC._
+Documentation generated by [nf-docs](https://github.com/ewels/nf-docs) v0.4.0 on 2026-11-24 11:50:10 UTC._

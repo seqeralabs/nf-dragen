@@ -83,7 +83,7 @@ For exome or panel data, give the target regions with `--target_bed targets.bed`
 
 ## MultiQC report
 
-MultiQC runs after DRAGEN on the DRAGEN metrics and the software versions (see [Output](output.md)). It runs in a Docker container, so the pipeline needs Docker on the machine that runs MultiQC; the DRAGEN processes have no container and run on the host. Skip it with `--skip_multiqc`.
+MultiQC runs after DRAGEN on the DRAGEN metrics and the software versions (see [Output](output.md)). It runs in a Docker container, so the pipeline needs Docker on the machine that runs MultiQC. Skip it with `--skip_multiqc`.
 
 ## Configuring the reference
 
