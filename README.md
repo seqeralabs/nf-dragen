@@ -66,8 +66,7 @@ aws.batch.volumes = '/scratch/fusion:/tmp,/opt/edico,/var/lib/edico,/lib64/libdr
 
 process {
     withLabel: 'dragen' {
-        // Without /ephemeral, DRAGEN fails with an async_io I/O error (exit 134).
-        scratch = '/ephemeral'
+        // Fusion caches on the local NVMe disk mounted at /ephemeral.
         containerOptions = '-e FUSION_CACHE_LOCATION=/ephemeral -e FUSION_COMPACT_SYMLINKS=true -e FUSION_STOP_SHUTDOWN_TIMEOUT=2h'
         // Integer.MAX_VALUE adds a retry for the ECS agent restart shortly after an F2 host boots.
         errorStrategy = { task.exitStatus in ((130..145) - 134) + 104 + Integer.MAX_VALUE ? 'retry' : 'finish' }

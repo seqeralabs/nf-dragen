@@ -25,7 +25,7 @@ Initial release of seqeralabs/nf-dragen, created with the [nf-core](https://nf-c
 - MultiQC report on the DRAGEN metrics and the software versions, published to `multiqc/`, with the params `skip_multiqc`, `multiqc_config`, `multiqc_title` and `multiqc_logo`. MultiQC runs in a container, so the pipeline enables Docker.
 - The software versions report `pipeline_info/software_versions.yml` lists the DRAGEN version of every DRAGEN and hash-table process, and the Nextflow and pipeline versions. It does not list MultiQC.
 - Seqera Platform's Reports tab shows the MultiQC report and the DRAGEN QC metrics, listed in `tower.yml`.
-- README: the Seqera Platform section has the Batch Forge settings and the Nextflow config to paste into the launch form for AWS F2 DRAGEN runs (volumes, `/ephemeral` scratch, Fusion settings, retry rule that excludes exit 134). Add it to your launch config.
+- README: the Seqera Platform section has the Batch Forge settings and the Nextflow config to paste into the launch form for AWS F2 DRAGEN runs (volumes, Fusion settings with the cache on `/ephemeral`, retry rule that excludes exit 134). Add it to your launch config.
 
 ### `Changed`
 
