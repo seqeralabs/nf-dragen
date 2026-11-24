@@ -1,7 +1,6 @@
 %%metro title: seqeralabs/nf-dragen
 %%metro style: seqera
 %%metro file: samplesheet | CSV | Samplesheet
-%%metro file: fasta | FASTA | Reference
 %%metro file: report_html | HTML | MultiQC report
 %%metro line: germline | DNA germline | #0dc09d
 %%metro line: somatic | DNA tumour/normal | #8b5cf6
@@ -20,18 +19,14 @@ graph LR
     subgraph dragen [DRAGEN]
         %%metro entry: left | germline, somatic, rna
         %%metro exit: right | germline, somatic, rna
-        fasta[ ]
-        ht_dna[DNA hash table]
-        ht_rna[RNA hash table]
+        hashtables[Hash tables]
         germline[Germline]
         somatic[Somatic]
         rna_align[RNA alignment]
 
-        fasta -->|germline,somatic| ht_dna
-        fasta -->|rna| ht_rna
-        ht_dna -->|germline| germline
-        ht_dna -->|somatic| somatic
-        ht_rna -->|rna| rna_align
+        hashtables -->|germline| germline
+        hashtables -->|somatic| somatic
+        hashtables -->|rna| rna_align
     end
 
     subgraph report [Report]
@@ -42,8 +37,7 @@ graph LR
         multiqc -->|germline,somatic,rna| report_html
     end
 
-    parse -->|germline,somatic| ht_dna
-    parse -->|rna| ht_rna
+    parse -->|germline,somatic,rna| hashtables
     germline -->|germline| multiqc
     somatic -->|somatic| multiqc
     rna_align -->|rna| multiqc
