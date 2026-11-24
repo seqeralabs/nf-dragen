@@ -5,8 +5,6 @@ on:
   pull_request:
     branches: [master, main]
   workflow_dispatch:
-  push: # TEMP: one-off test run, revert
-    branches: [ci/platform-release-test]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,7 +12,7 @@ concurrency:
 
 jobs:
   dragen-f2:
-    if: github.event_name != 'pull_request' || (github.head_ref == 'dev' && github.event.pull_request.head.repo.full_name == github.repository)
+    if: github.event_name == 'workflow_dispatch' || (github.head_ref == 'dev' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
       - uses: seqeralabs/action-seqera-launch@6854ad5e03f3be560f412a6d762d20448be468ca # v1.1.0
