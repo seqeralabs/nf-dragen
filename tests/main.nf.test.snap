@@ -449,7 +449,7 @@
                 "    dragen: stub",
                 "Workflow:",
                 "    Nextflow: 26.10.6",
-                "    seqeralabs/nf-dragen: 1.0.0dev"
+                "    seqeralabs/nf-dragen: 1.0.0"
             ]
         ],
         "timestamp": "2026-11-23T11:22:55.67868228",
