@@ -1,0 +1,24 @@
+name: parse_samplesheet
+description: Validate the samplesheet and group its rows into one record per sample
+keywords:
+  - samplesheet
+  - validation
+components: []
+input:
+  - samplesheet:
+      type: file
+      description: Samplesheet CSV, validated against the schema
+      pattern: "*.csv"
+  - default_seq_type:
+      type: string
+      description: Sequencing type for rows without a `seq_type` (`dna` or `rna`)
+  - schema:
+      type: file
+      description: Samplesheet JSON schema
+      pattern: "*.json"
+output:
+  - samples:
+      type: channel
+      description: One `Sample` record per sample (id, patient, tissue, sex, seq_type, fastq_1, fastq_2); several rows of a sample are its FASTQ pairs in samplesheet order
+authors:
+  - "@seqeralabs"

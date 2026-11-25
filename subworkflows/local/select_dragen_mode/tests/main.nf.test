@@ -1,0 +1,50 @@
+nextflow_workflow {
+
+    name "Test Workflow SELECT_DRAGEN_MODE"
+    script "../main.nf"
+    workflow "SELECT_DRAGEN_MODE"
+    tag "select_dragen_mode"
+
+    // Successful pairing is covered by the pipeline test on samplesheet_modes.csv
+
+    test("tumour without a normal - fails naming the patient") {
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of(
+                    record(id: 'P1_T', patient: 'P1', tissue: 'tumor', sex: 'unknown', seq_type: 'dna', fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")], fastq_2: [])
+                )
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("Patient 'P1' has tumour sample(s) P1_T but no normal") } }
+            )
+        }
+    }
+
+    test("two normals - fails naming the patient") {
+
+        when {
+            workflow {
+                """
+                input[0] = channel.of(
+                    record(id: 'P1_N1', patient: 'P1', tissue: 'germline', sex: 'unknown', seq_type: 'dna', fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test2_1.fastq.gz")], fastq_2: []),
+                    record(id: 'P1_N2', patient: 'P1', tissue: 'germline', sex: 'unknown', seq_type: 'dna', fastq_1: [file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz")], fastq_2: [])
+                )
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("Patient 'P1' has 2 normal DNA samples") } }
+            )
+        }
+    }
+}

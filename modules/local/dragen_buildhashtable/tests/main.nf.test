@@ -1,0 +1,35 @@
+nextflow_process {
+
+    name "Test Process DRAGEN_BUILDHASHTABLE"
+    script "../main.nf"
+    process "DRAGEN_BUILDHASHTABLE"
+    tag "dragen_buildhashtable"
+
+    test("fasta - stub") {
+
+        options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = record(
+                    id: 'dna',
+                    fasta: file("https://raw.githubusercontent.com/nf-core/test-datasets/4f975096d0621c0f52ca6f17964af0868be5bd99/data/genomics/homo_sapiens/genome/genome.fasta"),
+                    dragen_args: '--ht-build-cnv-hashtable true',
+                    output_prefix: 'dragen_index_dna'
+                )
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert process.out[0][0].id == 'dna' },
+                { assert new File(process.out[0][0].index).name == 'dragen_index_dna' },
+                { assert new File(new File(process.out[0][0].index).parentFile, '.command.out').text.contains('--ht-build-cnv-hashtable true') },
+                { assert snapshot(getAllFilesFromDir(process.out[0][0].index, relative: true, includeDir: false)).match() }
+            )
+        }
+    }
+}
